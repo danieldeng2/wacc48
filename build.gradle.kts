@@ -19,10 +19,14 @@ tasks.jar {
 
 repositories {
     mavenCentral()
+    flatDir {
+        dirs = setOf(file("lib"))
+    }
 }
 
 dependencies {
     testImplementation(kotlin("test-junit"))
+    implementation(fileTree(mapOf("dir" to "lib", "include" to listOf("*.jar"))))
 }
 
 tasks.test {

@@ -19,6 +19,6 @@ rules:
 	./gradlew jar
 
 clean:
-	$(RM) rules $(OUTPUT_DIR) $(SOURCE_DIR)/antlr
+	$(RM) rules $(OUTPUT_DIR) $(SOURCE_DIR)/main/java/antlr
 
 .PHONY: all rules clean
