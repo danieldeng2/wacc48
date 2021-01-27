@@ -1,5 +1,9 @@
 image: gradle:6.8.1-jdk11
 
+before_script:
+  - apt-get -y update
+  - apt-get install -y build-essential
+
 stages:
   - antlrBuild 
   - gradleTest
@@ -9,8 +13,9 @@ parser-generate:
   script: 
     - make
 
-test:
+gradle-test:
   stage: gradleTest 
   script: 
+    - make
     - ./gradlew test
 
