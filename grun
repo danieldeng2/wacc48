@@ -1,5 +1,8 @@
 #!/bin/sh
+mkdir -p bin
+find src/main/java -name '*.java' > bin/testRig
+javac -sourcepath src/main/java -d bin -cp lib/antlr-4.9.1-complete.jar  @bin/testRig
 
 echo running the ANTLR TestRig grammar tool
 java -cp bin:lib/antlr-4.9.1-complete.jar org.antlr.v4.gui.TestRig $@
-
+rm -rf bin

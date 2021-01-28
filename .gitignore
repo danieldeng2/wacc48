@@ -1,6 +1,10 @@
 #ignore generated binary files and auto-generated ANTLR code
 bin
 src/main/java/antlr
+*.tokens
+*.interp
+/gen
+/bin
 
 #ignore Java class files
 *.class
