@@ -4,9 +4,9 @@ import antlr.*
 
 fun main(args: Array<String>) {
     val input: CharStream = CharStreams.fromStream(System.`in`)
-    val lexer = BasicLexer(input)
+    val lexer = WACCLexer(input)
     val tokens = CommonTokenStream(lexer)
-    val parser = BasicParser(tokens)
+    val parser = WACCParser(tokens)
     val tree = parser.prog()
 
     println(tree.toStringTree(parser))
