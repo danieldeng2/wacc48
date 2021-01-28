@@ -4,7 +4,7 @@ import org.junit.Test
 class WACCLexerTest {
 
     //fun getTokensFromString(string: String): List<Token> {
-        // Requires to run ANTLR first to build java classes
+    // Requires to run ANTLR first to build java classes
 
 //        val byteStream = string.byteInputStream()
 //        val charStream = CharStreams.fromStream(byteStream)
