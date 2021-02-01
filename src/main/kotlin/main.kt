@@ -9,5 +9,7 @@ fun main(args: Array<String>) {
     val parser = WACCParser(tokens)
     val tree = parser.prog()
 
-    println(tree.toStringTree(parser))
+    val visitor = ParserVisitor()
+    visitor.visit(tree)
+
 }

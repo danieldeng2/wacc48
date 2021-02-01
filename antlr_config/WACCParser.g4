@@ -12,26 +12,20 @@ param_list: param (COMMA param)* ;
 param: type IDENT;
 
 // Statements
-stat: SKIP_
-    | declaration_stat
-    | assignment_stat
-    | if_stat
-    | while_stat
-    | begin_stat
-    | READ    expr
-    | FREE    expr
-    | EXIT    expr
-    | RETURN  expr
-    | PRINT   expr
-    | PRINTLN expr
-    | stat SEMICOLON stat;
-
-
-declaration_stat: type IDENT EQUAL assign_rhs;
-assignment_stat:  assign_lhs EQUAL assign_rhs;
-if_stat:    IF expr THEN stat ELSE stat FI;
-while_stat: WHILE expr DO stat DONE;
-begin_stat: BEGIN stat END;
+stat: SKIP_                               #skipStat
+    | type IDENT EQUAL assign_rhs         #declarationStat
+    | assign_lhs EQUAL assign_rhs         #assignmentStat
+    | IF expr THEN stat ELSE stat FI      #ifStat
+    | WHILE expr DO stat DONE             #whileStat
+    | BEGIN stat END                      #beginStat
+    | READ    expr                        #readStat
+    | FREE    expr                        #freeStat
+    | EXIT    expr                        #exitStat
+    | RETURN  expr                        #returnStat
+    | PRINT   expr                        #printStat
+    | PRINTLN expr                        #printlnStat
+    | stat SEMICOLON stat                 #seqCompositionStat
+    ;
 
 assign_lhs: IDENT
           | array_elem
