@@ -6,7 +6,7 @@ options {
 
 prog: BEGIN func* stat END ;
 
-func: type IDENT OPEN_PAREN param_list? CLOSE_PAREN 'is' stat END ;
+func: type IDENT OPEN_PAREN param_list? CLOSE_PAREN IS stat END ;
 
 param_list: param (COMMA param)* ;
 param: type IDENT;
