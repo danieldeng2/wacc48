@@ -8,7 +8,7 @@ prog: BEGIN func* stat END ;
 
 func: type IDENT OPEN_PAREN param_list? CLOSE_PAREN 'is' stat END ;
 
-param_list: param (',' param)* ;
+param_list: param (COMMA param)* ;
 param: type IDENT;
 
 // Statements
@@ -24,7 +24,7 @@ stat: SKIP_
     | RETURN  expr
     | PRINT   expr
     | PRINTLN expr
-    | stat ';' stat;
+    | stat SEMICOLON stat;
 
 
 declaration_stat: type IDENT EQUAL assign_rhs;
