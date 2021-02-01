@@ -82,3 +82,7 @@ CLOSE_PAREN: ')' ;
 OPEN_SQR_PAREN: '[' ;
 CLOSE_SQR_PAREN: ']' ;
 
+COMMA: ',';
+SEMICOLON: ';';
+
+EQUAL: '=';
