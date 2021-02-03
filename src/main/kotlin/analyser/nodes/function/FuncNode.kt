@@ -5,9 +5,13 @@ import analyser.nodes.type.Type
 import analyser.nodes.ASTNode
 import analyser.nodes.statement.StatNode
 
-class FuncNode(val identifier: String, val paramList: ParamListNode) : ASTNode {
-    var retType: Type? = null
-    var statNode: StatNode? = null
+class FuncNode(
+    val identifier: String,
+    val paramList: ParamListNode,
+    val retType: Type,
+    val body: StatNode
+) :
+    ASTNode {
 
     override fun isValid(st: SymbolTable): Boolean {
         if (st.lookupOuterScopes(identifier) != null) {

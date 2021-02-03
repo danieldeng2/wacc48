@@ -12,9 +12,6 @@ fun main(args: Array<String>) {
     val tokens = CommonTokenStream(lexer)
     val parser = WACCParser(tokens)
 
-    val semanticAnalyser = SemanticAnalyser()
-    semanticAnalyser.visitProg(parser.prog())
+    val progNode = ASTGenerator().visitProg(parser.prog())
 
-    println(semanticAnalyser.errorReporter.syntaxErrors)
-    println(semanticAnalyser.errorReporter.semanticErrors)
 }

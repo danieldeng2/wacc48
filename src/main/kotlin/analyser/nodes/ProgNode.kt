@@ -6,7 +6,7 @@ import analyser.nodes.statement.StatNode
 
 class ProgNode(
     private val body: StatNode,
-    private val functions: MutableList<FuncNode>
+    private val functions: List<FuncNode>
 ) : ASTNode {
 
     override fun isValid(st: SymbolTable): Boolean {

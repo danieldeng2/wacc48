@@ -1,4 +1,4 @@
-import analyser.ErrorReporter
+/*
 import analyser.SymbolTable
 import analyser.nodes.*
 import analyser.nodes.function.ExitNode
@@ -15,7 +15,6 @@ import antlr.WACCParserBaseVisitor
 class SemanticAnalyser : WACCParserBaseVisitor<ASTNode>() {
 
     private var st: SymbolTable = SymbolTable(null)
-    val errorReporter = ErrorReporter()
 
     override fun visitProg(ctx: WACCParser.ProgContext): ASTNode {
         println("Entering program...")
@@ -146,8 +145,4 @@ class SemanticAnalyser : WACCParserBaseVisitor<ASTNode>() {
         }
         return ErrorNode()
     }
-
-    override fun visitIntLiteral(ctx: WACCParser.IntLiteralContext?): ASTNode {
-        return ErrorNode()
-    }
-}
+}*/
