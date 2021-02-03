@@ -36,13 +36,13 @@ class WACCParserTest {
 
     @Test
     fun simpleDeclarationParsesCorrectly() {
-        parse("int x = 1").declaration_stat()
+        parse("int x = 1").stat()
     }
 
     @Test
     fun invalidDeclarationGivesSyntaxError() {
         try {
-            parse("int x a = 32").declaration_stat()
+            parse("int x a = 32").stat()
             fail()
         } catch (e: Exception) {
             // Successful error
@@ -52,7 +52,7 @@ class WACCParserTest {
     @Test
     fun invalidIdentifierDeclarationSyntaxError() {
         try {
-            parse("int _abc++ = 32").declaration_stat()
+            parse("int _abc++ = 32").stat()
             fail()
         } catch (e: Exception) {
             // Successful error
