@@ -11,7 +11,10 @@ class ProgNode(
 ) : ASTNode {
 
     override fun validate(st: SymbolTable) {
-        TODO("Not yet implemented")
+        functions.forEach {
+            it.validate(st)
+        }
+        body.validate(st)
     }
 
 }
