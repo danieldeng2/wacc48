@@ -44,16 +44,16 @@ base_type: INT | BOOL | CHAR | STRING;
 pair_type: PAIR OPEN_PAREN pair_elem_type COMMA pair_elem_type CLOSE_PAREN;
 pair_elem_type: base_type | type OPEN_SQR_PAREN CLOSE_SQR_PAREN | PAIR;
 
-expr: INT_LITER
-    | BOOL_LITER
-    | CHAR_LITER
-    | STR_LITER
-    | pair_liter
-    | IDENT
-    | array_elem
-    | unary_oper expr
-    | expr binary_oper expr
-    | OPEN_PAREN expr CLOSE_PAREN
+expr: INT_LITER                             #intLiteral
+    | BOOL_LITER                            #boolLiteral
+    | CHAR_LITER                            #charLiteral
+    | STR_LITER                             #strLiteral
+    | pair_liter                            #pairLiteral
+    | IDENT                                 #identifier
+    | array_elem                            #arrayElem
+    | unary_oper expr                       #unaryOpExpr
+    | expr binary_oper expr                 #binOpExpr
+    | OPEN_PAREN expr CLOSE_PAREN           #bracketedExpr
     ;
 
 unary_oper: NOT
