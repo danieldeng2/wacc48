@@ -1,13 +1,7 @@
-import analyser.SymbolTable
-import analyser.nodes.ASTNode
-import analyser.nodes.ProgNode
-import analyser.nodes.expr.ExprNode
-import analyser.nodes.function.ExitNode
-import analyser.nodes.function.FuncNode
-import analyser.nodes.function.ParamListNode
-import analyser.nodes.function.ParamNode
-import analyser.nodes.statement.SkipNode
-import analyser.nodes.statement.StatNode
+import analyser.nodes.*
+import analyser.nodes.expr.*
+import analyser.nodes.function.*
+import analyser.nodes.statement.*
 import analyser.nodes.type.*
 import antlr.WACCParser
 import antlr.WACCParserVisitor
