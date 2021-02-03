@@ -6,15 +6,15 @@ options {
 
 prog: BEGIN func* stat END ;
 
-func: type IDENT OPEN_PAREN param_list? CLOSE_PAREN IS stat END ;
+func: type IDENT OPEN_PAREN paramList? CLOSE_PAREN IS stat END ;
 
-param_list: param (COMMA param)* ;
+paramList: param (COMMA param)* ;
 param: type IDENT;
 
 // Statements
 stat: SKIP_                               #skipStat
-    | type IDENT EQUAL assign_rhs         #declarationStat
-    | assign_lhs EQUAL assign_rhs         #assignmentStat
+    | type IDENT EQUAL assignRhs          #declarationStat
+    | assignLhs EQUAL assignRhs           #assignmentStat
     | IF expr THEN stat ELSE stat FI      #ifStat
     | WHILE expr DO stat DONE             #whileStat
     | BEGIN stat END                      #beginStat
@@ -27,42 +27,46 @@ stat: SKIP_                               #skipStat
     | stat SEMICOLON stat                 #seqCompositionStat
     ;
 
-assign_lhs: IDENT
-          | array_elem
-          | pair_elem;
+assignLhs: IDENT
+         | arrayElem
+         | pairElem;
 
-assign_rhs: expr
-          | array_liter
-          | NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN
-          | pair_elem
-          | CALL IDENT OPEN_PAREN arg_list CLOSE_PAREN;
+assignRhs: expr
+         | arrayLiter
+         | NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN
+         | pairElem
+         | CALL IDENT OPEN_PAREN argList CLOSE_PAREN;
 
-arg_list: expr (COMMA expr)*;
+argList: expr (COMMA expr)*;
 
-type: base_type | pair_type | type OPEN_SQR_PAREN CLOSE_SQR_PAREN;
-base_type: INT | BOOL | CHAR | STRING;
-pair_type: PAIR OPEN_PAREN pair_elem_type COMMA pair_elem_type CLOSE_PAREN;
-pair_elem_type: base_type | type OPEN_SQR_PAREN CLOSE_SQR_PAREN | PAIR;
-
-expr: INT_LITER                             #intLiteral
-    | BOOL_LITER                            #boolLiteral
-    | CHAR_LITER                            #charLiteral
-    | STR_LITER                             #strLiteral
-    | pair_liter                            #pairLiteral
-    | IDENT                                 #identifier
-    | array_elem                            #arrayElem
-    | unary_oper expr                       #unaryOpExpr
-    | expr binary_oper expr                 #binOpExpr
-    | OPEN_PAREN expr CLOSE_PAREN           #bracketedExpr
+type: baseType
+    | pairType
+    | type OPEN_SQR_PAREN CLOSE_SQR_PAREN
     ;
 
-unary_oper: NOT
+baseType: INT | BOOL | CHAR | STRING;
+pairType: PAIR OPEN_PAREN pairElemType COMMA pairElemType CLOSE_PAREN;
+pairElemType: baseType | type OPEN_SQR_PAREN CLOSE_SQR_PAREN | PAIR;
+
+expr: INT_LITER                                       #intLiteral
+    | BOOL_LITER                                      #boolLiteral
+    | CHAR_LITER                                      #charLiteral
+    | STR_LITER                                       #strLiteral
+    | NULL                                            #pairLiteral
+    | IDENT                                           #identifier
+    | arrayElem                                       #arrayElemExpr
+    | unaryOper expr                                  #unaryOpExpr
+    | expr binaryOper expr                            #binOpExpr
+    | OPEN_PAREN expr CLOSE_PAREN                     #bracketedExpr
+    ;
+
+unaryOper: NOT
           | MINUS
           | LENGTH
           | ORD
           | CHR ;
 
-binary_oper: MULT
+binaryOper: MULT
            | DIV
            | MOD
            | PLUS
@@ -77,8 +81,7 @@ binary_oper: MULT
            | OR
            ;
 
-array_elem: IDENT (OPEN_SQR_PAREN expr CLOSE_SQR_PAREN)+ ;
-pair_elem: FST expr | SND expr;
+pairElem: FST expr | SND expr;
 
-array_liter: OPEN_SQR_PAREN (expr (COMMA expr)* )? CLOSE_SQR_PAREN ;
-pair_liter: NULL ;
+arrayLiter: OPEN_SQR_PAREN (expr (COMMA expr)* )? CLOSE_SQR_PAREN;
+arrayElem: IDENT (OPEN_SQR_PAREN expr CLOSE_SQR_PAREN)+;
