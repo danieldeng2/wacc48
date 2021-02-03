@@ -1,8 +1,7 @@
 package analyser.nodes.expr
 
 import analyser.nodes.ASTNode
-import analyser.nodes.type.Typable
-import analyser.nodes.type.Type
+import analyser.nodes.type.Typeable
 
-interface ExprNode : ASTNode, Typable {
+interface ExprNode : ASTNode, Typeable {
 }

@@ -8,19 +8,15 @@ import antlr.WACCParserVisitor
 import org.antlr.v4.runtime.tree.*
 
 class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTNode> {
-    override fun visitProg(ctx: WACCParser.ProgContext): ASTNode {
-        println("Entering program...")
 
-        return ProgNode(
+    override fun visitProg(ctx: WACCParser.ProgContext): ASTNode =
+        ProgNode(
             body = visit(ctx.stat()) as StatNode,
             functions = ctx.func().map { visit(it) as FuncNode }
         )
-    }
 
-    override fun visitFunc(ctx: WACCParser.FuncContext): ASTNode {
-        println("Visiting ${ctx.IDENT().text}")
-
-        return FuncNode(
+    override fun visitFunc(ctx: WACCParser.FuncContext): ASTNode =
+        FuncNode(
             identifier = ctx.IDENT().text,
             paramList = when {
                 ctx.paramList() == null -> ParamListNode(emptyList())
@@ -29,7 +25,6 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
             retType = visit(ctx.type()) as Type,
             body = visit(ctx.stat()) as StatNode
         )
-    }
 
     override fun visitParamList(ctx: WACCParser.ParamListContext): ASTNode =
         ParamListNode(

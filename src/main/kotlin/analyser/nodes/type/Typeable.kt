@@ -1,5 +1,5 @@
 package analyser.nodes.type
 
-interface Typable {
+interface Typeable {
     val type: Type
 }

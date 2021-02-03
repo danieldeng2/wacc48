@@ -7,7 +7,7 @@ import java.util.*
 
 fun main(args: Array<String>) {
     val input: CharStream = when {
-        args.isEmpty() -> CharStreams.fromString(Scanner(System.`in`).nextLine())
+        args.isEmpty() -> CharStreams.fromStream(System.`in`)
         else -> CharStreams.fromFileName(args[0])
     }
 
