@@ -25,9 +25,12 @@ class SemanticAnalyser : WACCParserBaseVisitor<ASTNode>() {
             val funcId = func.IDENT().text
             if (st.lookupCurrentScope(funcId) != null) return ErrorNode()
 
-            val paramList = visit(func.paramList())
-            if (paramList !is ParamListNode) return ErrorNode()
+            val paramList = when {
+                func.paramList() == null -> ParamListNode(emptyList())
+                else -> visit(func.paramList())
+            }
 
+            if (paramList !is ParamListNode) return ErrorNode()
             val funcNode = FuncNode(funcId, paramList)
 
             st.add(funcId, funcNode)
