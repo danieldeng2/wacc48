@@ -5,7 +5,7 @@ import analyser.nodes.type.Type
 import analyser.nodes.ASTNode
 
 class ParamNode(val type: Type, val text: String) : ASTNode {
-    override fun isValid(st: SymbolTable): Boolean {
+    override fun validate(st: SymbolTable) {
         TODO("Not yet implemented")
     }
 }

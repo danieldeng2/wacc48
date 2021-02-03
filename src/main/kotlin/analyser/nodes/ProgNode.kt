@@ -9,7 +9,8 @@ class ProgNode(
     private val functions: List<FuncNode>
 ) : ASTNode {
 
-    override fun isValid(st: SymbolTable): Boolean {
+    override fun validate(st: SymbolTable) {
         TODO("Not yet implemented")
     }
+
 }

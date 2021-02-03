@@ -6,7 +6,7 @@ import analyser.nodes.expr.ExprNode
 
 class ExitNode(value: ExprNode) : ASTNode {
 
-    override fun isValid(st: SymbolTable): Boolean {
+    override fun validate(st: SymbolTable) {
         TODO("Not yet implemented")
     }
 

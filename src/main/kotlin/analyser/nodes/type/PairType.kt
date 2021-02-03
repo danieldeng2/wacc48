@@ -10,7 +10,10 @@ import analyser.SymbolTable
 class PairType(var firstType: Type? = null, var secondType: Type? = null) :
     Type {
 
-    override fun isValid(st: SymbolTable): Boolean = true
+    override fun validate(st: SymbolTable) {
+        TODO("Not yet implemented")
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

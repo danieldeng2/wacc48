@@ -1,6 +1,7 @@
 import org.antlr.v4.runtime.*
 
 import antlr.*
+import analyser.SymbolTable
 import java.util.*
 
 fun main(args: Array<String>) {
@@ -14,4 +15,5 @@ fun main(args: Array<String>) {
 
     val progNode = ASTGenerator().visitProg(parser.prog())
 
+    progNode.validate(SymbolTable(null))
 }

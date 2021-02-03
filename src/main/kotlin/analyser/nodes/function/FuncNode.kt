@@ -12,9 +12,8 @@ class FuncNode(
     val body: StatNode
 ) :
     ASTNode {
-
-    override fun isValid(st: SymbolTable): Boolean {
-        if (st.lookupOuterScopes(identifier) != null) {
+    override fun validate(st: SymbolTable) {
+        /*if (st.lookupOuterScopes(identifier) != null) {
             //TODO: Error
             println("Illegal re-declaration of $identifier")
             return false
@@ -24,7 +23,7 @@ class FuncNode(
             st.add(identifier, this)
             return true
         }
-        return false
+        return false*/
     }
 
     /**

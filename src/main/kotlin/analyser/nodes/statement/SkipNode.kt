@@ -5,8 +5,8 @@ import analyser.nodes.ASTNode
 
 class SkipNode : ASTNode {
 
-    override fun isValid(st: SymbolTable): Boolean {
-        return true
+    override fun validate(st: SymbolTable) {
+        TODO("Not yet implemented")
     }
 
 }

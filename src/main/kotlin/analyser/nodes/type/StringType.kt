@@ -4,5 +4,7 @@ import analyser.SymbolTable
 
 object StringType : Type {
 
-    override fun isValid(st: SymbolTable) = true
+    override fun validate(st: SymbolTable) {
+        TODO("Not yet implemented")
+    }
 }

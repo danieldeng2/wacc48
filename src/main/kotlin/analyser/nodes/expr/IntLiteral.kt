@@ -6,5 +6,7 @@ import analyser.nodes.type.IntType
 class IntLiteral : ExprNode {
     override val type = IntType
 
-    override fun isValid(st: SymbolTable) = true
+    override fun validate(st: SymbolTable) {
+        TODO("Not yet implemented")
+    }
 }
