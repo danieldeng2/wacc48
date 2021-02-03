@@ -2,7 +2,7 @@ package analyser.nodes.type
 
 import analyser.SymbolTable
 
-class ArrayType(val elementType: Type) : Type {
+data class ArrayType(val elementType: Type) : Type {
 
     override fun validate(st: SymbolTable) {
         TODO("Not yet implemented")

@@ -45,56 +45,70 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
             text = ctx.IDENT().text
         )
 
-    override fun visitIfStat(ctx: WACCParser.IfStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitIfStat(ctx: WACCParser.IfStatContext): ASTNode =
+        IfNode(
+            proposition = visit(ctx.expr()) as ExprNode,
+            trueStat = visit(ctx.stat(0)) as StatNode,
+            falseStat = visit(ctx.stat(1)) as StatNode,
+        )
 
-    override fun visitReadStat(ctx: WACCParser.ReadStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitReadStat(ctx: WACCParser.ReadStatContext): ASTNode =
+        ReadNode(
+            value = visit(ctx.expr()) as ExprNode,
+        )
 
-    override fun visitPrintStat(ctx: WACCParser.PrintStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitPrintStat(ctx: WACCParser.PrintStatContext): ASTNode =
+        PrintNode(
+            value = visit(ctx.expr()) as ExprNode,
+        )
 
-    override fun visitSeqCompositionStat(ctx: WACCParser.SeqCompositionStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitSeqCompositionStat(ctx: WACCParser.SeqCompositionStatContext): ASTNode =
+        SeqNode(
+            firstStat = visit(ctx.stat(0)) as StatNode,
+            secondStat = visit(ctx.stat(2)) as StatNode,
+        )
 
     override fun visitAssignmentStat(ctx: WACCParser.AssignmentStatContext): ASTNode {
         TODO("Not yet implemented")
     }
 
-    override fun visitPrintlnStat(ctx: WACCParser.PrintlnStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitPrintlnStat(ctx: WACCParser.PrintlnStatContext): ASTNode =
+        PrintNode(
+            value = visit(ctx.expr()) as ExprNode,
+            returnAfterPrint = true,
+        )
 
     override fun visitExitStat(ctx: WACCParser.ExitStatContext): ASTNode =
         ExitNode(
             value = visit(ctx.expr()) as ExprNode
         )
 
-    override fun visitFreeStat(ctx: WACCParser.FreeStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitFreeStat(ctx: WACCParser.FreeStatContext): ASTNode =
+        FreeNode(
+            value = visit(ctx.expr()) as ExprNode
+        )
 
-    override fun visitBeginStat(ctx: WACCParser.BeginStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitBeginStat(ctx: WACCParser.BeginStatContext): ASTNode =
+        BeginNode(
+            stat = visit(ctx.stat()) as StatNode,
+        )
 
-    override fun visitSkipStat(ctx: WACCParser.SkipStatContext): ASTNode = SkipNode()
+    override fun visitSkipStat(ctx: WACCParser.SkipStatContext): ASTNode = SkipNode
 
-    override fun visitReturnStat(ctx: WACCParser.ReturnStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitReturnStat(ctx: WACCParser.ReturnStatContext): ASTNode =
+        ReturnNode(
+            value = visit(ctx.expr()) as ExprNode,
+        )
 
     override fun visitDeclarationStat(ctx: WACCParser.DeclarationStatContext): ASTNode {
         TODO("Not yet implemented")
     }
 
-    override fun visitWhileStat(ctx: WACCParser.WhileStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitWhileStat(ctx: WACCParser.WhileStatContext): ASTNode =
+        WhileNode(
+            proposition = visit(ctx.expr()) as ExprNode,
+            body = visit(ctx.stat()) as StatNode,
+        )
 
     override fun visitAssignLhs(ctx: WACCParser.AssignLhsContext): ASTNode {
         TODO("Not yet implemented")
@@ -154,9 +168,10 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
         TODO("Not yet implemented")
     }
 
-    override fun visitIntLiteral(ctx: WACCParser.IntLiteralContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitIntLiteral(ctx: WACCParser.IntLiteralContext): ASTNode =
+        IntLiteral(
+            value = ctx.text.toInt()
+        )
 
     override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode {
         TODO("Not yet implemented")

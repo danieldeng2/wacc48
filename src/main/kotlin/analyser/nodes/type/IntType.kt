@@ -4,12 +4,16 @@ import analyser.SymbolTable
 import kotlin.math.pow
 
 object IntType : Type {
-    private val minus2: Double = -2.0
-    private val two: Double = 2.0
-    private val min: Int = minus2.pow(31).toInt()
-    private val max: Int = two.pow(31).toInt() - 1
+    private const val minus2: Double = -2.0
+    private const val two: Double = 2.0
+    val min: Int = minus2.pow(31).toInt()
+    val max: Int = two.pow(31).toInt() - 1
 
     override fun validate(st: SymbolTable) {
         TODO("Not yet implemented")
+    }
+
+    override fun toString(): String {
+        return "Int"
     }
 }

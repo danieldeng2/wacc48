@@ -3,11 +3,10 @@ package analyser.nodes.type
 import analyser.SymbolTable
 
 /**
- *
  *  'null' means generic pair
  */
 
-class PairType(var firstType: Type? = null, var secondType: Type? = null) :
+data class PairType(var firstType: Type? = null, var secondType: Type? = null) :
     Type {
 
     override fun validate(st: SymbolTable) {

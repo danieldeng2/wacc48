@@ -23,5 +23,7 @@ fun main(args: Array<String>) {
 
     val programNode = ASTGenerator().visitProg(parser.prog())
     programNode.validate(SymbolTable(null))
+
+    println(programNode)
 }
 

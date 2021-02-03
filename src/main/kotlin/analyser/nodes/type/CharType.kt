@@ -9,4 +9,7 @@ object CharType : Type {
         TODO("Not yet implemented")
     }
 
+    override fun toString(): String {
+        return "Char"
+    }
 }

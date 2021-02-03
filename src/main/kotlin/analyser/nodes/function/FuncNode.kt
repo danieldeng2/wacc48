@@ -6,7 +6,7 @@ import analyser.nodes.ASTNode
 import analyser.nodes.statement.StatNode
 import exceptions.SemanticsException
 
-class FuncNode(
+data class FuncNode(
     val identifier: String,
     val paramList: ParamListNode,
     val retType: Type,
@@ -18,7 +18,7 @@ class FuncNode(
         retType.validate(currST)
         paramList.validate(currST)
 
-        if (st.lookupCurrentScope(identifier) != null)
+        if (identifier in st)
             throw SemanticsException("Illegal re-declaration of function $identifier")
 
         if (!allPathsTerminated())
@@ -34,6 +34,7 @@ class FuncNode(
      * @return true iff all branches exit correctly
      */
     private fun allPathsTerminated(): Boolean {
+        // TODO("Not yet implemented")
         return true
     }
 

@@ -7,32 +7,20 @@ class SymbolTable(private val parent: SymbolTable?) {
     private val map: MutableMap<String, ASTNode> = HashMap()
 
     /**
-     * Only a global scope should have a 'null' parent since this is a tree
-     * structure
-     * @return true iff current symbol table is at global scope
+     * @return whether SymbolTable contains the [key]
      */
-    fun isGlobalScope(): Boolean = parent == null
+    operator fun contains(key: String): Boolean =
+        key in map || parent?.contains(key) ?: false
 
     /**
-     * Look-up [key] in the current scope
+     * Look-up [key] in all scopes
      * @return ASTNode associated to [key] if found, null otherwise
      */
-    fun lookupCurrentScope(key: String): ASTNode? {
-        return map[key]
-    }
-
-    /**
-     * Look-up [key] in current and all ancestor scopes
-     * @return ASTNode in innermost scope if [key] is found, null otherwise
-     */
-    fun lookupOuterScopes(key: String): ASTNode? {
-        var st: SymbolTable? = this
-        do {
-            val node = st!!.lookupCurrentScope(key)
-            if (node != null) return node
-            st = st.parent
-        } while (st != null)
-        return null
+    operator fun get(key: String): ASTNode? {
+        if (key in map) {
+            return map[key]
+        }
+        return parent?.get(key)
     }
 
     fun add(id: String, node: ASTNode) {

@@ -5,7 +5,7 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.statement.StatNode
 import exceptions.SemanticsException
 
-class ProgNode(
+data class ProgNode(
     private val body: StatNode,
     private val functions: List<FuncNode>
 ) : ASTNode {

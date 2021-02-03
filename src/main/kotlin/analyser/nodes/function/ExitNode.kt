@@ -3,11 +3,15 @@ package analyser.nodes.function
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
 import analyser.nodes.expr.ExprNode
+import analyser.nodes.type.IntType
+import exceptions.SemanticsException
 
-class ExitNode(value: ExprNode) : ASTNode {
+data class ExitNode(private val value: ExprNode) : ASTNode {
 
     override fun validate(st: SymbolTable) {
-        TODO("Not yet implemented")
+        value.validate(st);
+        if (value.type != IntType)
+            throw SemanticsException("Exit must take integer as input")
     }
 
 }
