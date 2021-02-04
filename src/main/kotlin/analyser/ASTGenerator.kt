@@ -3,6 +3,7 @@ package analyser
 import analyser.nodes.*
 import analyser.nodes.assignment.*
 import analyser.nodes.expr.*
+import analyser.nodes.expr.operators.*
 import analyser.nodes.function.*
 import analyser.nodes.statement.*
 import analyser.nodes.type.*
@@ -176,15 +177,19 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
 
     override fun visitUnaryOpExpr(ctx: WACCParser.UnaryOpExprContext): ASTNode =
         UnOpNode(
-            operator = ctx.UNARY_OPERATOR().text,
+            operator = UnaryOperator.lookupRepresentation(
+                ctx.UNARY_OPERATOR().text
+            )!!,
             expr = visit(ctx.expr()) as ExprNode
         )
 
     override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode =
         BinOpNode(
-            operator = ctx.BINARY_OPERATOR().text,
+            operator = BinaryOperator.lookupRepresentation(
+                ctx.BINARY_OPERATOR().text
+            )!!,
             firstExpr = visit(ctx.expr(0)) as ExprNode,
-            secondExpr = visit(ctx.expr(1)) as ExprNode,
+            secondExpr = visit(ctx.expr(1)) as ExprNode
         )
 
     override fun visitPairLiteral(ctx: WACCParser.PairLiteralContext): ASTNode =
