@@ -13,7 +13,7 @@ data class IdentifierNode(
     override var type: Type = VoidType
 
     override fun validate(st: SymbolTable) {
-        if (name !in st)
+        if (!st.containsInAnyScope(name))
             throw SemanticsException("Unknown identifier $name")
 
         val assignedNode = st[name]
@@ -21,5 +21,6 @@ data class IdentifierNode(
             throw SemanticsException("Unknown type $name")
 
         type = assignedNode.type
+        st.add(name, assignedNode)
     }
 }
