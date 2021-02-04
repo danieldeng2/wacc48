@@ -1,6 +1,7 @@
 package analyser.nodes.expr
 
 import analyser.SymbolTable
+import analyser.nodes.assignment.LHSNode
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
@@ -8,7 +9,7 @@ import exceptions.SemanticsException
 data class ArrayElement(
     val name: String,
     val indices: List<ExprNode>
-) : ExprNode {
+) : ExprNode, LHSNode {
     override var type: Type = VoidType
     override fun validate(st: SymbolTable) {
         if (st.containsInAnyScope(name))
