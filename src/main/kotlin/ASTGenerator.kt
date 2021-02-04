@@ -112,7 +112,9 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
         when {
             ctx.arrayElem() != null -> visit(ctx.arrayElem())
             ctx.pairElem() != null -> visit(ctx.pairElem())
-            else -> visit(ctx.IDENT())
+            else -> IdentifierNode(
+                name = ctx.text
+            )
         }
 
     override fun visitAssignRhs(ctx: WACCParser.AssignRhsContext): ASTNode =
@@ -129,14 +131,15 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
             args = ctx.expr().map { visit(it) as ExprNode }
         )
 
-    override fun visitType(ctx: WACCParser.TypeContext): ASTNode = when {
-        ctx.type() != null ->
-            ArrayType(
-                elementType = visit(ctx.type()) as Type
-            )
-        ctx.baseType() != null -> visit(ctx.baseType())
-        else -> visit(ctx.pairType())
-    }
+    override fun visitType(ctx: WACCParser.TypeContext): ASTNode =
+        when {
+            ctx.type() != null ->
+                ArrayType(
+                    elementType = visit(ctx.type()) as Type
+                )
+            ctx.baseType() != null -> visit(ctx.baseType())
+            else -> visit(ctx.pairType())
+        }
 
     override fun visitBaseType(ctx: WACCParser.BaseTypeContext): ASTNode =
         when {
@@ -169,13 +172,18 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
             name = ctx.text
         )
 
-    override fun visitUnaryOpExpr(ctx: WACCParser.UnaryOpExprContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitUnaryOpExpr(ctx: WACCParser.UnaryOpExprContext): ASTNode =
+        UnOpNode(
+            operator = ctx.UNARY_OPERATOR().text,
+            expr = visit(ctx.expr()) as ExprNode
+        )
 
-    override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode =
+        BinOpNode(
+            operator = ctx.BINARY_OPERATOR().text,
+            firstExpr = visit(ctx.expr(0)) as ExprNode,
+            secondExpr = visit(ctx.expr(1)) as ExprNode,
+        )
 
     override fun visitPairLiteral(ctx: WACCParser.PairLiteralContext): ASTNode =
         PairLiteral
@@ -200,14 +208,6 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
 
     override fun visitBracketedExpr(ctx: WACCParser.BracketedExprContext): ASTNode =
         visit(ctx.expr())
-
-    override fun visitUnaryOper(ctx: WACCParser.UnaryOperContext): ASTNode {
-        TODO("Not yet implemented")
-    }
-
-    override fun visitBinaryOper(ctx: WACCParser.BinaryOperContext): ASTNode {
-        TODO("Not yet implemented")
-    }
 
     override fun visitPairElem(ctx: WACCParser.PairElemContext): ASTNode =
         PairElemNode(

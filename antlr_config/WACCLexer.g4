@@ -36,41 +36,44 @@ BOOL: 'bool';
 CHAR: 'char';
 STRING: 'string';
 
-//unary operators
-NOT: '!' ;
-LENGTH: 'len' ;
-ORD: 'ord' ;
-CHR: 'chr' ;
-
-//binary operators
-PLUS: '+' ;
-MINUS: '-' ;
-MULT: '*' ;
-DIV: '/' ;
-MOD: '%' ;
-
-//comparison operators
-GREATER_THAN: '>' ;
-GREATER_THAN_EQUAL: '>=' ;
-LESS_THAN: '<' ;
-LESS_THAN_EQUAL: '<=' ;
-EQUALS: '==' ;
-NOT_EQUALS: '!=' ;
-AND: '&&' ;
-OR: '||' ;
-
 // Type literals
 INT_LITER: (PLUS | MINUS)? DIGIT+ ;
 BOOL_LITER: 'true' | 'false' ;
 CHAR_LITER: '\'' CHARACTER '\'' ;
 STR_LITER: '"' CHARACTER* '"' ;
 
-IDENT: ('_' | [a-z] | [A-Z]) ('_' | [a-z] | [A-Z] | [0-9])* ;
+
+UNARY_OPERATOR:
+    '!'
+    | 'len'
+    | 'ord'
+    | 'chr'
+    ;
+
+BINARY_OPERATOR :
+    PLUS
+   | MINUS
+   | '*'
+   | '/'
+   | '%'
+   | '>'
+   | '>='
+   | '<'
+   | '<='
+   | '=='
+   | '!='
+   | '&&'
+   | '||'
+   ;
 
 // Fragments
+fragment PLUS: '+' ;
+fragment MINUS: '-' ;
 fragment DIGIT: '0'..'9' ;
 fragment CHARACTER: ~('"' | '\'' | '\\') | ('\\' ESCAPED_CHAR) ;
 fragment ESCAPED_CHAR: '0' | 'b' | 't' | 'n' | 'f' | 'r' | '"' | '\'' | '\\' ;
+
+
 
 //array liter is defined in the parser
 //to be used in pair_liter in the parser
@@ -86,3 +89,5 @@ COMMA: ',';
 SEMICOLON: ';';
 
 EQUAL: '=';
+
+IDENT: ('_' | [a-z] | [A-Z]) ('_' | [a-z] | [A-Z] | [0-9])* ;

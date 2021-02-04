@@ -33,7 +33,7 @@ class WACCLexerTest {
 
         assertNotNull(tokens)
         assertEquals(WACCLexer.INT_LITER, tokens[0].type)
-        assertEquals(WACCLexer.PLUS, tokens[1].type)
+        assertEquals(WACCLexer.BINARY_OPERATOR, tokens[1].type)
         assertEquals(WACCLexer.INT_LITER, tokens[2].type)
     }
 
@@ -43,7 +43,7 @@ class WACCLexerTest {
 
         assertNotNull(tokens)
         assertEquals(WACCLexer.INT_LITER, tokens[0].type)
-        assertEquals(WACCLexer.PLUS, tokens[1].type)
+        assertEquals(WACCLexer.BINARY_OPERATOR, tokens[1].type)
         assertEquals(WACCLexer.INT_LITER, tokens[2].type)
     }
 
@@ -99,7 +99,7 @@ class WACCLexerTest {
         assertNotNull(tokens)
         assertEquals(4, tokens.size)
         assertEquals(-123, tokens[0].text.toInt())
-        assertEquals(WACCLexer.PLUS, tokens[1].type)
+        assertEquals(WACCLexer.BINARY_OPERATOR, tokens[1].type)
         assertEquals(456, tokens[2].text.toInt())
     }
 
