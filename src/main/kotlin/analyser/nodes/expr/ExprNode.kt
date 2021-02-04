@@ -1,7 +1,5 @@
 package analyser.nodes.expr
 
-import analyser.nodes.ASTNode
-import analyser.nodes.type.Typeable
+import analyser.nodes.assignment.RHSNode
 
-interface ExprNode : ASTNode, Typeable {
-}
+interface ExprNode : RHSNode

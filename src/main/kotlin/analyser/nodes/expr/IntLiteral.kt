@@ -2,10 +2,11 @@ package analyser.nodes.expr
 
 import analyser.SymbolTable
 import analyser.nodes.type.IntType
+import analyser.nodes.type.Type
 import exceptions.SemanticsException
 
 data class IntLiteral(val value: Int) : ExprNode {
-    override val type = IntType
+    override var type: Type = IntType
 
     override fun validate(st: SymbolTable) {
         if (value > IntType.max || value < IntType.min)

@@ -1,4 +1,5 @@
 import analyser.nodes.*
+import analyser.nodes.assignment.*
 import analyser.nodes.expr.*
 import analyser.nodes.function.*
 import analyser.nodes.statement.*
@@ -63,9 +64,11 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
             secondStat = visit(ctx.stat(2)) as StatNode,
         )
 
-    override fun visitAssignmentStat(ctx: WACCParser.AssignmentStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitAssignmentStat(ctx: WACCParser.AssignmentStatContext): ASTNode =
+        AssignmentNode(
+            name = visit(ctx.assignLhs()) as LHSNode,
+            value = visit(ctx.assignLhs()) as RHSNode,
+        )
 
     override fun visitPrintlnStat(ctx: WACCParser.PrintlnStatContext): ASTNode =
         PrintNode(
@@ -95,9 +98,12 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
             value = visit(ctx.expr()) as ExprNode,
         )
 
-    override fun visitDeclarationStat(ctx: WACCParser.DeclarationStatContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitDeclarationStat(ctx: WACCParser.DeclarationStatContext): ASTNode =
+        DeclarationNode(
+            type = visit(ctx.type()) as Type,
+            name = ctx.IDENT().text,
+            value = visit(ctx.assignRhs()) as RHSNode
+        )
 
     override fun visitWhileStat(ctx: WACCParser.WhileStatContext): ASTNode =
         WhileNode(
@@ -105,13 +111,21 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
             body = visit(ctx.stat()) as StatNode,
         )
 
-    override fun visitAssignLhs(ctx: WACCParser.AssignLhsContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitAssignLhs(ctx: WACCParser.AssignLhsContext): ASTNode =
+        when {
+            ctx.arrayElem() != null -> visit(ctx.arrayElem())
+            ctx.pairElem() != null -> visit(ctx.pairElem())
+            else -> visit(ctx.IDENT())
+        }
 
-    override fun visitAssignRhs(ctx: WACCParser.AssignRhsContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitAssignRhs(ctx: WACCParser.AssignRhsContext): ASTNode =
+        when {
+            ctx.expr() != null -> visit(ctx.expr())
+            ctx.arrayLiter() != null -> visit(ctx.arrayLiter())
+            ctx.pairLiter() != null -> visit(ctx.pairLiter())
+            ctx.pairElem() != null -> visit(ctx.pairElem())
+            else -> visit(ctx.funcCall())
+        }
 
     override fun visitArgList(ctx: WACCParser.ArgListContext): ASTNode {
         TODO("Not yet implemented")
@@ -151,9 +165,10 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
         TODO("Not yet implemented")
     }
 
-    override fun visitIdentifier(ctx: WACCParser.IdentifierContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitIdentifier(ctx: WACCParser.IdentifierContext): ASTNode =
+        IdentifierNode(
+            name = ctx.text
+        )
 
     override fun visitUnaryOpExpr(ctx: WACCParser.UnaryOpExprContext): ASTNode {
         TODO("Not yet implemented")
@@ -205,6 +220,14 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
     }
 
     override fun visitArrayElem(ctx: WACCParser.ArrayElemContext): ASTNode {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitFuncCall(ctx: WACCParser.FuncCallContext?): ASTNode {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitPairLiter(ctx: WACCParser.PairLiterContext?): ASTNode {
         TODO("Not yet implemented")
     }
 

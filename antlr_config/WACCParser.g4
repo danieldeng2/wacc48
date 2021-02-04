@@ -33,9 +33,9 @@ assignLhs: IDENT
 
 assignRhs: expr
          | arrayLiter
-         | NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN
+         | pairLiter
          | pairElem
-         | CALL IDENT OPEN_PAREN argList CLOSE_PAREN;
+         | funcCall;
 
 argList: expr (COMMA expr)*;
 
@@ -81,6 +81,8 @@ binaryOper: MULT
            | OR
            ;
 
+funcCall : CALL IDENT OPEN_PAREN argList CLOSE_PAREN;
+pairLiter: NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN;
 pairElem: FST expr | SND expr;
 
 arrayLiter: OPEN_SQR_PAREN (expr (COMMA expr)* )? CLOSE_SQR_PAREN;

@@ -20,7 +20,7 @@ class ThrowingErrorListener : BaseErrorListener() {
 
 class SyntaxException(message: String) : Exception(message) {
     init {
-        println("Syntax Error : $message")
+        println("Syntax Error: $message")
         exitProcess(100)
     }
 }

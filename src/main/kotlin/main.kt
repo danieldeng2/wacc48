@@ -11,19 +11,23 @@ fun main(args: Array<String>) {
         else -> CharStreams.fromFileName(args[0])
     }
 
+    // Lexical Analysis
     val lexer = WACCLexer(input)
     lexer.removeErrorListeners()
     lexer.addErrorListener(ThrowingErrorListener())
 
     val tokens = CommonTokenStream(lexer)
 
+    // Syntax Analysis
     val parser = WACCParser(tokens)
     parser.removeErrorListeners()
     parser.addErrorListener(ThrowingErrorListener())
 
+    // Semantic Analysis
     val programNode = ASTGenerator().visitProg(parser.prog())
     programNode.validate(SymbolTable(null))
 
+    // Print out Abstract Syntax Tree
     println(programNode)
 }
 
