@@ -11,7 +11,7 @@ data class ArrayElement(
 ) : ExprNode {
     override var type: Type = VoidType
     override fun validate(st: SymbolTable) {
-        if (name !in st)
+        if (st.containsInAnyScope(name))
             throw SemanticsException("Cannot find array $name")
         indices.forEach { it.validate(st) }
         val typedElem = st[name] as ArrayLiteral

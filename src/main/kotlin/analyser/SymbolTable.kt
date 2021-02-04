@@ -9,14 +9,14 @@ class SymbolTable(private val parent: SymbolTable?) {
     /**
      * @return whether SymbolTable contains the [key]
      */
-    operator fun contains(key: String): Boolean =
-        key in map || parent?.contains(key) ?: false
+
+    fun containsInCurrentScope(key: String): Boolean = key in map
 
     /**
      * @return whether current or ancestor SymbolTable contains [key]
      */
-    fun containsInCurrentScope(key: String): Boolean =
-        key in map
+    fun containsInAnyScope(key: String): Boolean =
+        key in map || parent?.containsInAnyScope(key) ?: false
 
     /**
      * Look-up [key] in all scopes
