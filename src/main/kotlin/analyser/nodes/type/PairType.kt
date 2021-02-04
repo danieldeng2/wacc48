@@ -10,7 +10,6 @@ data class PairType(var firstType: Type? = null, var secondType: Type? = null) :
     Type {
 
     override fun validate(st: SymbolTable) {
-        TODO("Not yet implemented")
     }
 
     override fun equals(other: Any?): Boolean {

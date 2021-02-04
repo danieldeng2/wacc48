@@ -10,7 +10,6 @@ object IntType : Type {
     val max: Int = two.pow(31).toInt() - 1
 
     override fun validate(st: SymbolTable) {
-        TODO("Not yet implemented")
     }
 
     override fun toString(): String {

@@ -13,7 +13,7 @@ param: type IDENT;
 
 // Statements
 stat: SKIP_                               #skipStat
-    | type IDENT EQUAL assignRhs          #declarationStat
+    | param EQUAL assignRhs               #declarationStat
     | assignLhs EQUAL assignRhs           #assignmentStat
     | IF expr THEN stat ELSE stat FI      #ifStat
     | WHILE expr DO stat DONE             #whileStat

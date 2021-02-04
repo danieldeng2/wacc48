@@ -29,7 +29,8 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
 
     override fun visitParamList(ctx: WACCParser.ParamListContext): ASTNode =
         ParamListNode(
-            params = ctx.param().withIndex()
+            params = ctx.param()
+                .withIndex()
                 .map { (_, paramCtx) ->
                     visit(paramCtx) as ParamNode
                 }
@@ -100,8 +101,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
 
     override fun visitDeclarationStat(ctx: WACCParser.DeclarationStatContext): ASTNode =
         DeclarationNode(
-            type = visit(ctx.type()) as Type,
-            name = ctx.IDENT().text,
+            name = visit(ctx.param()) as ParamNode,
             value = visit(ctx.assignRhs()) as RHSNode
         )
 
@@ -127,9 +127,14 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
             else -> visit(ctx.funcCall())
         }
 
-    override fun visitArgList(ctx: WACCParser.ArgListContext): ASTNode {
-        TODO("Not yet implemented")
-    }
+    override fun visitArgList(ctx: WACCParser.ArgListContext): ASTNode =
+        ArgListNode(
+            args = ctx.expr()
+                .withIndex()
+                .map { (_, paramCtx) ->
+                    visit(paramCtx) as ExprNode
+                }
+        )
 
     override fun visitType(ctx: WACCParser.TypeContext): ASTNode = when {
         ctx.type() != null ->

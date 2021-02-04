@@ -2,21 +2,18 @@ package analyser.nodes.statement
 
 import analyser.SymbolTable
 import analyser.nodes.assignment.RHSNode
-import analyser.nodes.type.Typable
-import analyser.nodes.type.Type
+import analyser.nodes.function.ParamNode
 import exceptions.SemanticsException
 
 data class DeclarationNode(
-    override var type: Type,
-    private val name: String,
+    private val name: ParamNode,
     private val value: RHSNode
-) : StatNode, Typable {
+) : StatNode {
 
     override fun validate(st: SymbolTable) {
-        if (value.type != type)
+        if (value.type != name.type)
             throw SemanticsException("Type mismatch in declaration $name")
+        name.validate(st)
         value.validate(st)
-
-        st.add(name, value)
     }
 }
