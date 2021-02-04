@@ -13,18 +13,28 @@ data class FuncNode(
     val body: StatNode
 ) :
     ASTNode {
-    override fun validate(st: SymbolTable) {
-        val currST = SymbolTable(st)
-        retType.validate(currST)
-        paramList.validate(currST)
+    private var hasValuatedPrototype = false
+
+    fun validatePrototype(st: SymbolTable) {
+        hasValuatedPrototype = true
 
         if (identifier in st)
             throw SemanticsException("Illegal re-declaration of function $identifier")
 
+        st.add(identifier, this)
+    }
+
+    override fun validate(st: SymbolTable) {
+        if (!hasValuatedPrototype)
+            validatePrototype(st)
+
+        val currST = SymbolTable(st)
+        retType.validate(currST)
+        paramList.validate(currST)
+
         if (!allPathsTerminated())
             throw SemanticsException("Function $identifier does not terminate")
 
-        st.add(identifier, this)
         body.validate(currST)
     }
 

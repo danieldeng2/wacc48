@@ -3,7 +3,6 @@ package analyser.nodes
 import analyser.SymbolTable
 import analyser.nodes.function.FuncNode
 import analyser.nodes.statement.StatNode
-import exceptions.SemanticsException
 
 data class ProgNode(
     private val body: StatNode,
@@ -12,8 +11,13 @@ data class ProgNode(
 
     override fun validate(st: SymbolTable) {
         functions.forEach {
+            it.validatePrototype(st)
+        }
+
+        functions.forEach {
             it.validate(st)
         }
+
         body.validate(st)
     }
 

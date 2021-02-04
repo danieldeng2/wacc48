@@ -21,6 +21,4 @@ data class ArrayType(val elementType: Type) : Type {
     override fun hashCode(): Int {
         return elementType.hashCode()
     }
-
-
 }

@@ -1,26 +1,25 @@
-package analyser.nodes.statement
+package analyser.nodes.expr
 
 import analyser.SymbolTable
 import analyser.nodes.assignment.LHSNode
-import analyser.nodes.type.PairType
+import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.Typable
 import analyser.nodes.type.Type
+import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 
 data class IdentifierNode(
     val name: String,
-) : LHSNode, StatNode {
-
-    override var type: Type = PairType()
+) : LHSNode, ExprNode {
+    override var type: Type = VoidType
 
     override fun validate(st: SymbolTable) {
         if (name !in st)
             throw SemanticsException("Unknown identifier $name")
 
         val assignedNode = st[name]
-        if (assignedNode !is Typable) {
+        if (assignedNode !is Typable)
             throw SemanticsException("Unknown type $name")
-        }
 
         type = assignedNode.type
     }

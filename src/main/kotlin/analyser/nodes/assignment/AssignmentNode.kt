@@ -12,7 +12,7 @@ data class AssignmentNode(
         name.validate(st)
         value.validate(st)
 
-        if (name.type != value)
+        if (name.type != value.type)
             throw SemanticsException("Attempt to assign different types $this")
     }
 }

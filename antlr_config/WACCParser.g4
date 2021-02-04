@@ -33,7 +33,7 @@ assignLhs: IDENT
 
 assignRhs: expr
          | arrayLiter
-         | pairLiter
+         | newPair
          | pairElem
          | funcCall;
 
@@ -54,17 +54,18 @@ expr: INT_LITER                                       #intLiteral
     | STR_LITER                                       #strLiteral
     | NULL                                            #pairLiteral
     | IDENT                                           #identifier
+    | OPEN_PAREN expr CLOSE_PAREN                     #bracketedExpr
     | arrayElem                                       #arrayElemExpr
     | unaryOper expr                                  #unaryOpExpr
     | expr binaryOper expr                            #binOpExpr
-    | OPEN_PAREN expr CLOSE_PAREN                     #bracketedExpr
     ;
 
 unaryOper: NOT
           | MINUS
           | LENGTH
           | ORD
-          | CHR ;
+          | CHR
+          ;
 
 binaryOper: MULT
            | DIV
@@ -82,7 +83,7 @@ binaryOper: MULT
            ;
 
 funcCall : CALL IDENT OPEN_PAREN argList CLOSE_PAREN;
-pairLiter: NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN;
+newPair: NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN;
 pairElem: FST expr | SND expr;
 
 arrayLiter: OPEN_SQR_PAREN (expr (COMMA expr)* )? CLOSE_SQR_PAREN;
