@@ -3,7 +3,6 @@ package exceptions
 import org.antlr.v4.runtime.BaseErrorListener
 import org.antlr.v4.runtime.RecognitionException
 import org.antlr.v4.runtime.Recognizer
-import kotlin.system.exitProcess
 
 class ThrowingErrorListener : BaseErrorListener() {
     override fun syntaxError(
@@ -18,9 +17,4 @@ class ThrowingErrorListener : BaseErrorListener() {
     }
 }
 
-class SyntaxException(message: String) : Exception(message) {
-    init {
-        println("Syntax Error: $message")
-        exitProcess(100)
-    }
-}
+class SyntaxException(message: String) : Exception(message)
