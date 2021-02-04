@@ -10,9 +10,8 @@ import exceptions.SemanticsException
 data class ExitNode(private val value: ExprNode) : StatNode {
 
     override fun validate(st: SymbolTable) {
-        value.validate(st);
+        value.validate(st)
         if (value.type != IntType)
-            throw SemanticsException("Exit must take integer as input")
+            throw SemanticsException("Exit must take integer as input, got ${value.type} instead")
     }
-
 }

@@ -6,7 +6,7 @@ import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 
-class FuncCallNode(
+data class FuncCallNode(
     private val name: String,
     private val argList: ArgListNode,
 ) : RHSNode {
