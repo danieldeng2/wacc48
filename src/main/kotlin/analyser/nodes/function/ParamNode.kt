@@ -11,7 +11,7 @@ data class ParamNode(
     val text: String
 ) : ASTNode, Typable {
     override fun validate(st: SymbolTable) {
-        if (text in st)
+        if (st.containsInCurrentScope(text))
             throw SemanticsException("Illegal re-declaration of parameter $text")
         st.add(text, this)
     }
