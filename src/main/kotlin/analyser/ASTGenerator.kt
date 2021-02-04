@@ -1,3 +1,5 @@
+package analyser
+
 import analyser.nodes.*
 import analyser.nodes.assignment.*
 import analyser.nodes.expr.*
