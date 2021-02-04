@@ -13,7 +13,7 @@ data class FuncCallNode(
     override var type: Type = VoidType
 
     override fun validate(st: SymbolTable) {
-        if (st.containsInCurrentScope(name))
+        if (!st.containsInAnyScope(name))
             throw SemanticsException("Cannot find function $name")
         val functionNode = st[name] as FuncNode
 
