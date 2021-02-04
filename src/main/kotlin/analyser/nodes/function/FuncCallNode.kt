@@ -25,7 +25,7 @@ data class FuncCallNode(
         if (args.size != params.size)
             throw SemanticsException("Number of arguments do not match parameter: $name")
 
-        for (i in 1 until args.size) {
+        for (i in args.indices) {
             if (args[i].type != params[i].type)
                 throw SemanticsException("${i}th argument of $name has wrong type")
         }

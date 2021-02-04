@@ -1,7 +1,6 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
-import analyser.nodes.ASTNode
 
 object SkipNode : StatNode {
 

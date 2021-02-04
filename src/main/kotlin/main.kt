@@ -3,7 +3,6 @@ import org.antlr.v4.runtime.*
 import antlr.*
 import analyser.SymbolTable
 import exceptions.ThrowingErrorListener
-import java.util.*
 
 fun main(args: Array<String>) {
     val input: CharStream = when {

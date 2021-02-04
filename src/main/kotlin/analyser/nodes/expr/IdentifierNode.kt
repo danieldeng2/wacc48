@@ -2,7 +2,6 @@ package analyser.nodes.expr
 
 import analyser.SymbolTable
 import analyser.nodes.assignment.LHSNode
-import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.Typable
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType

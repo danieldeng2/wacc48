@@ -1,9 +1,7 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
-import analyser.nodes.ASTNode
 import analyser.nodes.expr.ExprNode
-import analyser.nodes.statement.StatNode
 import analyser.nodes.type.IntType
 import exceptions.SemanticsException
 
