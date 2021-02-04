@@ -13,6 +13,7 @@ data class FuncNode(
     val body: StatNode
 ) :
     ASTNode {
+
     private var hasValuatedPrototype = false
 
     fun validatePrototype(st: SymbolTable) {
@@ -28,14 +29,16 @@ data class FuncNode(
         if (!hasValuatedPrototype)
             validatePrototype(st)
 
-        val currST = SymbolTable(st)
-        retType.validate(currST)
-        paramList.validate(currST)
+        val paramScopeST = SymbolTable(st)
+        val bodyScopeST = SymbolTable(paramScopeST)
+
+        retType.validate(st)
+        paramList.validate(paramScopeST)
+        body.validate(bodyScopeST)
 
         if (!allPathsTerminated())
             throw SemanticsException("Function $identifier does not terminate")
 
-        body.validate(currST)
     }
 
     /**
