@@ -11,9 +11,13 @@ data class DeclarationNode(
 ) : StatNode {
 
     override fun validate(st: SymbolTable) {
-        if (value.type != name.type)
-            throw SemanticsException("Type mismatch in declaration $name")
         name.validate(st)
         value.validate(st)
+
+        if (value.type != name.type)
+            throw SemanticsException("Type mismatch in declaration $name")
+        if (st.containsInCurrentScope(name.text))
+            throw SemanticsException("Illegal re-declaration of $name")
+        st.add(name.text, value)
     }
 }

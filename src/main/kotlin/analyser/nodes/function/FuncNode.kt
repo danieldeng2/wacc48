@@ -19,7 +19,7 @@ data class FuncNode(
     fun validatePrototype(st: SymbolTable) {
         hasValuatedPrototype = true
 
-        if (identifier in st)
+        if (st.containsInCurrentScope(identifier))
             throw SemanticsException("Illegal re-declaration of function $identifier")
 
         st.add(identifier, this)
