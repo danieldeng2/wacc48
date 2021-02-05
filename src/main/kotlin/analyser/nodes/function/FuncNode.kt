@@ -47,7 +47,7 @@ data class FuncNode(
             lastStat = lastStat.secondStat
         }
 
-        if (lastStat is ReturnNode && lastStat.value.type !== retType)
+        if (lastStat is ReturnNode && lastStat.value.type != retType)
             throw SemanticsException("Function $identifier must return $retType")
 
         return when (lastStat) {
