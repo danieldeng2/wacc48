@@ -7,7 +7,7 @@ import exceptions.SemanticsException
 import exceptions.SyntaxException
 import kotlin.math.exp
 
-open class UnOpNode(
+data class UnOpNode(
     val operator: UnaryOperator,
     val expr: ExprNode,
 ) : ExprNode {
