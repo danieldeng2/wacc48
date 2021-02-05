@@ -12,9 +12,9 @@ data class NewPairNode(
 ) : RHSNode {
     override var type: Type = VoidType
 
-    override fun validate(st: SymbolTable) {
-        firstElem.validate(st)
-        secondElem.validate(st)
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        firstElem.validate(st, funTable)
+        secondElem.validate(st, funTable)
 
         type = PairType(firstElem.type, secondElem.type)
     }

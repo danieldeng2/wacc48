@@ -8,7 +8,7 @@ import exceptions.SemanticsException
 data class IntLiteral(val value: Int) : ExprNode {
     override var type: Type = IntType
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (value > IntType.max || value < IntType.min)
             throw SemanticsException("IntLiteral $value is out of range")
     }

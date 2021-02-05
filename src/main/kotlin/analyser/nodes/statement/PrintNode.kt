@@ -8,7 +8,7 @@ data class PrintNode(
     private val returnAfterPrint: Boolean = false,
 ) : StatNode {
 
-    override fun validate(st: SymbolTable) {
-        value.validate(st)
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        value.validate(st, funTable)
     }
 }

@@ -6,8 +6,8 @@ data class BeginNode(
     val stat: StatNode,
 ) : StatNode {
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
         val currST = SymbolTable(st)
-        stat.validate(currST)
+        stat.validate(currST, funTable)
     }
 }

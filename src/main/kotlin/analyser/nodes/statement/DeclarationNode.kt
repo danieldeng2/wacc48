@@ -10,9 +10,9 @@ data class DeclarationNode(
     private val value: RHSNode
 ) : StatNode {
 
-    override fun validate(st: SymbolTable) {
-        name.validate(st)
-        value.validate(st)
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        name.validate(st, funTable)
+        value.validate(st, funTable)
 
         if (value.type != name.type)
             throw SemanticsException("Type mismatch in declaration $name")

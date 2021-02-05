@@ -7,6 +7,6 @@ import analyser.nodes.type.Type
 data class BoolLiteral(val value: Boolean) : ExprNode {
     override var type: Type = BoolType
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
     }
 }

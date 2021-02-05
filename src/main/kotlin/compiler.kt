@@ -22,7 +22,7 @@ fun runCompiler(input: CharStream): ASTNode {
 
     // Semantic Analysis
     val programNode = ASTGenerator().visitProg(parser.prog())
-    programNode.validate(SymbolTable(null))
+    programNode.validate(SymbolTable(null), SymbolTable(null))
 
     return programNode
 }

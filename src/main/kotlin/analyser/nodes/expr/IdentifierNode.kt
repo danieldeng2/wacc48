@@ -12,7 +12,7 @@ data class IdentifierNode(
 ) : LHSNode, ExprNode {
     override var type: Type = VoidType
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (!st.containsInAnyScope(name))
             throw SemanticsException("Unknown identifier $name")
 

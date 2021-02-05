@@ -17,24 +17,24 @@ data class FuncNode(
 
     private var hasValuatedPrototype = false
 
-    fun validatePrototype(st: SymbolTable) {
+    fun validatePrototype(ft: SymbolTable) {
         hasValuatedPrototype = true
 
-        if (st.containsInCurrentScope(identifier))
+        if (ft.containsInCurrentScope(identifier))
             throw SemanticsException("Illegal re-declaration of function $identifier")
 
-        st.add(identifier, this)
+        ft.add(identifier, this)
     }
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (!hasValuatedPrototype)
-            validatePrototype(st)
+            validatePrototype(funTable)
 
         val paramST = SymbolTable(st)
 
-        retType.validate(st)
-        paramList.validate(paramST)
-        body.validate(SymbolTable(paramST))
+        retType.validate(st, funTable)
+        paramList.validate(paramST, funTable)
+        body.validate(SymbolTable(paramST), funTable)
 
         if (!allPathsTerminated(body))
             throw SyntaxException("Function $identifier must end with either a return or exit")

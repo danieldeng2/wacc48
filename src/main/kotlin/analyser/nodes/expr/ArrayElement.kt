@@ -13,10 +13,10 @@ data class ArrayElement(
     val indices: List<ExprNode>
 ) : ExprNode, LHSNode {
     override var type: Type = VoidType
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (!st.containsInAnyScope(name))
             throw SemanticsException("Cannot find array $name")
-        indices.forEach { it.validate(st) }
+        indices.forEach { it.validate(st, funTable) }
         val typedElem = st[name] as ParamNode
         val arrayType = typedElem.type
         if (arrayType !is ArrayType)

@@ -2,7 +2,6 @@ package analyser.nodes.statement
 
 import analyser.SymbolTable
 import analyser.nodes.assignment.LHSNode
-import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.CharType
 import analyser.nodes.type.IntType
 import analyser.nodes.type.StringType
@@ -14,8 +13,8 @@ data class ReadNode(
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
 
-    override fun validate(st: SymbolTable) {
-        value.validate(st)
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        value.validate(st, funTable)
         if (value.type !in expectedExprTypes)
             throw SemanticsException("Cannot read from type ${value.type}")
     }

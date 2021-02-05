@@ -12,12 +12,12 @@ data class FuncCallNode(
 ) : RHSNode {
     override var type: Type = VoidType
 
-    override fun validate(st: SymbolTable) {
-        if (!st.containsInAnyScope(name))
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        if (!funTable.containsInAnyScope(name))
             throw SemanticsException("Cannot find function $name")
-        val functionNode = st[name] as FuncNode
+        val functionNode = funTable[name] as FuncNode
 
-        argList.validate(st)
+        argList.validate(st, funTable)
 
         val args = argList.args
         val params = functionNode.paramList.params

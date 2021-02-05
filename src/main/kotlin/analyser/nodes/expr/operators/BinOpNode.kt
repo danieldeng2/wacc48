@@ -12,9 +12,9 @@ data class BinOpNode(
 ) : ExprNode {
     override var type: Type = operator.returnType
 
-    override fun validate(st: SymbolTable) {
-        firstExpr.validate(st)
-        secondExpr.validate(st)
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        firstExpr.validate(st, funTable)
+        secondExpr.validate(st, funTable)
 
         val expected = operator.expectedExprTypes
 

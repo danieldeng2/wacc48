@@ -10,13 +10,13 @@ data class WhileNode(
     val body: StatNode,
 ) : StatNode {
 
-    override fun validate(st: SymbolTable) {
-        proposition.validate(st)
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        proposition.validate(st, funTable)
 
         if (proposition.type != BoolType)
             throw SemanticsException("While statement proposition must be boolean")
 
-        body.validate(SymbolTable(st))
+        body.validate(SymbolTable(st), funTable)
     }
 }
 

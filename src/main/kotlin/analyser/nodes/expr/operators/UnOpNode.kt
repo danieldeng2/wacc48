@@ -3,9 +3,7 @@ package analyser.nodes.expr.operators
 import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
-import exceptions.SemanticsException
 import exceptions.SyntaxException
-import kotlin.math.exp
 
 data class UnOpNode(
     val operator: UnaryOperator,
@@ -13,8 +11,8 @@ data class UnOpNode(
 ) : ExprNode {
     override var type: Type = operator.returnType
 
-    override fun validate(st: SymbolTable) {
-        expr.validate(st)
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        expr.validate(st, funTable)
 
         if (expr.type !in operator.expectedExprTypes)
             throw SyntaxException(

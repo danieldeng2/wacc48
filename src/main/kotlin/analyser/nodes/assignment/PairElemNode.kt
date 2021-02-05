@@ -2,7 +2,6 @@ package analyser.nodes.assignment
 
 import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
-import analyser.nodes.type.GenericPair
 import analyser.nodes.type.PairType
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
@@ -14,8 +13,8 @@ data class PairElemNode(
 ) : LHSNode, RHSNode {
     override var type: Type = VoidType
 
-    override fun validate(st: SymbolTable) {
-        name.validate(st)
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        name.validate(st, funTable)
 
         if (name.type !is PairType)
             throw SemanticsException("Cannot dereference pair $name")

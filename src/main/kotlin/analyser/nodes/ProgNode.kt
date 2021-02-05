@@ -10,19 +10,19 @@ data class ProgNode(
     private val functions: List<FuncNode>
 ) : ASTNode {
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
         functions.forEach {
-            it.validatePrototype(st)
+            it.validatePrototype(funTable)
         }
 
         functions.forEach {
-            it.validate(st)
+            it.validate(st, funTable)
         }
 
         if (hasGlobalReturn(body))
             throw SemanticsException("Cannot return in global context")
 
-        body.validate(st)
+        body.validate(st, funTable)
     }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =

@@ -8,6 +8,6 @@ import analyser.nodes.type.Type
 data class StringLiteral(val value: String) : ExprNode {
     override var type: Type = StringType
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
     }
 }

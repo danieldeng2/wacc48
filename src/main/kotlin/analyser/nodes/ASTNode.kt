@@ -4,6 +4,6 @@ import analyser.SymbolTable
 
 interface ASTNode {
 
-    fun validate(st: SymbolTable)
+    fun validate(st: SymbolTable, funTable: SymbolTable)
 
 }

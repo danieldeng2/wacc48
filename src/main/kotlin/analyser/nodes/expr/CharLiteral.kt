@@ -7,6 +7,6 @@ import analyser.nodes.type.Type
 data class CharLiteral(val value: Char) : ExprNode {
     override var type: Type = CharType
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
     }
 }

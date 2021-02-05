@@ -6,7 +6,7 @@ import analyser.SymbolTable
 data class PairType(var firstType: Type, var secondType: Type) :
     GenericPair {
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
     }
 
     override fun equals(other: Any?): Boolean {

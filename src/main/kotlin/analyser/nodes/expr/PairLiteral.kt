@@ -7,7 +7,7 @@ import analyser.nodes.type.Type
 object PairLiteral : ExprNode {
     override var type: Type = EmptyPair
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
     }
 
     override fun toString(): String {

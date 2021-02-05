@@ -9,8 +9,8 @@ data class FreeNode(
     private val value: ExprNode,
 ) : StatNode {
 
-    override fun validate(st: SymbolTable) {
-        value.validate(st)
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        value.validate(st, funTable)
 
         if (value.type !is GenericPair)
             throw SemanticsException("Cannot free ${value.type}")

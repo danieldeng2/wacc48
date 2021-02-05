@@ -4,7 +4,7 @@ import analyser.SymbolTable
 
 data class ArrayType(val elementType: Type) : Type {
 
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
     }
 
     override fun equals(other: Any?): Boolean {

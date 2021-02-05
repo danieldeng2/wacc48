@@ -3,7 +3,7 @@ package analyser.nodes.type
 import analyser.SymbolTable
 
 object VoidType : Type {
-    override fun validate(st: SymbolTable) {
+    override fun validate(st: SymbolTable, funTable: SymbolTable) {
     }
 
     override fun toString(): String {
