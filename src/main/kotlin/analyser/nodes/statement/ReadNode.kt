@@ -1,6 +1,7 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
+import analyser.nodes.assignment.LHSNode
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.CharType
 import analyser.nodes.type.IntType
@@ -9,7 +10,7 @@ import analyser.nodes.type.Type
 import exceptions.SemanticsException
 
 data class ReadNode(
-    private val value: ExprNode,
+    private val value: LHSNode,
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
 

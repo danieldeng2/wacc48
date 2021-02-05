@@ -18,7 +18,7 @@ stat: SKIP_                               #skipStat
     | IF expr THEN stat ELSE stat FI      #ifStat
     | WHILE expr DO stat DONE             #whileStat
     | BEGIN stat END                      #beginStat
-    | READ    expr                        #readStat
+    | READ    assignLhs                   #readStat
     | FREE    expr                        #freeStat
     | EXIT    expr                        #exitStat
     | RETURN  expr                        #returnStat

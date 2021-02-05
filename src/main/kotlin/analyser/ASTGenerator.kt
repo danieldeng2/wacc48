@@ -51,7 +51,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitReadStat(ctx: WACCParser.ReadStatContext): ASTNode =
         ReadNode(
-            value = visit(ctx.expr()) as ExprNode,
+            value = visit(ctx.assignLhs()) as LHSNode,
         )
 
     override fun visitPrintStat(ctx: WACCParser.PrintStatContext): ASTNode =
