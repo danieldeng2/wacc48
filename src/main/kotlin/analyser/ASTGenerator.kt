@@ -179,8 +179,8 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     override fun visitUnaryOpExpr(ctx: WACCParser.UnaryOpExprContext): ASTNode =
         visit(ctx.unaryOperator()) as UnOpNode
 
-    override fun visitUnaryOperator(ctx: WACCParser.UnaryOperatorContext): ASTNode {
-        return UnOpNode(
+    override fun visitUnaryOperator(ctx: WACCParser.UnaryOperatorContext): ASTNode =
+        UnOpNode(
             operator = UnaryOperator.lookupRepresentation(
                 ctx.getChild(0).text
             )!!,
@@ -189,7 +189,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
                     .ruleContext as WACCParser.UnaryOpExprContext).expr()
             ) as ExprNode
         )
-    }
+
 
     override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode =
         BinOpNode(
