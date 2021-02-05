@@ -33,4 +33,7 @@ class SymbolTable(private val parent: SymbolTable?) {
         map[id] = node
     }
 
+    override fun toString(): String {
+        return map.toString()
+    }
 }
