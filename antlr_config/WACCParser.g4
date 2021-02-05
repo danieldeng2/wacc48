@@ -75,7 +75,7 @@ binaryOperator: PLUS
               | AND
               | OR;
 
-funcCall : CALL IDENT OPEN_PAREN argList CLOSE_PAREN;
+funcCall : CALL IDENT OPEN_PAREN argList? CLOSE_PAREN;
 newPair: NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN;
 pairElem: FST expr | SND expr;
 

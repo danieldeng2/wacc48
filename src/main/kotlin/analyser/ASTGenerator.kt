@@ -23,17 +23,14 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     override fun visitFunc(ctx: WACCParser.FuncContext): ASTNode =
         FuncNode(
             identifier = ctx.IDENT().text,
-            paramList = when {
-                ctx.paramList() == null -> ParamListNode(emptyList())
-                else -> visit(ctx.paramList()) as ParamListNode
-            },
+            paramList = visitParamList(ctx.paramList()) as ParamListNode,
             retType = visit(ctx.type()) as Type,
             body = visit(ctx.stat()) as StatNode
         )
 
-    override fun visitParamList(ctx: WACCParser.ParamListContext): ASTNode =
+    override fun visitParamList(ctx: WACCParser.ParamListContext?): ASTNode =
         ParamListNode(
-            params = ctx.param().map { visit(it) as ParamNode }
+            params = ctx?.param()?.map { visit(it) as ParamNode } ?: emptyList()
         )
 
     override fun visitParam(ctx: WACCParser.ParamContext): ASTNode =
@@ -130,9 +127,9 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
             else -> visit(ctx.funcCall())
         }
 
-    override fun visitArgList(ctx: WACCParser.ArgListContext): ASTNode =
+    override fun visitArgList(ctx: WACCParser.ArgListContext?): ASTNode =
         ArgListNode(
-            args = ctx.expr().map { visit(it) as ExprNode }
+            args = ctx?.expr()?.map { visit(it) as ExprNode } ?: emptyList()
         )
 
     override fun visitType(ctx: WACCParser.TypeContext): ASTNode =
@@ -251,7 +248,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     override fun visitFuncCall(ctx: WACCParser.FuncCallContext): ASTNode =
         FuncCallNode(
             name = ctx.IDENT().text,
-            argList = visit(ctx.argList()) as ArgListNode,
+            argList = visitArgList(ctx.argList()) as ArgListNode
         )
 
     override fun visitNewPair(ctx: WACCParser.NewPairContext): ASTNode =
