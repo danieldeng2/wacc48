@@ -51,6 +51,7 @@ data class FuncNode(
         return when (lastStat) {
             is ReturnNode -> true
             is ExitNode -> true
+            is BeginNode -> allPathsTerminated(lastStat.stat)
             is IfNode -> allPathsTerminated(lastStat.trueStat)
                     && allPathsTerminated(lastStat.falseStat)
             else -> false

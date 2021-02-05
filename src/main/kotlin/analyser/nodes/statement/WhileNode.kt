@@ -6,8 +6,8 @@ import analyser.nodes.type.BoolType
 import exceptions.SemanticsException
 
 data class WhileNode(
-    private val proposition: ExprNode,
-    private val body: StatNode,
+    val proposition: ExprNode,
+    val body: StatNode,
 ) : StatNode {
 
     override fun validate(st: SymbolTable) {

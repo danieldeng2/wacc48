@@ -3,7 +3,7 @@ package analyser.nodes.statement
 import analyser.SymbolTable
 
 data class BeginNode(
-    private val stat: StatNode,
+    val stat: StatNode,
 ) : StatNode {
 
     override fun validate(st: SymbolTable) {
