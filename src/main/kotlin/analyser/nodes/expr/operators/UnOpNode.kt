@@ -4,6 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import exceptions.SemanticsException
+import exceptions.SyntaxException
 import kotlin.math.exp
 
 open class UnOpNode(
@@ -16,7 +17,7 @@ open class UnOpNode(
         expr.validate(st)
 
         if (expr.type !in operator.expectedExprTypes)
-            throw SemanticsException(
+            throw SyntaxException(
                 "Expression type for $operator " +
                         "does not match required type $type"
             )
