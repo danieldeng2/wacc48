@@ -9,7 +9,9 @@ import analyser.nodes.statement.*
 import analyser.nodes.type.*
 import antlr.WACCParser
 import antlr.WACCParserVisitor
+import exceptions.SemanticsException
 import org.antlr.v4.runtime.tree.*
+import java.lang.NumberFormatException
 
 class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     WACCParserVisitor<ASTNode> {
@@ -209,7 +211,11 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitIntLiteral(ctx: WACCParser.IntLiteralContext): ASTNode =
         IntLiteral(
-            value = ctx.text.toInt()
+            value = try {
+                ctx.text.toInt()
+            } catch (e: NumberFormatException) {
+                throw SemanticsException("Integer ${ctx.text} out of bounds")
+            }
         )
 
     override fun visitCharLiteral(ctx: WACCParser.CharLiteralContext): ASTNode =
