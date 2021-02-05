@@ -161,8 +161,10 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitPairElemType(ctx: WACCParser.PairElemTypeContext): ASTNode =
         when {
+            ctx.type() != null -> ArrayType(
+                elementType = visit(ctx.type()) as Type
+            )
             ctx.baseType() != null -> visit(ctx.baseType())
-            ctx.type() != null -> visit(ctx.type())
             else -> EmptyPair
         }
 
