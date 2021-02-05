@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 
 data class ReturnNode(
-    private val value: ExprNode,
+    val value: ExprNode,
 ) : StatNode {
 
     override fun validate(st: SymbolTable) {

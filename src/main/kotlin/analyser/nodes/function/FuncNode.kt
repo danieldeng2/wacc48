@@ -30,9 +30,6 @@ data class FuncNode(
         if (!hasValuatedPrototype)
             validatePrototype(st)
 
-        if (!allPathsTerminated(body))
-            throw SyntaxException("Function $identifier must end with either a return or exit")
-
         val paramScopeST = SymbolTable(st)
         val bodyScopeST = SymbolTable(paramScopeST)
 
@@ -40,6 +37,8 @@ data class FuncNode(
         paramList.validate(paramScopeST)
         body.validate(bodyScopeST)
 
+        if (!allPathsTerminated(body))
+            throw SyntaxException("Function $identifier must end with either a return or exit")
     }
 
     private fun allPathsTerminated(body: StatNode): Boolean {
@@ -47,6 +46,9 @@ data class FuncNode(
         while (lastStat is SeqNode) {
             lastStat = lastStat.secondStat
         }
+
+        if (lastStat is ReturnNode && lastStat.value.type !== retType)
+            throw SemanticsException("Function $identifier must return $retType")
 
         return when (lastStat) {
             is ReturnNode -> true
