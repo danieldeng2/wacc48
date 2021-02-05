@@ -16,6 +16,5 @@ data class DeclarationNode(
 
         if (value.type != name.type)
             throw SemanticsException("Type mismatch in declaration $name")
-        st.add(name.text, value)
     }
 }
