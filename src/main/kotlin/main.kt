@@ -1,13 +1,27 @@
+import analyser.nodes.ASTNode
 import org.antlr.v4.runtime.*
-
-import antlr.*
+import exceptions.SemanticsException
+import exceptions.SyntaxException
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
-    val input: CharStream = CharStreams.fromStream(System.`in`)
-    val lexer = WACCLexer(input)
-    val tokens = CommonTokenStream(lexer)
-    val parser = WACCParser(tokens)
-    val tree = parser.prog()
+    val input: CharStream = when {
+        args.isEmpty() -> CharStreams.fromStream(System.`in`)
+        else -> CharStreams.fromFileName(args[0])
+    }
+    val pNode: ASTNode
 
-    println(tree.toStringTree(parser))
+    try {
+        pNode = runCompiler(input)
+    } catch (e: SyntaxException) {
+        println("Syntax Error: ${e.message}")
+        exitProcess(100)
+    } catch (e: SemanticsException) {
+        println("Semantics Error: ${e.message}")
+        exitProcess(200)
+    }
+
+    // Print out AST tree
+    println(pNode)
 }
+

@@ -4,87 +4,74 @@ options {
   tokenVocab=WACCLexer;
 }
 
-prog: BEGIN func* stat END ;
+prog: BEGIN func* stat END EOF ;
 
-func: type IDENT OPEN_PAREN param_list? CLOSE_PAREN IS stat END ;
+func: type IDENT OPEN_PAREN paramList? CLOSE_PAREN IS stat END ;
 
-param_list: param (COMMA param)* ;
+paramList: param (COMMA param)* ;
 param: type IDENT;
 
 // Statements
-stat: SKIP_
-    | declaration_stat
-    | assignment_stat
-    | if_stat
-    | while_stat
-    | begin_stat
-    | READ    expr
-    | FREE    expr
-    | EXIT    expr
-    | RETURN  expr
-    | PRINT   expr
-    | PRINTLN expr
-    | stat SEMICOLON stat;
-
-
-declaration_stat: type IDENT EQUAL assign_rhs;
-assignment_stat:  assign_lhs EQUAL assign_rhs;
-if_stat:    IF expr THEN stat ELSE stat FI;
-while_stat: WHILE expr DO stat DONE;
-begin_stat: BEGIN stat END;
-
-assign_lhs: IDENT
-          | array_elem
-          | pair_elem;
-
-assign_rhs: expr
-          | array_liter
-          | NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN
-          | pair_elem
-          | CALL IDENT OPEN_PAREN arg_list CLOSE_PAREN;
-
-arg_list: expr (COMMA expr)*;
-
-type: base_type | pair_type | type OPEN_SQR_PAREN CLOSE_SQR_PAREN;
-base_type: INT | BOOL | CHAR | STRING;
-pair_type: PAIR OPEN_PAREN pair_elem_type COMMA pair_elem_type CLOSE_PAREN;
-pair_elem_type: base_type | type OPEN_SQR_PAREN CLOSE_SQR_PAREN | PAIR;
-
-expr: INT_LITER
-    | BOOL_LITER
-    | CHAR_LITER
-    | STR_LITER
-    | pair_liter
-    | IDENT
-    | array_elem
-    | unary_oper expr
-    | expr binary_oper expr
-    | OPEN_PAREN expr CLOSE_PAREN
+stat: SKIP_                               #skipStat
+    | param EQUAL assignRhs               #declarationStat
+    | assignLhs EQUAL assignRhs           #assignmentStat
+    | IF expr THEN stat ELSE stat FI      #ifStat
+    | WHILE expr DO stat DONE             #whileStat
+    | BEGIN stat END                      #beginStat
+    | READ    expr                        #readStat
+    | FREE    expr                        #freeStat
+    | EXIT    expr                        #exitStat
+    | RETURN  expr                        #returnStat
+    | PRINT   expr                        #printStat
+    | PRINTLN expr                        #printlnStat
+    | stat SEMICOLON stat                 #seqCompositionStat
     ;
 
-unary_oper: NOT
-          | MINUS
-          | LENGTH
-          | ORD
-          | CHR ;
+assignLhs: IDENT
+         | arrayElem
+         | pairElem;
 
-binary_oper: MULT
-           | DIV
-           | MOD
-           | PLUS
-           | MINUS
-           | GREATER_THAN
-           | GREATER_THAN_EQUAL
-           | LESS_THAN
-           | LESS_THAN_EQUAL
-           | EQUALS
-           | NOT_EQUALS
-           | AND
-           | OR
-           ;
+assignRhs: expr
+         | arrayLiter
+         | newPair
+         | pairElem
+         | funcCall;
 
-array_elem: IDENT (OPEN_SQR_PAREN expr CLOSE_SQR_PAREN)+ ;
-pair_elem: FST expr | SND expr;
+argList: expr (COMMA expr)*;
 
-array_liter: OPEN_SQR_PAREN (expr (COMMA expr)* )? CLOSE_SQR_PAREN ;
-pair_liter: NULL ;
+type: baseType
+    | pairType
+    | type OPEN_SQR_PAREN CLOSE_SQR_PAREN
+    ;
+
+baseType: INT | BOOL | CHAR | STRING;
+pairType: PAIR OPEN_PAREN pairElemType COMMA pairElemType CLOSE_PAREN;
+pairElemType: baseType | type OPEN_SQR_PAREN CLOSE_SQR_PAREN | PAIR;
+
+expr:
+      BOOL_LITER                                      #boolLiteral
+    | CHAR_LITER                                      #charLiteral
+    | STR_LITER                                       #strLiteral
+    | NULL                                            #pairLiteral
+    | IDENT                                           #identifier
+    | OPEN_PAREN expr CLOSE_PAREN                     #bracketedExpr
+    | arrayElem                                       #arrayElemExpr
+    | expr op=(MUL | DIV | MOD) expr                  #binOpExpr
+    | expr op=(PLUS | MINUS) expr                     #binOpExpr
+    | expr op=(GT | GE | LT | LE) expr                #binOpExpr
+    | expr op=(EQ | NEQ) expr                         #binOpExpr
+    | expr op=AND expr                                #binOpExpr
+    | expr op=OR expr                                 #binOpExpr
+    | (PLUS | MINUS)? INT_LITER                       #intLiteral
+    | unaryOperator expr                              #unaryOpExpr
+    ;
+
+unaryOperator: NOT | MINUS | ORD | LEN | CHR ;
+
+
+funcCall : CALL IDENT OPEN_PAREN argList? CLOSE_PAREN;
+newPair: NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN;
+pairElem: FST expr | SND expr;
+
+arrayLiter: OPEN_SQR_PAREN (expr (COMMA expr)* )? CLOSE_SQR_PAREN;
+arrayElem: IDENT (OPEN_SQR_PAREN expr CLOSE_SQR_PAREN)+;
