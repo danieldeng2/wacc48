@@ -51,7 +51,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitReadStat(ctx: WACCParser.ReadStatContext): ASTNode =
         ReadNode(
-            value = visit(ctx.expr()) as ExprNode,
+            value = visit(ctx.assignLhs()) as LHSNode,
         )
 
     override fun visitPrintStat(ctx: WACCParser.PrintStatContext): ASTNode =
@@ -161,8 +161,10 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitPairElemType(ctx: WACCParser.PairElemTypeContext): ASTNode =
         when {
+            ctx.type() != null -> ArrayType(
+                elementType = visit(ctx.type()) as Type
+            )
             ctx.baseType() != null -> visit(ctx.baseType())
-            ctx.type() != null -> visit(ctx.type())
             else -> EmptyPair
         }
 
@@ -179,8 +181,8 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     override fun visitUnaryOpExpr(ctx: WACCParser.UnaryOpExprContext): ASTNode =
         visit(ctx.unaryOperator()) as UnOpNode
 
-    override fun visitUnaryOperator(ctx: WACCParser.UnaryOperatorContext): ASTNode {
-        return UnOpNode(
+    override fun visitUnaryOperator(ctx: WACCParser.UnaryOperatorContext): ASTNode =
+        UnOpNode(
             operator = UnaryOperator.lookupRepresentation(
                 ctx.getChild(0).text
             )!!,
@@ -189,7 +191,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
                     .ruleContext as WACCParser.UnaryOpExprContext).expr()
             ) as ExprNode
         )
-    }
+
 
     override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode =
         BinOpNode(

@@ -12,14 +12,11 @@ data class IfNode(
 ) : StatNode {
 
     override fun validate(st: SymbolTable) {
-        val currST = SymbolTable(st)
-
-        proposition.validate(currST)
 
         if (proposition.type != BoolType)
             throw SemanticsException("If statement proposition must be boolean")
 
-        trueStat.validate(currST)
-        falseStat.validate(currST)
+        trueStat.validate(SymbolTable(st))
+        falseStat.validate(SymbolTable(st))
     }
 }

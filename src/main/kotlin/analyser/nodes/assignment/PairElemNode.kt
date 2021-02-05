@@ -17,7 +17,7 @@ data class PairElemNode(
     override fun validate(st: SymbolTable) {
         name.validate(st)
 
-        if (name !is GenericPair)
+        if (name.type !is PairType)
             throw SemanticsException("Cannot dereference pair $name")
 
         val nameType = name.type

@@ -21,6 +21,5 @@ data class IdentifierNode(
             throw SemanticsException("Unknown type $name")
 
         type = assignedNode.type
-        st.add(name, assignedNode)
     }
 }
