@@ -30,12 +30,11 @@ data class FuncNode(
         if (!hasValuatedPrototype)
             validatePrototype(st)
 
-        val paramScopeST = SymbolTable(st)
-        val bodyScopeST = SymbolTable(paramScopeST)
+        val paramST = SymbolTable(st)
 
         retType.validate(st)
-        paramList.validate(paramScopeST)
-        body.validate(bodyScopeST)
+        paramList.validate(paramST)
+        body.validate(SymbolTable(paramST))
 
         if (!allPathsTerminated(body))
             throw SyntaxException("Function $identifier must end with either a return or exit")

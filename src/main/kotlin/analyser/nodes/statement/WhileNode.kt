@@ -11,14 +11,12 @@ data class WhileNode(
 ) : StatNode {
 
     override fun validate(st: SymbolTable) {
-        val currST = SymbolTable(st)
-
-        proposition.validate(currST)
+        proposition.validate(st)
 
         if (proposition.type != BoolType)
             throw SemanticsException("While statement proposition must be boolean")
 
-        body.validate(currST)
+        body.validate(SymbolTable(st))
     }
 }
 
