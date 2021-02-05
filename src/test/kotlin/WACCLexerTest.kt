@@ -81,15 +81,15 @@ class WACCLexerTest {
     @Test
     fun intLiteralWithPlusSignTokenisedCorrectly() {
         val tokens = getTokensFromString("+123")
-        assertEquals(WACCLexer.INT_LITER, tokens!![0].type)
-        assertEquals(123, tokens[0].text.toInt())
+        assertEquals("+", tokens!![0].text)
+        assertEquals(123, tokens[1].text.toInt())
     }
 
     @Test
     fun intLiteralWithMinusSignTokenisedCorrectly() {
         val tokens = getTokensFromString("-123")
-        assertEquals(WACCLexer.INT_LITER, tokens!![0].type)
-        assertEquals(-123, tokens[0].text.toInt())
+        assertEquals("-", tokens!![0].text)
+        assertEquals(123, tokens[1].text.toInt())
     }
 
     @Test
@@ -97,10 +97,11 @@ class WACCLexerTest {
         val tokens = getTokensFromString("-123 + +456")
 
         assertNotNull(tokens)
-        assertEquals(4, tokens.size)
-        assertEquals(-123, tokens[0].text.toInt())
-        assertEquals(WACCLexer.PLUS, tokens[1].type)
-        assertEquals(456, tokens[2].text.toInt())
+        assertEquals("-", tokens[0].text)
+        assertEquals(123, tokens[1].text.toInt())
+        assertEquals(WACCLexer.PLUS, tokens[2].type)
+        assertEquals("+", tokens[3].text)
+        assertEquals(456, tokens[4].text.toInt())
     }
 
     @Test

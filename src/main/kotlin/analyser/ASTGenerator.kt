@@ -9,7 +9,6 @@ import analyser.nodes.statement.*
 import analyser.nodes.type.*
 import antlr.WACCParser
 import antlr.WACCParserVisitor
-import exceptions.SemanticsException
 import exceptions.SyntaxException
 import org.antlr.v4.runtime.tree.*
 import java.lang.NumberFormatException
