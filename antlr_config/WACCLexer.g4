@@ -36,11 +36,6 @@ BOOL: 'bool';
 CHAR: 'char';
 STRING: 'string';
 
-// Type literals
-INT_LITER: (PLUS | MINUS)? DIGIT+ ;
-BOOL_LITER: 'true' | 'false' ;
-CHAR_LITER: '\'' CHARACTER '\'' ;
-STR_LITER: '"' CHARACTER* '"' ;
 
 // Overloaded operator
 PLUS: '+' ;
@@ -68,6 +63,12 @@ NEQ: '!=' ;
 // -- Boolean
 AND: '&&' ;
 OR: '||';
+
+// Type literals
+INT_LITER: DIGIT+ ;
+BOOL_LITER: 'true' | 'false' ;
+CHAR_LITER: '\'' CHARACTER '\'' ;
+STR_LITER: '"' CHARACTER* '"' ;
 
 // Fragments
 fragment DIGIT: '0'..'9' ;

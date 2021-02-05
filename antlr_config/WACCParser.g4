@@ -48,21 +48,22 @@ baseType: INT | BOOL | CHAR | STRING;
 pairType: PAIR OPEN_PAREN pairElemType COMMA pairElemType CLOSE_PAREN;
 pairElemType: baseType | type OPEN_SQR_PAREN CLOSE_SQR_PAREN | PAIR;
 
-expr: INT_LITER                                       #intLiteral
-    | BOOL_LITER                                      #boolLiteral
+expr:
+      BOOL_LITER                                      #boolLiteral
     | CHAR_LITER                                      #charLiteral
     | STR_LITER                                       #strLiteral
     | NULL                                            #pairLiteral
     | IDENT                                           #identifier
     | OPEN_PAREN expr CLOSE_PAREN                     #bracketedExpr
     | arrayElem                                       #arrayElemExpr
-    | unaryOperator expr                              #unaryOpExpr
     | expr op=(MUL | DIV | MOD) expr                  #binOpExpr
     | expr op=(PLUS | MINUS) expr                     #binOpExpr
     | expr op=(GT | GE | LT | LE) expr                #binOpExpr
     | expr op=(EQ | NEQ) expr                         #binOpExpr
     | expr op=AND expr                                #binOpExpr
     | expr op=OR expr                                 #binOpExpr
+    | (PLUS | MINUS)? INT_LITER                       #intLiteral
+    | unaryOperator expr                              #unaryOpExpr
     ;
 
 unaryOperator: NOT | MINUS | ORD | LEN | CHR ;
