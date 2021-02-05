@@ -13,7 +13,7 @@ data class ArrayType(val elementType: Type) : Type {
 
         other as ArrayType
 
-        if (elementType != other.elementType) return false
+        if (elementType != VoidType && other.elementType != VoidType && elementType != other.elementType) return false
 
         return true
     }
