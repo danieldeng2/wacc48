@@ -56,9 +56,24 @@ expr: INT_LITER                                       #intLiteral
     | IDENT                                           #identifier
     | OPEN_PAREN expr CLOSE_PAREN                     #bracketedExpr
     | arrayElem                                       #arrayElemExpr
-    | UNARY_OPERATOR expr                             #unaryOpExpr
-    | expr BINARY_OPERATOR expr                       #binOpExpr
+    | unaryOperator expr                              #unaryOpExpr
+    | expr binaryOperator expr                        #binOpExpr
     ;
+
+unaryOperator: PLUS | MINUS | NOT | ORD | LEN | CHR ;
+binaryOperator: PLUS
+              | MINUS
+              | MUL
+              | DIV
+              | MOD
+              | GT
+              | GE
+              | LT
+              | LE
+              | EQ
+              | NEQ
+              | AND
+              | OR;
 
 funcCall : CALL IDENT OPEN_PAREN argList CLOSE_PAREN;
 newPair: NEWPAIR OPEN_PAREN expr COMMA expr CLOSE_PAREN;

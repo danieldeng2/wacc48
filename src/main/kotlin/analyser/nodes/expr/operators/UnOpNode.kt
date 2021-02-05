@@ -26,6 +26,8 @@ open class UnOpNode(
 enum class UnaryOperator(
     val repr: String, val expectedExprTypes: List<Type>, val returnType: Type
 ) {
+    PLUS("+", listOf(IntType), IntType),
+    MINUS("-", listOf(IntType), IntType),
     NEGATE("!", listOf(BoolType), BoolType),
     LEN("len", listOf(StringType, ArrayType(VoidType)), IntType),
     ORD("ord", listOf(CharType), IntType),

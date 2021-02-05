@@ -11,7 +11,8 @@ import antlr.WACCParser
 import antlr.WACCParserVisitor
 import org.antlr.v4.runtime.tree.*
 
-class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTNode> {
+class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
+    WACCParserVisitor<ASTNode> {
 
     override fun visitProg(ctx: WACCParser.ProgContext): ASTNode =
         ProgNode(
@@ -176,21 +177,35 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
         )
 
     override fun visitUnaryOpExpr(ctx: WACCParser.UnaryOpExprContext): ASTNode =
-        UnOpNode(
-            operator = UnaryOperator.lookupRepresentation(
-                ctx.UNARY_OPERATOR().text
-            )!!,
-            expr = visit(ctx.expr()) as ExprNode
-        )
+        visit(ctx.unaryOperator()) as UnOpNode
 
     override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode =
-        BinOpNode(
-            operator = BinaryOperator.lookupRepresentation(
-                ctx.BINARY_OPERATOR().text
+        visit(ctx.binaryOperator()) as BinOpNode
+
+
+    override fun visitUnaryOperator(ctx: WACCParser.UnaryOperatorContext): ASTNode {
+        return UnOpNode(
+            operator = UnaryOperator.lookupRepresentation(
+                ctx.getChild(0).text
             )!!,
-            firstExpr = visit(ctx.expr(0)) as ExprNode,
-            secondExpr = visit(ctx.expr(1)) as ExprNode
+            expr = visit(
+                (ctx.getParent()
+                    .ruleContext as WACCParser.UnaryOpExprContext).expr()
+            ) as ExprNode
         )
+    }
+
+    override fun visitBinaryOperator(ctx: WACCParser.BinaryOperatorContext): ASTNode {
+        val parentCtx =
+            ctx.getParent().ruleContext as WACCParser.BinOpExprContext
+        return BinOpNode(
+            operator = BinaryOperator.lookupRepresentation(
+                ctx.getChild(0).text
+            )!!,
+            firstExpr = visit(parentCtx.expr(0)) as ExprNode,
+            secondExpr = visit(parentCtx.expr(1)) as ExprNode
+        )
+    }
 
     override fun visitPairLiteral(ctx: WACCParser.PairLiteralContext): ASTNode =
         PairLiteral
@@ -244,4 +259,5 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(), WACCParserVisitor<ASTN
             firstElem = visit(ctx.expr(0)) as ExprNode,
             secondElem = visit(ctx.expr(1)) as ExprNode,
         )
+
 }

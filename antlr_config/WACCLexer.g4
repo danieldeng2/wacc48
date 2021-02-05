@@ -42,33 +42,34 @@ BOOL_LITER: 'true' | 'false' ;
 CHAR_LITER: '\'' CHARACTER '\'' ;
 STR_LITER: '"' CHARACTER* '"' ;
 
+// Overloaded operator
+PLUS: '+' ;
+MINUS: '-' ;
 
-UNARY_OPERATOR:
-    '!'
-    | 'len'
-    | 'ord'
-    | 'chr'
-    ;
+// Unary operator
+NOT: '!' ;
+LEN: 'len' ;
+ORD: 'ord' ;
+CHR: 'chr' ;
 
-BINARY_OPERATOR :
-    PLUS
-   | MINUS
-   | '*'
-   | '/'
-   | '%'
-   | '>'
-   | '>='
-   | '<'
-   | '<='
-   | '=='
-   | '!='
-   | '&&'
-   | '||'
-   ;
+// Binary operator
+// -- Arithmetic
+MUL: '*' ;
+DIV: '/' ;
+MOD: '%' ;
+// -- Ordering
+GT: '>' ;
+GE: '>=' ;
+LT: '<' ;
+LE: '<=';
+// -- Equality
+EQ: '==' ;
+NEQ: '!=' ;
+// -- Boolean
+AND: '&&' ;
+OR: '||';
 
 // Fragments
-fragment PLUS: '+' ;
-fragment MINUS: '-' ;
 fragment DIGIT: '0'..'9' ;
 fragment CHARACTER: ~('"' | '\'' | '\\') | ('\\' ESCAPED_CHAR) ;
 fragment ESCAPED_CHAR: '0' | 'b' | 't' | 'n' | 'f' | 'r' | '"' | '\'' | '\\' ;
