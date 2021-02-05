@@ -6,9 +6,9 @@ import analyser.nodes.type.BoolType
 import exceptions.SemanticsException
 
 data class IfNode(
-    private val proposition: ExprNode,
-    private val trueStat: StatNode,
-    private val falseStat: StatNode,
+    val proposition: ExprNode,
+    val trueStat: StatNode,
+    val falseStat: StatNode,
 ) : StatNode {
 
     override fun validate(st: SymbolTable) {

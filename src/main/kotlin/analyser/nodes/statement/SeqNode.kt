@@ -4,8 +4,8 @@ import analyser.SymbolTable
 import exceptions.SyntaxException
 
 data class SeqNode(
-    private val firstStat: StatNode,
-    private val secondStat: StatNode,
+    val firstStat: StatNode,
+    val secondStat: StatNode,
 ) : StatNode {
     override fun validate(st: SymbolTable) {
         firstStat.validate(st)

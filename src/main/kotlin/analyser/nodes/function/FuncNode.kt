@@ -3,8 +3,9 @@ package analyser.nodes.function
 import analyser.SymbolTable
 import analyser.nodes.type.Type
 import analyser.nodes.ASTNode
-import analyser.nodes.statement.StatNode
+import analyser.nodes.statement.*
 import exceptions.SemanticsException
+import exceptions.SyntaxException
 
 data class FuncNode(
     val identifier: String,
@@ -29,6 +30,9 @@ data class FuncNode(
         if (!hasValuatedPrototype)
             validatePrototype(st)
 
+        if (!allPathsTerminated(body))
+            throw SyntaxException("Function $identifier must end with either a return or exit")
+
         val paramScopeST = SymbolTable(st)
         val bodyScopeST = SymbolTable(paramScopeST)
 
@@ -36,19 +40,21 @@ data class FuncNode(
         paramList.validate(paramScopeST)
         body.validate(bodyScopeST)
 
-        if (!allPathsTerminated())
-            throw SemanticsException("Function $identifier does not terminate")
-
     }
 
-    /**
-     * Check all branches in the body of the function ends with either a
-     * ReturnNode with correct return type or ExitNode
-     * @return true iff all branches exit correctly
-     */
-    private fun allPathsTerminated(): Boolean {
-        // TODO("Not yet implemented")
-        return true
+    private fun allPathsTerminated(body: StatNode): Boolean {
+        var lastStat = body
+        while (lastStat is SeqNode) {
+            lastStat = lastStat.secondStat
+        }
+
+        return when (lastStat) {
+            is ReturnNode -> true
+            is ExitNode -> true
+            is IfNode -> allPathsTerminated(lastStat.trueStat)
+                    && allPathsTerminated(lastStat.falseStat)
+            else -> false
+        }
     }
 
 }
