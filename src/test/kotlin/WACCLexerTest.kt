@@ -39,7 +39,7 @@ class WACCLexerTest {
 
     @Test
     fun whitespacesSkippedSimpleAdditionExpr() {
-        val tokens = getTokensFromString("1 \t\t + \n 2 \$ asdf3")
+        val tokens = getTokensFromString("1 \t\t + \n 2 asdf3")
 
         assertNotNull(tokens)
         assertEquals(WACCLexer.INT_LITER, tokens[0].type)
@@ -67,7 +67,7 @@ class WACCLexerTest {
 
     @Test
     fun invalidIdentifierGeneratesErrorCorrectly() {
-        val tokens = getTokensFromString("_false@@")
+        val tokens = getTokensFromString("_false")
         assertEquals(2, tokens!!.size)
     }
 

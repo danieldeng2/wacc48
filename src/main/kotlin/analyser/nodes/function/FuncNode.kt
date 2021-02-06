@@ -12,14 +12,9 @@ data class FuncNode(
     val paramList: ParamListNode,
     val retType: Type,
     val body: StatNode
-) :
-    ASTNode {
-
-    private var hasValuatedPrototype = false
+) : ASTNode {
 
     fun validatePrototype(ft: SymbolTable) {
-        hasValuatedPrototype = true
-
         if (ft.containsInCurrentScope(identifier))
             throw SemanticsException("Illegal re-declaration of function $identifier")
 
@@ -27,36 +22,28 @@ data class FuncNode(
     }
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
-        if (!hasValuatedPrototype)
-            validatePrototype(funTable)
-
         val paramST = SymbolTable(st)
 
         retType.validate(st, funTable)
         paramList.validate(paramST, funTable)
         body.validate(SymbolTable(paramST), funTable)
 
-        if (!allPathsTerminated(body))
-            throw SyntaxException("Function $identifier must end with either a return or exit")
+        if (!correctReturnType(body))
+            throw SemanticsException("Function $identifier must end with either a return or exit")
     }
 
-    private fun allPathsTerminated(body: StatNode): Boolean {
+    private fun correctReturnType(body: StatNode): Boolean {
         var lastStat = body
         while (lastStat is SeqNode) {
             lastStat = lastStat.secondStat
         }
 
-        if (lastStat is ReturnNode && lastStat.value.type != retType)
-            throw SemanticsException("Function $identifier must return $retType")
-
         return when (lastStat) {
-            is ReturnNode -> true
-            is ExitNode -> true
-            is BeginNode -> allPathsTerminated(lastStat.stat)
-            is IfNode -> allPathsTerminated(lastStat.trueStat)
-                    && allPathsTerminated(lastStat.falseStat)
-            else -> false
+            is BeginNode -> correctReturnType(lastStat.stat)
+            is IfNode -> correctReturnType(lastStat.trueStat)
+                    && correctReturnType(lastStat.falseStat)
+            is ReturnNode -> lastStat.value.type == retType
+            else -> true
         }
     }
-
 }
