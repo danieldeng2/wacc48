@@ -17,7 +17,7 @@ data class PairElemNode(
         name.validate(st, funTable)
 
         if (name.type !is PairType)
-            throw SemanticsException("Cannot dereference pair $name")
+            throw SemanticsException(".*", null)
 
         val nameType = name.type
         if (nameType is PairType) {

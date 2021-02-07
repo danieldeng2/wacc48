@@ -12,7 +12,7 @@ data class ParamNode(
 ) : ASTNode, Typable {
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (st.containsInCurrentScope(text))
-            throw SemanticsException("Illegal re-declaration of parameter $text")
+            throw SemanticsException(".*", null)
         st.add(text, this)
     }
 }

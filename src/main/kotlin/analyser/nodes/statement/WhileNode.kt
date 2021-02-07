@@ -14,7 +14,7 @@ data class WhileNode(
         proposition.validate(st, funTable)
 
         if (proposition.type != BoolType)
-            throw SemanticsException("While statement proposition must be boolean")
+            throw SemanticsException(".*", null)
 
         body.validate(SymbolTable(st), funTable)
     }

@@ -10,6 +10,6 @@ data class IntLiteral(val value: Int) : ExprNode {
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (value > IntType.max || value < IntType.min)
-            throw SemanticsException("IntLiteral $value is out of range")
+            throw SemanticsException(".*", null)
     }
 }

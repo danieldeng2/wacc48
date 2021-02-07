@@ -16,7 +16,7 @@ data class FuncNode(
 
     fun validatePrototype(ft: SymbolTable) {
         if (ft.containsInCurrentScope(identifier))
-            throw SemanticsException("Illegal re-declaration of function $identifier")
+            throw SemanticsException(".*", null)
 
         ft.add(identifier, this)
     }
@@ -29,7 +29,7 @@ data class FuncNode(
         body.validate(SymbolTable(paramST), funTable)
 
         if (!correctReturnType(body))
-            throw SemanticsException("Function $identifier must end with either a return or exit")
+            throw SemanticsException(".*", null)
     }
 
     private fun correctReturnType(body: StatNode): Boolean {

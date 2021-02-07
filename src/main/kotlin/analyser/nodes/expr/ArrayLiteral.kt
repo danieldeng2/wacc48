@@ -23,7 +23,7 @@ data class ArrayLiteral(
         values.forEach {
             it.validate(st, funTable)
             if (it.type != elemType)
-                throw SemanticsException("Array elements are of different type: $this")
+                throw SemanticsException(".*", null)
         }
     }
 }

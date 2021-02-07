@@ -13,6 +13,6 @@ data class FreeNode(
         value.validate(st, funTable)
 
         if (value.type !is GenericPair)
-            throw SemanticsException("Cannot free ${value.type}")
+            throw SemanticsException(".*", null)
     }
 }

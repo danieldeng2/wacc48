@@ -15,12 +15,12 @@ data class ArrayElement(
     override var type: Type = VoidType
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (!st.containsInAnyScope(name))
-            throw SemanticsException("Cannot find array $name")
+            throw SemanticsException(".*", null)
         indices.forEach { it.validate(st, funTable) }
         val typedElem = st[name] as ParamNode
         val arrayType = typedElem.type
         if (arrayType !is ArrayType)
-            throw SemanticsException("$name is not an array")
+            throw SemanticsException(".*", null)
 
         type = arrayType.elementType
     }

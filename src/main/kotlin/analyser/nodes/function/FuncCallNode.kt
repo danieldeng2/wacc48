@@ -14,7 +14,7 @@ data class FuncCallNode(
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (!funTable.containsInAnyScope(name))
-            throw SemanticsException("Cannot find function $name")
+            throw SemanticsException(".*", null)
         val functionNode = funTable[name] as FuncNode
 
         argList.validate(st, funTable)
@@ -23,11 +23,11 @@ data class FuncCallNode(
         val params = functionNode.paramList.params
 
         if (args.size != params.size)
-            throw SemanticsException("Number of arguments do not match parameter: $name")
+            throw SemanticsException(".*", null)
 
         for (i in args.indices) {
             if (args[i].type != params[i].type)
-                throw SemanticsException("${i}th argument of $name has wrong type")
+                throw SemanticsException(".*", null)
         }
 
         type = functionNode.retType

@@ -14,7 +14,7 @@ data class IfNode(
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
 
         if (proposition.type != BoolType)
-            throw SemanticsException("If statement proposition must be boolean")
+            throw SemanticsException(".*", null)
 
         trueStat.validate(SymbolTable(st), funTable)
         falseStat.validate(SymbolTable(st), funTable)

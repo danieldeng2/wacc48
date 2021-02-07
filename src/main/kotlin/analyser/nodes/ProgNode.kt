@@ -21,7 +21,7 @@ data class ProgNode(
         functions.forEach { it.validate(st, funTable) }
 
         if (hasGlobalReturn(body))
-            throw SemanticsException("Cannot return in global context")
+            throw SemanticsException(".*", null)
 
         body.validate(st, funTable)
     }

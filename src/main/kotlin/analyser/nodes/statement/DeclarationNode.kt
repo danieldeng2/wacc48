@@ -15,6 +15,6 @@ data class DeclarationNode(
         value.validate(st, funTable)
 
         if (value.type != name.type)
-            throw SemanticsException("Type mismatch in declaration $name")
+            throw SemanticsException(".*", null)
     }
 }

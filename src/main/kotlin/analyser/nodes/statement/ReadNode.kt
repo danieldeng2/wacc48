@@ -16,6 +16,6 @@ data class ReadNode(
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         value.validate(st, funTable)
         if (value.type !in expectedExprTypes)
-            throw SemanticsException("Cannot read from type ${value.type}")
+            throw SemanticsException(".*", null)
     }
 }

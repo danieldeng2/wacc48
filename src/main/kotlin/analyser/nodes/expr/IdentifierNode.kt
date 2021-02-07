@@ -14,11 +14,11 @@ data class IdentifierNode(
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (!st.containsInAnyScope(name))
-            throw SemanticsException("Unknown identifier $name")
+            throw SemanticsException(".*", null)
 
         val assignedNode = st[name]
         if (assignedNode !is Typable)
-            throw SemanticsException("Unknown type $name")
+            throw SemanticsException(".*", null)
 
         type = assignedNode.type
     }
