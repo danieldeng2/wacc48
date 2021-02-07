@@ -5,10 +5,12 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
+import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(
     private val body: StatNode,
-    private val functions: List<FuncNode>
+    private val functions: List<FuncNode>,
+    override val ctx: ParserRuleContext?
 ) : ASTNode {
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
@@ -21,7 +23,7 @@ data class ProgNode(
         functions.forEach { it.validate(st, funTable) }
 
         if (hasGlobalReturn(body))
-            throw SemanticsException(".*", null)
+            throw SemanticsException("Cannot return in global context", ctx)
 
         body.validate(st, funTable)
     }

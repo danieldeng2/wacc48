@@ -1,8 +1,9 @@
 package analyser.nodes.type
 
 import analyser.SymbolTable
+import org.antlr.v4.runtime.ParserRuleContext
 
-data class ArrayType(val elementType: Type) : Type {
+data class ArrayType(val elementType: Type, override val ctx: ParserRuleContext?) : Type {
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
     }

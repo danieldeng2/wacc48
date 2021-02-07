@@ -5,16 +5,18 @@ import analyser.nodes.assignment.RHSNode
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncCallNode(
     private val name: String,
     private val argList: ArgListNode,
+    override val ctx: ParserRuleContext?,
 ) : RHSNode {
     override var type: Type = VoidType
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         if (!funTable.containsInAnyScope(name))
-            throw SemanticsException(".*", null)
+            throw SemanticsException("Cannot find function $name", ctx)
         val functionNode = funTable[name] as FuncNode
 
         argList.validate(st, funTable)
@@ -23,11 +25,11 @@ data class FuncCallNode(
         val params = functionNode.paramList.params
 
         if (args.size != params.size)
-            throw SemanticsException(".*", null)
+            throw SemanticsException("Number of arguments do not match parameter: $name", ctx)
 
         for (i in args.indices) {
             if (args[i].type != params[i].type)
-                throw SemanticsException(".*", null)
+                throw SemanticsException("argument ${i + 1} of $name has wrong type", ctx)
         }
 
         type = functionNode.retType
