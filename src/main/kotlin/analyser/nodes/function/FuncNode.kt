@@ -6,17 +6,19 @@ import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
+import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(
     val identifier: String,
     val paramList: ParamListNode,
     val retType: Type,
-    val body: StatNode
+    val body: StatNode,
+    override val ctx: ParserRuleContext?
 ) : ASTNode {
 
     fun validatePrototype(ft: SymbolTable) {
         if (ft.containsInCurrentScope(identifier))
-            throw SemanticsException("Illegal re-declaration of function $identifier")
+            throw SemanticsException("Illegal re-declaration of function $identifier", ctx)
 
         ft.add(identifier, this)
     }
@@ -29,7 +31,7 @@ data class FuncNode(
         body.validate(SymbolTable(paramST), funTable)
 
         if (!correctReturnType(body))
-            throw SemanticsException("Function $identifier must end with either a return or exit")
+            throw SemanticsException("Function $identifier must end with either a return or exit", ctx)
     }
 
     private fun correctReturnType(body: StatNode): Boolean {

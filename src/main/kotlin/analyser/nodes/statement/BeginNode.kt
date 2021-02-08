@@ -1,9 +1,10 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
+import org.antlr.v4.runtime.ParserRuleContext
 
 data class BeginNode(
-    val stat: StatNode,
+    val stat: StatNode, override val ctx: ParserRuleContext?,
 ) : StatNode {
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {

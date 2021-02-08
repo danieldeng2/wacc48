@@ -4,11 +4,13 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
 
 data class BinOpNode(
     val operator: BinaryOperator,
     val firstExpr: ExprNode,
-    val secondExpr: ExprNode
+    val secondExpr: ExprNode,
+    override val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType
 
@@ -22,13 +24,15 @@ data class BinOpNode(
             if (firstExpr.type !in expected)
                 throw SemanticsException(
                     "Type-mismatched on operator $operator: arg 1 has type " +
-                            "${firstExpr.type}, required 1 of type(s) $expected"
+                            "${firstExpr.type}, required 1 of type(s) $expected",
+                    ctx
                 )
         }
         if (firstExpr.type != secondExpr.type)
             throw SemanticsException(
                 "Type-mismatched on operator $operator: arg 1 has type " +
-                        "${firstExpr.type}, arg 2 of type(s) ${secondExpr.type}"
+                        "${firstExpr.type}, arg 2 of type(s) ${secondExpr.type}",
+                ctx
             )
 
     }
