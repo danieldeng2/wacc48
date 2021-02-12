@@ -48,8 +48,8 @@ data class FuncNode(
             is ReturnNode ->
                 if (lastStat.value.type != retType)
                     throw SemanticsException(
-                        "The expected return type of Function $identifier is: ${lastStat.value.type.toString()}" +
-                                " Actual return type: ${retType.toString()}", ctx
+                        "The actual return type of Function $identifier is: ${lastStat.value.type.toString()}" +
+                                " Expected return type: ${retType.toString()}", ctx
                     )
         }
     }
