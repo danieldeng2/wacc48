@@ -12,31 +12,66 @@ import analyser.nodes.type.IntType
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 import exceptions.SyntaxException
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.ExpectedException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 
 class FunctionNodeTest {
-    private val trueBooleanNode = BoolLiteral(true, null)
-    private val returnTrueNode = ReturnNode(trueBooleanNode, null)
+    private val trueBooleanNode = BoolLiteral(
+        value = true,
+        ctx = null
+    )
+    private val returnTrueNode = ReturnNode(
+        value = trueBooleanNode,
+        ctx = null
+    )
 
 
     // Creates a program with a single function and validates that this function returns
     private fun validateProgramWithFunctionBody(body: StatNode) {
-        val funcNode = FuncNode("func", ParamListNode(emptyList(), null), BoolType, body, null)
-        val programNode = ProgNode(SkipNode, listOf(funcNode), null)
+        val funcNode = FuncNode(
+            identifier = "func",
+            paramList = ParamListNode(
+                params = emptyList(),
+                ctx = null
+            ),
+            retType = BoolType,
+            body = body,
+            ctx = null
+        )
+        val programNode = ProgNode(
+            body = SkipNode,
+            functions = listOf(funcNode),
+            ctx = null
+        )
         programNode.validate(SymbolTable(null), SymbolTable(null))
     }
 
     @Test
     fun functionsCannotBeReDeclared() {
-        val funcNode = FuncNode("func", ParamListNode(emptyList(), null), VoidType, SkipNode, null)
-        val funcNodeDuplicate = FuncNode("func", ParamListNode(emptyList(), null), VoidType, SkipNode, null)
+        val funcNode = FuncNode(
+            identifier = "func",
+            paramList = ParamListNode(
+                params = emptyList(),
+                ctx = null
+            ),
+            retType = VoidType,
+            body = SkipNode,
+            ctx = null
+        )
+        val funcNodeDuplicate = FuncNode(
+            identifier = "func",
+            paramList = ParamListNode(
+                params = emptyList(),
+                ctx = null
+            ),
+            retType = VoidType,
+            body = SkipNode,
+            ctx = null
+        )
         val symbolTable = SymbolTable(null)
-        symbolTable.add("func", funcNode);
+        symbolTable.add("func", funcNode)
 
         val exception = assertFailsWith<SemanticsException> {
             funcNodeDuplicate.validatePrototype(symbolTable)
@@ -46,16 +81,37 @@ class FunctionNodeTest {
 
     @Test
     fun incorrectReturnTypeThrowsSemanticError() {
-        val funcNode = FuncNode("func", ParamListNode(emptyList(), null), IntType, returnTrueNode, null)
+        val funcNode = FuncNode(
+            identifier = "func",
+            paramList = ParamListNode(
+                params = emptyList(),
+                ctx = null
+            ),
+            retType = IntType,
+            body = returnTrueNode,
+            ctx = null
+        )
         val exception = assertFailsWith<SemanticsException> {
             funcNode.validate(SymbolTable(null), SymbolTable(null))
         }
-        assertEquals(exception.message, "The expected return type of Function func is: Bool Actual return type: Int")
+        assertEquals(
+            exception.message,
+            "The expected return type of Function func is: ${funcNode.retType}, actual return type: Bool"
+        )
     }
 
     @Test
     fun correctReturnTypeValidates() {
-        val funcNode = FuncNode("func", ParamListNode(emptyList(), null), BoolType, returnTrueNode, null)
+        val funcNode = FuncNode(
+            identifier = "func",
+            paramList = ParamListNode(
+                params = emptyList(),
+                ctx = null
+            ),
+            retType = BoolType,
+            body = returnTrueNode,
+            ctx = null
+        )
         funcNode.validate(SymbolTable(null), SymbolTable(null))
     }
 
@@ -74,13 +130,27 @@ class FunctionNodeTest {
     @Test
     fun functionWithoutReturnIfStatThrowsSyntaxError() {
         assertFailsWith<SyntaxException> {
-            validateProgramWithFunctionBody(IfNode(trueBooleanNode, returnTrueNode, SkipNode, null))
+            validateProgramWithFunctionBody(
+                IfNode(
+                    proposition = trueBooleanNode,
+                    trueStat = returnTrueNode,
+                    falseStat = SkipNode,
+                    ctx = null
+                )
+            )
         }
     }
 
     @Test
-    fun functionWithReturnIfStatValidates(){
-        validateProgramWithFunctionBody(IfNode(trueBooleanNode, returnTrueNode, returnTrueNode, null))
+    fun functionWithReturnIfStatValidates() {
+        validateProgramWithFunctionBody(
+            IfNode(
+                proposition = trueBooleanNode,
+                trueStat = returnTrueNode,
+                falseStat = returnTrueNode,
+                ctx = null
+            )
+        )
     }
 
 

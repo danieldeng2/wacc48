@@ -5,7 +5,6 @@ import analyser.nodes.type.Type
 import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
 import exceptions.SemanticsException
-import exceptions.SyntaxException
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(
@@ -48,8 +47,8 @@ data class FuncNode(
             is ReturnNode ->
                 if (lastStat.value.type != retType)
                     throw SemanticsException(
-                        "The actual return type of Function $identifier is: ${lastStat.value.type}," +
-                                " Expected return type: $retType", ctx
+                        "The expected return type of Function $identifier is: $retType," +
+                                " actual return type: ${lastStat.value.type}", ctx
                     )
         }
     }
