@@ -47,10 +47,9 @@ class FunctionNodeTest {
     @Test
     fun incorrectReturnTypeThrowsSemanticError() {
         val funcNode = FuncNode("func", ParamListNode(emptyList(), null), IntType, returnTrueNode, null)
-        val exception = assertFailsWith<SemanticsException> {
+        assertFailsWith<SemanticsException> {
             funcNode.validate(SymbolTable(null), SymbolTable(null))
         }
-        assertEquals(exception.message, "The expected return type of Function func is: Bool Actual return type: Int")
     }
 
     @Test
