@@ -40,17 +40,17 @@ data class FuncNode(
             lastStat = lastStat.secondStat
         }
 
-        when (lastStat) {
-            is BeginNode -> return correctReturnType(lastStat.stat)
-            is IfNode -> return correctReturnType(lastStat.trueStat)
+        return when (lastStat) {
+            is BeginNode -> correctReturnType(lastStat.stat)
+            is IfNode -> correctReturnType(lastStat.trueStat)
                     && correctReturnType(lastStat.falseStat)
             is ReturnNode ->
-                if (lastStat.value.type == retType) return true
+                if (lastStat.value.type == retType) true
                 else throw SemanticsException(
                     "The expected return type of Function $identifier is: ${lastStat.value.type.toString()}" +
                             " Actual return type: ${retType.toString()}", ctx
                 )
-            else -> return true
+            else -> true
         }
     }
 }
