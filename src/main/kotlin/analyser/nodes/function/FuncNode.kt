@@ -30,27 +30,27 @@ data class FuncNode(
         paramList.validate(paramST, funTable)
         body.validate(SymbolTable(paramST), funTable)
 
-        if (!correctReturnType(body))
-            throw SemanticsException("Function $identifier must end with either a return or exit", ctx)
+        validateReturnType(body)
     }
 
-    private fun correctReturnType(body: StatNode): Boolean {
+    private fun validateReturnType(body: StatNode) {
         var lastStat = body
         while (lastStat is SeqNode) {
             lastStat = lastStat.secondStat
         }
 
-        return when (lastStat) {
-            is BeginNode -> correctReturnType(lastStat.stat)
-            is IfNode -> correctReturnType(lastStat.trueStat)
-                    && correctReturnType(lastStat.falseStat)
+        when (lastStat) {
+            is BeginNode -> validateReturnType(lastStat.stat)
+            is IfNode -> {
+                validateReturnType(lastStat.trueStat)
+                validateReturnType(lastStat.falseStat)
+            }
             is ReturnNode ->
-                if (lastStat.value.type == retType) true
-                else throw SemanticsException(
-                    "The expected return type of Function $identifier is: ${lastStat.value.type.toString()}" +
-                            " Actual return type: ${retType.toString()}", ctx
-                )
-            else -> true
+                if (lastStat.value.type != retType)
+                    throw SemanticsException(
+                        "The expected return type of Function $identifier is: ${lastStat.value.type.toString()}" +
+                                " Actual return type: ${retType.toString()}", ctx
+                    )
         }
     }
 }
