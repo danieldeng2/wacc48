@@ -33,22 +33,18 @@ data class FuncNode(
     }
 
     private fun validateReturnType(body: StatNode) {
-        var lastStat = body
-        while (lastStat is SeqNode) {
-            lastStat = lastStat.secondStat
-        }
-
-        when (lastStat) {
-            is BeginNode -> validateReturnType(lastStat.stat)
+        when (body) {
+            is SeqNode -> validateReturnType(body.last())
+            is BeginNode -> validateReturnType(body.stat)
             is IfNode -> {
-                validateReturnType(lastStat.trueStat)
-                validateReturnType(lastStat.falseStat)
+                validateReturnType(body.trueStat)
+                validateReturnType(body.falseStat)
             }
             is ReturnNode ->
-                if (lastStat.value.type != retType)
+                if (body.value.type != retType)
                     throw SemanticsException(
                         "The expected return type of Function $identifier is: $retType," +
-                                " actual return type: ${lastStat.value.type}", ctx
+                                " actual return type: ${body.value.type}", ctx
                     )
         }
     }

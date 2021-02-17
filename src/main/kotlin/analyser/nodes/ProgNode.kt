@@ -28,25 +28,21 @@ data class ProgNode(
         body.validate(st, funTable)
     }
 
-    private fun allPathsTerminated(body: StatNode): Boolean {
-        var lastStat = body
-        while (lastStat is SeqNode) {
-            lastStat = lastStat.secondStat
-        }
-        return when (lastStat) {
-            is BeginNode -> allPathsTerminated(lastStat.stat)
-            is IfNode -> allPathsTerminated(lastStat.trueStat)
-                    && allPathsTerminated(lastStat.falseStat)
+    private fun allPathsTerminated(body: StatNode): Boolean =
+        when (body) {
+            is SeqNode -> allPathsTerminated(body.last())
+            is BeginNode -> allPathsTerminated(body.stat)
+            is IfNode -> allPathsTerminated(body.trueStat)
+                    && allPathsTerminated(body.falseStat)
             is ReturnNode -> true
             is ExitNode -> true
             else -> false
         }
-    }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =
         when (body) {
             is IfNode -> hasGlobalReturn(body.trueStat) || hasGlobalReturn(body.falseStat)
-            is SeqNode -> hasGlobalReturn(body.firstStat) || hasGlobalReturn(body.secondStat)
+            is SeqNode -> body.any { hasGlobalReturn(it) }
             is WhileNode -> hasGlobalReturn(body.body)
             is BeginNode -> hasGlobalReturn(body.stat)
             is ReturnNode -> true

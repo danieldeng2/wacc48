@@ -83,36 +83,6 @@ class GlobalReturnTest {
     }
 
     @Test
-    fun globalReturnSeqStatFirstThrowsSemanticError() {
-        val seqNode = SeqNode(
-            firstStat = returnNode,
-            secondStat = skipNode,
-            ctx = null
-        )
-        assertTrue(globalReturnSemanticErrorThrown(seqNode))
-    }
-
-    @Test
-    fun globalReturnSeqStatSecondThrowsSemanticError() {
-        val seqNode = SeqNode(
-            firstStat = skipNode,
-            secondStat = returnNode,
-            ctx = null
-        )
-        assertTrue(globalReturnSemanticErrorThrown(seqNode))
-    }
-
-    @Test
-    fun noGlobalReturnSeqStatValidates() {
-        val seqNode = SeqNode(
-            firstStat = skipNode,
-            secondStat = skipNode,
-            ctx = null
-        )
-        assertFalse(globalReturnSemanticErrorThrown(seqNode))
-    }
-
-    @Test
     fun globalReturnBeginStatThrowsSemanticError() {
         val beginNode = BeginNode(
             stat = returnNode,
