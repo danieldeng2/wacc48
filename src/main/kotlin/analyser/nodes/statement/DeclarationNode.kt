@@ -7,12 +7,16 @@ import exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class DeclarationNode(
-    private val name: ParamNode,
-    private val value: RHSNode,
+    val name: ParamNode,
+    val value: RHSNode,
     override val ctx: ParserRuleContext?
 ) : StatNode {
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         name.validate(st, funTable)
         value.validate(st, funTable)
 

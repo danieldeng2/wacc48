@@ -13,8 +13,12 @@ data class BinOpNode(
     override val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         firstExpr.validate(st, funTable)
         secondExpr.validate(st, funTable)
 

@@ -12,7 +12,12 @@ data class ParamNode(
     val text: String,
     override val ctx: ParserRuleContext?
 ) : ASTNode, Typable {
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
+
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         if (st.containsInCurrentScope(text))
             throw SemanticsException("Illegal re-declaration of parameter $text", ctx)
         st.add(text, this)

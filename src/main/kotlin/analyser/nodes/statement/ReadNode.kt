@@ -14,8 +14,12 @@ data class ReadNode(
     override val ctx: ParserRuleContext?,
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         value.validate(st, funTable)
         if (value.type !in expectedExprTypes)
             throw SemanticsException("Cannot read from type ${value.type}", ctx)

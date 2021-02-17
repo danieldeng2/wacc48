@@ -8,13 +8,17 @@ import exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncCallNode(
-    private val name: String,
-    private val argList: ArgListNode,
+    val name: String,
+    val argList: ArgListNode,
     override val ctx: ParserRuleContext?,
 ) : RHSNode {
     override var type: Type = VoidType
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         if (!funTable.containsInAnyScope(name))
             throw SemanticsException("Cannot find function $name", ctx)
         val functionNode = funTable[name] as FuncNode

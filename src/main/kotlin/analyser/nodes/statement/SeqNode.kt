@@ -4,10 +4,15 @@ import analyser.SymbolTable
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class SeqNode(
-    private val sequence: List<StatNode>,
+    val sequence: List<StatNode>,
     override val ctx: ParserRuleContext?,
 ) : StatNode, List<StatNode> {
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
+
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         sequence.forEach { it.validate(st, funTable) }
     }
 

@@ -14,8 +14,12 @@ data class PairElemNode(
     override val ctx: ParserRuleContext?
 ) : LHSNode, RHSNode {
     override var type: Type = VoidType
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         name.validate(st, funTable)
 
         if (name.type !is PairType)

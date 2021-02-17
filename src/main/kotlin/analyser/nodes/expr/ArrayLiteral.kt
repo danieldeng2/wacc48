@@ -14,8 +14,12 @@ data class ArrayLiteral(
 ) : ExprNode {
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, ctx)
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         if (values.isNotEmpty()) {
             values[0].validate(st, funTable)
             elemType = values[0].type

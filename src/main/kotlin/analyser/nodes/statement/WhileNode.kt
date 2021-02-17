@@ -11,8 +11,12 @@ data class WhileNode(
     val body: StatNode,
     override val ctx: ParserRuleContext?,
 ) : StatNode {
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         proposition.validate(st, funTable)
 
         if (proposition.type != BoolType)

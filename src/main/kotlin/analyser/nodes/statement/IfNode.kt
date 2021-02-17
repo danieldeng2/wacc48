@@ -12,8 +12,12 @@ data class IfNode(
     val falseStat: StatNode,
     override val ctx: ParserRuleContext?,
 ) : StatNode {
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
 
         if (proposition.type != BoolType)
             throw SemanticsException("If statement proposition must be boolean", ctx)

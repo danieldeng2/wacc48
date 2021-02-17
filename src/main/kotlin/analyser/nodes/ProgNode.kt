@@ -12,8 +12,12 @@ data class ProgNode(
     private val functions: List<FuncNode>,
     override val ctx: ParserRuleContext?
 ) : ASTNode {
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         functions.forEach {
             if (!allPathsTerminated(it.body))
                 throw SyntaxException("Function ${it.identifier} must end with either a return or exit")

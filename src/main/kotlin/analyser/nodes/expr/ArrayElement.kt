@@ -15,7 +15,12 @@ data class ArrayElement(
     override val ctx: ParserRuleContext?
 ) : ExprNode, LHSNode {
     override var type: Type = VoidType
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
+
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         if (!st.containsInAnyScope(name))
             throw SemanticsException("Cannot find array $name", ctx)
         indices.forEach { it.validate(st, funTable) }

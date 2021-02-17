@@ -13,8 +13,12 @@ data class NewPairNode(
     override val ctx: ParserRuleContext?
 ) : RHSNode {
     override var type: Type = VoidType
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         firstElem.validate(st, funTable)
         secondElem.validate(st, funTable)
 

@@ -10,7 +10,11 @@ data class BoolLiteral(
     override val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = BoolType
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
     }
 }

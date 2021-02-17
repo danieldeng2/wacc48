@@ -10,7 +10,12 @@ data class AssignmentNode(
     val value: RHSNode,
     override val ctx: ParserRuleContext?
 ) : StatNode {
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
+
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         name.validate(st, funTable)
         value.validate(st, funTable)
 

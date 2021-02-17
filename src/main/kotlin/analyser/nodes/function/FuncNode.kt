@@ -14,6 +14,8 @@ data class FuncNode(
     val body: StatNode,
     override val ctx: ParserRuleContext?
 ) : ASTNode {
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     fun validatePrototype(ft: SymbolTable) {
         if (ft.containsInCurrentScope(identifier))
@@ -23,6 +25,9 @@ data class FuncNode(
     }
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
+
         val paramST = SymbolTable(st)
 
         retType.validate(st, funTable)

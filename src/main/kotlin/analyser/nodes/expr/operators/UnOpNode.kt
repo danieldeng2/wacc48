@@ -12,8 +12,12 @@ data class UnOpNode(
     override val ctx: ParserRuleContext?,
 ) : ExprNode {
     override var type: Type = operator.returnType
+    override lateinit var st: SymbolTable
+    override lateinit var funTable: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
+        this.st = st
+        this.funTable = funTable
         expr.validate(st, funTable)
 
         if (expr.type !in operator.expectedExprTypes)
