@@ -7,7 +7,7 @@ import analyser.nodes.ASTNode
 import exceptions.ThrowingErrorListener
 
 
-fun runCompiler(input: CharStream): ASTNode {
+fun runAnalyser(input: CharStream): ASTNode {
     // Lexical Analysis
     val lexer = WACCLexer(input)
     lexer.removeErrorListeners()
@@ -26,4 +26,10 @@ fun runCompiler(input: CharStream): ASTNode {
 
     return programNode
 }
+
+fun runGenerator(pNode: ASTNode): String {
+    // TODO(Implement Generator)
+    return pNode.toString()
+}
+
 

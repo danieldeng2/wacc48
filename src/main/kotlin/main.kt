@@ -2,6 +2,8 @@ import analyser.nodes.ASTNode
 import org.antlr.v4.runtime.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
+import java.io.File
+import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -12,7 +14,7 @@ fun main(args: Array<String>) {
     val pNode: ASTNode
 
     try {
-        pNode = runCompiler(input)
+        pNode = runAnalyser(input)
     } catch (e: SyntaxException) {
         println("Syntax Error: ${e.message}")
         exitProcess(100)
@@ -21,7 +23,14 @@ fun main(args: Array<String>) {
         exitProcess(200)
     }
 
-    // Print out AST tree
-    println(pNode)
+    val output = runGenerator(pNode)
+    when {
+        args.isEmpty() -> println(output)
+        else -> {
+            val p = Paths.get(args[0])
+            val outName = p.fileName.toString().replace(".wacc", ".s")
+            File(outName).writeText(output)
+        }
+    }
 }
 
