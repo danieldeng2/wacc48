@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.CharStreams
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 class EndToEndTest {
     var totalTests = 0
