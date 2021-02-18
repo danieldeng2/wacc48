@@ -2,6 +2,8 @@ import analyser.nodes.ASTNode
 import org.antlr.v4.runtime.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
+import reference.RefEmulator
+import java.io.File
 import java.io.FileWriter
 import java.nio.file.Paths
 import kotlin.system.exitProcess
@@ -33,6 +35,10 @@ fun main(args: Array<String>) {
             val writer = FileWriter(outName)
             output.forEach { writer.write(it + System.lineSeparator()) }
             writer.close()
+
+            val emulator = RefEmulator(File(outName)).execute("")
+            println(emulator.emulatorOut)
+            println("exit ${emulator.emulatorExit}")
         }
     }
 }

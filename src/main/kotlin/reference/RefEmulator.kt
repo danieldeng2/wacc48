@@ -21,7 +21,7 @@ class RefEmulator(
         .build()
     private val service = retrofit.create(WACCReferenceAPI::class.java)
 
-    fun execute(stdin: String): String {
+    fun execute(stdin: String): EmulatorResult {
         val call = service.emulate(
             testFile = MultipartBody.Part.createFormData(
                 "testfile",
@@ -33,7 +33,7 @@ class RefEmulator(
                 stdin,
             )
         )
-        return call.execute().body()!!.toString()
+        return call.execute().body()!!
     }
 
 }
