@@ -44,7 +44,7 @@ class GeneratorIntegrationTest {
 
 
     @Test
-    fun validProgramsShouldNotProduceException() {
+    fun basicProgramsShouldMatchReferenceOutput() {
         val dir = File(object {}.javaClass.getResource("valid/basic").file)
 
         dir.walk().forEach { f ->
@@ -67,7 +67,7 @@ class GeneratorIntegrationTest {
                 }
             }
         }
-        println("$passedTests/$totalTests tests passed for valid products")
+        println("$passedTests/$totalTests tests passed for basic programs")
         assertEquals(totalTests, passedTests)
     }
 }
