@@ -15,7 +15,7 @@ class GeneratorIntegrationTest {
     private fun compilerPipeline(path: String, stdin: String): EmulatorResult {
         val input = CharStreams.fromFileName(path)
         val pNode = runAnalyser(input)
-        val assembly = runGenerator(pNode, path)
+        val assembly = runGenerator(pNode)
 
         val assemFile = File("tmp.s")
         val writer = FileWriter(assemFile)

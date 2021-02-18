@@ -2,6 +2,7 @@ import analyser.nodes.ASTNode
 import org.antlr.v4.runtime.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
+import reference.RefCompiler
 import reference.RefEmulator
 import java.io.File
 import java.io.FileWriter
@@ -25,7 +26,10 @@ fun main(args: Array<String>) {
         exitProcess(200)
     }
 
-    val output = runGenerator(pNode, args[0])
+    val output = if (args.size > 1 && args[1] == "-r")
+        RefCompiler(File(args[0])).run()
+    else
+        runGenerator(pNode)
 
     when {
         args.isEmpty() -> println(output)

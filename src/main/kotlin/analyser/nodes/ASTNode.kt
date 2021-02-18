@@ -1,6 +1,8 @@
 package analyser.nodes
 
 import analyser.SymbolTable
+import generator.armInstructions.Instruction
+import generator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 interface ASTNode {
@@ -11,4 +13,5 @@ interface ASTNode {
 
     fun validate(st: SymbolTable, funTable: SymbolTable)
 
+    fun translate(ctx: TranslatorContext): List<Instruction> = TODO()
 }

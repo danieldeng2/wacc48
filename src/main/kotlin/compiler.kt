@@ -5,6 +5,8 @@ import antlr.*
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
 import exceptions.ThrowingErrorListener
+import generator.TranslatorContext
+import generator.armInstructions.Instruction
 import reference.RefCompiler
 import java.io.File
 
@@ -29,9 +31,12 @@ fun runAnalyser(input: CharStream): ASTNode {
     return programNode
 }
 
-// TODO(Implement Generator and remove filename)
-fun runGenerator(pNode: ASTNode, filename: String): List<String> {
-    return RefCompiler(File(filename)).run()
+fun runGenerator(pNode: ASTNode): List<String> {
+    val instrs = pNode.translate(TranslatorContext())
+
+    val returnList = mutableListOf(".text", "", ".global main")
+    instrs.forEach { returnList += it.toString() }
+    return returnList
 }
 
 
