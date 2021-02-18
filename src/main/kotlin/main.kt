@@ -2,6 +2,10 @@ import analyser.nodes.ASTNode
 import org.antlr.v4.runtime.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
+import reference.RefEmulator
+import java.io.File
+import java.io.FileWriter
+import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -12,7 +16,7 @@ fun main(args: Array<String>) {
     val pNode: ASTNode
 
     try {
-        pNode = runCompiler(input)
+        pNode = runAnalyser(input)
     } catch (e: SyntaxException) {
         println("Syntax Error: ${e.message}")
         exitProcess(100)
@@ -21,7 +25,21 @@ fun main(args: Array<String>) {
         exitProcess(200)
     }
 
-    // Print out AST tree
-    println(pNode)
+    val output = runGenerator(pNode, args[0])
+
+    when {
+        args.isEmpty() -> println(output)
+        else -> {
+            val p = Paths.get(args[0])
+            val outName = p.fileName.toString().replace(".wacc", ".s")
+            val writer = FileWriter(outName)
+            output.forEach { writer.write(it + System.lineSeparator()) }
+            writer.close()
+
+            val emulator = RefEmulator(File(outName)).execute("")
+            println(emulator.emulatorOut)
+            println("exit ${emulator.emulatorExit}")
+        }
+    }
 }
 

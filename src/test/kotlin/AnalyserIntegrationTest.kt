@@ -5,7 +5,7 @@ import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
 
-class EndToEndTest {
+class AnalyserIntegrationTest {
     var totalTests = 0
     var passedTests = 0
 
@@ -18,7 +18,7 @@ class EndToEndTest {
                 val input = CharStreams.fromFileName(f.path)
                 println("${f.path}:")
                 try {
-                    runCompiler(input)
+                    runAnalyser(input)
                     println("PASSED")
                     passedTests++
                 } catch (e: Exception) {
@@ -40,7 +40,7 @@ class EndToEndTest {
                 val input = CharStreams.fromFileName(f.path)
                 println("${f.path}:")
                 try {
-                    runCompiler(input)
+                    runAnalyser(input)
                     error("This program contains syntax error")
                 } catch (e: SyntaxException) {
                     passedTests++
@@ -64,7 +64,7 @@ class EndToEndTest {
                 val input = CharStreams.fromFileName(f.path)
                 println("${f.path}:")
                 try {
-                    runCompiler(input)
+                    runAnalyser(input)
                     error("This program contains semantic error")
                 } catch (e: SemanticsException) {
                     passedTests++

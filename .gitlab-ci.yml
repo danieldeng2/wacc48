@@ -17,5 +17,5 @@ gradle-test:
   stage: gradleTest 
   script: 
     - make
-    - ./gradlew test
+    - ./gradlew clean test
 
