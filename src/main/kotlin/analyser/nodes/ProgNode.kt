@@ -57,19 +57,18 @@ data class ProgNode(
             else -> false
         }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
-
-        functions.forEach {
-            instructions.addAll(it.translate(ctx))
+    override fun translate(ctx: TranslatorContext): List<Instruction> =
+        mutableListOf<Instruction>().apply {
+            addAll(
+                functions.flatMap {
+                    it.translate(ctx)
+                }
+            )
+            add(LabelInstr("main"))
+            add(PUSHInstr(Register.LR))
+            add(LDRInstr(Register.R0, ImmOp(0)))
+            add(POPInstr(Register.PC))
+            add(Directive(".ltorg"))
         }
 
-        instructions.add(LabelInstr("main"))
-        instructions.add(PUSHInstr(Register.LR))
-        instructions.add(LDRInstr(Register.R0, ImmOp(0)))
-        instructions.add(POPInstr(Register.PC))
-        instructions.add(Directive(".ltorg"))
-
-        return instructions
-    }
 }

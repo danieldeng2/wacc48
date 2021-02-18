@@ -45,13 +45,12 @@ class RefCompiler(
 
         val first = lines.indexOf("===========================================================") + 1
         val last = lines.lastIndexOf("===========================================================")
-        val output = mutableListOf<String>()
 
-        for (i in first until last) {
-            output.add(lines[i].substringAfter("\t"))
+        return mutableListOf<String>().apply {
+            for (i in first until last) {
+                add(lines[i].substringAfter("\t"))
+            }
         }
-
-        return output
     }
 
 }
