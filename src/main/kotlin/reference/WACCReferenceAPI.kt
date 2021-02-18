@@ -14,12 +14,12 @@ interface WACCReferenceAPI {
         @Part testFile: MultipartBody.Part,
         @Part options: MultipartBody.Part?,
         @Part stdin: MultipartBody.Part?,
-    ): Call<String>
+    ): Call<CompilerResult>
 
     @Multipart
     @POST("/wacc_compiler/emulate.cgi")
     fun emulate(
         @Part testFile: MultipartBody.Part,
         @Part stdin: MultipartBody.Part,
-    ): Call<String>
+    ): Call<EmulatorResult>
 }

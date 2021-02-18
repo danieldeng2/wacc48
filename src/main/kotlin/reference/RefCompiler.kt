@@ -1,22 +1,27 @@
 package reference
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 
 class RefCompiler(
     private val testFile: File,
 ) {
+    private val moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())
+        .build()
     private val retrofit = Retrofit.Builder()
-        .addConverterFactory(ScalarsConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .baseUrl("https://teaching.doc.ic.ac.uk/")
         .build()
     private val service = retrofit.create(WACCReferenceAPI::class.java)
 
-    fun compile(): String {
+    fun run(): List<String> {
         val call = service.compileFile(
             testFile = MultipartBody.Part.createFormData(
                 "testfile",
@@ -30,37 +35,23 @@ class RefCompiler(
             stdin = null
         )
 
-        val result = call.execute()
+        val result = call.execute().body()!!
 
-        return result.message()
+        return parseOutput(result.compilerOut)
     }
 
-    fun execute(stdin: String): String {
-        val call = service.compileFile(
-            testFile = MultipartBody.Part.createFormData(
-                "testfile",
-                testFile.name,
-                RequestBody.create(MediaType.parse("application/octet-stream"), testFile)
-            ),
-            options = MultipartBody.Part.createFormData(
-                "options[]",
-                "-x",
-            ),
-            stdin = MultipartBody.Part.createFormData(
-                "stdin",
-                stdin,
-            )
-        )
+    private fun parseOutput(rawOutput: String): List<String> {
+        val lines = rawOutput.lines()
 
+        val first = lines.indexOf("===========================================================") + 1
+        val last = lines.lastIndexOf("===========================================================")
+        val output = mutableListOf<String>()
 
-        return call.execute().body()!!
+        for (i in first until last) {
+            output.add(lines[i].substringAfter("\t"))
+        }
+
+        return output
     }
 
-}
-
-fun main() {
-    val testFile = File("src/test/resources/valid/while/fibonacciIterative.wacc")
-    val message = RefCompiler(testFile).execute("")
-
-    println(message)
 }

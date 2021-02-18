@@ -2,7 +2,7 @@ import analyser.nodes.ASTNode
 import org.antlr.v4.runtime.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
-import java.io.File
+import java.io.FileWriter
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
@@ -23,13 +23,16 @@ fun main(args: Array<String>) {
         exitProcess(200)
     }
 
-    val output = runGenerator(pNode)
+    val output = runGenerator(pNode, args[0])
+
     when {
         args.isEmpty() -> println(output)
         else -> {
             val p = Paths.get(args[0])
             val outName = p.fileName.toString().replace(".wacc", ".s")
-            File(outName).writeText(output)
+            val writer = FileWriter(outName)
+            output.forEach { writer.write(it + System.lineSeparator()) }
+            writer.close()
         }
     }
 }
