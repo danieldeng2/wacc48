@@ -66,9 +66,13 @@ data class ProgNode(
             )
             add(LabelInstr("main"))
             add(PUSHInstr(Register.LR))
+
+            addAll(body.translate(ctx))
+
             add(LDRInstr(Register.R0, ImmOp(0)))
             add(POPInstr(Register.PC))
             add(Directive(".ltorg"))
+
         }
 
 }

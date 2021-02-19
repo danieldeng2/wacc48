@@ -4,6 +4,12 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.IntType
 import exceptions.SemanticsException
+import generator.TranslatorContext
+import generator.armInstructions.BLInstr
+import generator.armInstructions.Instruction
+import generator.armInstructions.MOVInstr
+import generator.armInstructions.POPInstr
+import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ExitNode(
@@ -18,6 +24,14 @@ data class ExitNode(
         this.funTable = funTable
         value.validate(st, funTable)
         if (value.type != IntType)
-            throw SemanticsException("Exit must take integer as input, got ${value.type} instead", ctx)
+            throw SemanticsException(
+                "Exit must take integer as input, got ${value.type} instead",
+                ctx
+            )
     }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> =
+        value.translate(ctx).toMutableList().apply {
+            add(BLInstr("exit"))
+        }
 }
