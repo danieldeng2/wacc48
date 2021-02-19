@@ -13,6 +13,6 @@ all:
 	./gradlew jar
 
 clean:
-	$(RM) $(OUTPUT_DIR) $(SOURCE_DIR)/main/java/antlr
+	$(RM) $(OUTPUT_DIR) $(SOURCE_DIR)/main/java/antlr *.s
 
 .PHONY: all clean

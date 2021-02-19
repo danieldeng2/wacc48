@@ -9,41 +9,67 @@ import java.io.FileWriter
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
-fun main(args: Array<String>) {
-    val input: CharStream = when {
-        args.isEmpty() -> CharStreams.fromStream(System.`in`)
-        else -> CharStreams.fromFileName(args[0])
-    }
-    val pNode: ASTNode
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.path
+import java.lang.UnsupportedOperationException
+import java.nio.file.Path
 
-    try {
-        pNode = runAnalyser(input)
-    } catch (e: SyntaxException) {
-        println("Syntax Error: ${e.message}")
-        exitProcess(100)
-    } catch (e: SemanticsException) {
-        println("Semantics Error: ${e.message}")
-        exitProcess(200)
-    }
+class Cli : CliktCommand() {
 
-    val output = if (args.size > 1 && args[1] == "-r")
-        RefCompiler(File(args[0])).run()
-    else
-        runGenerator(pNode)
+    val reference: Boolean by option(
+        "-r",
+        "--reference",
+        help = "Run with reference compiler"
+    ).flag()
 
-    when {
-        args.isEmpty() -> println(output)
-        else -> {
-            val p = Paths.get(args[0])
-            val outName = p.fileName.toString().replace(".wacc", ".s")
-            val writer = FileWriter(outName)
-            output.forEach { writer.write(it + System.lineSeparator()) }
-            writer.close()
+    val sourceFile: Path? by argument().path(mustExist = true)
 
-            val emulator = RefEmulator(File(outName)).execute("")
-            println(emulator.emulatorOut)
-            println("exit ${emulator.emulatorExit}")
+    override fun run() {
+        val input: CharStream = when (sourceFile) {
+            null -> CharStreams.fromStream(System.`in`)
+            else -> CharStreams.fromPath(sourceFile)
+        }
+        val pNode: ASTNode
+
+        try {
+            pNode = runAnalyser(input)
+        } catch (e: SyntaxException) {
+            println("Syntax Error: ${e.message}")
+            exitProcess(100)
+        } catch (e: SemanticsException) {
+            println("Semantics Error: ${e.message}")
+            exitProcess(200)
+        }
+
+        val output =
+            if (reference)
+                when (sourceFile) {
+                    null -> throw UnsupportedOperationException("Unsupported functionality! Pass in a source-file!")
+                    else -> RefCompiler(sourceFile!!.toFile()).run()
+
+                }
+            else runGenerator(pNode)
+
+        when (sourceFile) {
+            null -> println(output)
+            else -> {
+                val outName =
+                    sourceFile!!.fileName.toString().replace(".wacc", ".s")
+                val writer = FileWriter(outName)
+                output.forEach { writer.write(it + System.lineSeparator()) }
+                writer.close()
+
+                val emulator = RefEmulator(File(outName)).execute("")
+                println(emulator.emulatorOut)
+                println("exit ${emulator.emulatorExit}")
+            }
         }
     }
+
 }
+
+fun main(args: Array<String>) = Cli().main(args)
 
