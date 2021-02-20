@@ -57,7 +57,7 @@ class GeneratorIntegrationTest {
     private fun executeAssembly(assembly: List<String>, stdin: String): EmulatorResult {
         val assemFile = File("tmp.s")
         val writer = FileWriter(assemFile)
-        assembly.forEach { writer.write(it + System.lineSeparator()) }
+        assembly.forEach { writer.appendLine(it) }
         writer.close()
 
         val res = RefEmulator(assemFile).execute(stdin)
