@@ -4,7 +4,6 @@ import reference.EmulatorResult
 import reference.RefCompiler
 import reference.RefEmulator
 import java.io.File
-import kotlin.io.createTempFile
 import java.io.FileWriter
 import kotlin.test.assertEquals
 

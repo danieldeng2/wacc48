@@ -7,8 +7,7 @@ import analyser.nodes.expr.operators.*
 import analyser.nodes.function.*
 import analyser.nodes.statement.*
 import analyser.nodes.type.*
-import antlr.WACCParser
-import antlr.WACCParserVisitor
+import WACCParserVisitor
 import exceptions.SyntaxException
 import org.antlr.v4.runtime.tree.*
 import java.lang.NumberFormatException

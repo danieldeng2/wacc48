@@ -1,7 +1,6 @@
 import analyser.ASTGenerator
 import org.antlr.v4.runtime.*
 
-import antlr.*
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
 import exceptions.ThrowingErrorListener

@@ -5,7 +5,7 @@ src/main/java/antlr
 *.tokens
 *.interp
 *.s
-/gen
+src/main/gen
 
 #ignore Java class files
 *.class
