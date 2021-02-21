@@ -1,9 +1,5 @@
 image: openjdk:11
 
-before_script:
-  - apt-get -y update
-  - apt-get install -y make
-
 stages:
   - gradleBuild
   - gradleTest
@@ -16,6 +12,5 @@ gradle-build:
 gradle-test:
   stage: gradleTest 
   script: 
-    - ./gradlew jar
     - ./gradlew clean test
 
