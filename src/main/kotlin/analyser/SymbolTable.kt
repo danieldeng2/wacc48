@@ -1,6 +1,10 @@
 package analyser
 
 import analyser.nodes.ASTNode
+import analyser.nodes.expr.BoolLiteral
+import analyser.nodes.expr.CharLiteral
+import analyser.nodes.expr.IntLiteral
+import analyser.nodes.expr.StringLiteral
 
 class SymbolTable(private val parent: SymbolTable?) {
 
@@ -35,5 +39,18 @@ class SymbolTable(private val parent: SymbolTable?) {
 
     override fun toString(): String {
         return map.toString()
+    }
+
+    fun getLocalVariablesSize(): Int {
+        var size = 0
+        for ((_, v) in map) {
+            when (v) {
+                is IntLiteral -> size += 4
+                is CharLiteral -> size += 4
+                is StringLiteral -> size += 4
+                is BoolLiteral -> size += 1
+            }
+        }
+        return size
     }
 }
