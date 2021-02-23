@@ -1,4 +1,3 @@
 package generator.armInstructions.operands
 
-interface LoadableOp {
-}
+interface LoadableOp {}

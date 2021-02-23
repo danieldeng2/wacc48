@@ -7,7 +7,7 @@ import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import generator.TranslatorContext
 import generator.armInstructions.*
-import generator.armInstructions.operands.ImmOp
+import generator.armInstructions.operands.NumOp
 import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -68,7 +68,7 @@ data class FuncNode(
 
     override fun translate(ctx: TranslatorContext): List<Instruction> {
         val instructions = mutableListOf<Instruction>().apply {
-            add(LabelInstr("main"))
+            add(LabelInstr(identifier))
             add(PUSHInstr(Register.LR))
 
         }
@@ -80,7 +80,7 @@ data class FuncNode(
                 SUBInstr(
                     Register.SP,
                     Register.SP,
-                    ImmOp(st.getLocalVariablesSize())
+                    NumOp(st.getLocalVariablesSize())
                 )
             )
 
@@ -91,13 +91,13 @@ data class FuncNode(
                 ADDInstr(
                     Register.SP,
                     Register.SP,
-                    ImmOp(st.getLocalVariablesSize())
+                    NumOp(st.getLocalVariablesSize())
                 )
             )
 
         return instructions.apply {
             if (identifier == "main") {
-                add(LDRInstr(Register.R0, ImmOp(0)))
+                add(LDRInstr(Register.R0, NumOp(0, isLoad = true)))
                 add(POPInstr(Register.PC))
                 add(Directive(".ltorg"))
             } else {

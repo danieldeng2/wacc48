@@ -4,6 +4,8 @@ import analyser.SymbolTable
 import analyser.nodes.assignment.RHSNode
 import analyser.nodes.function.ParamNode
 import exceptions.SemanticsException
+import generator.TranslatorContext
+import generator.armInstructions.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class DeclarationNode(
@@ -23,4 +25,10 @@ data class DeclarationNode(
         if (value.type != name.type)
             throw SemanticsException("Type mismatch in declaration $name", ctx)
     }
+
+    override fun translate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            addAll(value.translate(ctx))
+            addAll(name.translate(ctx))
+        }
 }

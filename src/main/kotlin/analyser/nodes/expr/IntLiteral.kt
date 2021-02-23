@@ -7,8 +7,7 @@ import exceptions.SemanticsException
 import generator.TranslatorContext
 import generator.armInstructions.Instruction
 import generator.armInstructions.LDRInstr
-import generator.armInstructions.PUSHInstr
-import generator.armInstructions.operands.ImmOp
+import generator.armInstructions.operands.NumOp
 import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -28,5 +27,5 @@ data class IntLiteral(
     }
 
     override fun translate(ctx: TranslatorContext): List<Instruction> =
-        listOf(LDRInstr(Register.R0, ImmOp(value)))
+        listOf(LDRInstr(Register.R0, NumOp(value, isLoad = true)))
 }

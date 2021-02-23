@@ -2,15 +2,11 @@ package analyser.nodes
 
 import analyser.SymbolTable
 import analyser.nodes.function.FuncNode
-import analyser.nodes.function.ParamListNode
 import analyser.nodes.statement.*
-import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 import exceptions.SyntaxException
 import generator.TranslatorContext
 import generator.armInstructions.*
-import generator.armInstructions.operands.ImmOp
-import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(

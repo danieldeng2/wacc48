@@ -3,8 +3,14 @@ package analyser.nodes.function
 import analyser.SymbolTable
 import analyser.nodes.type.Type
 import analyser.nodes.ASTNode
+import analyser.nodes.type.BoolType
 import analyser.nodes.type.Typable
 import exceptions.SemanticsException
+import generator.TranslatorContext
+import generator.armInstructions.*
+import generator.armInstructions.operands.MemAddr
+import generator.armInstructions.operands.NumOp
+import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ParamNode(
@@ -19,7 +25,22 @@ data class ParamNode(
         this.st = st
         this.funTable = funTable
         if (st.containsInCurrentScope(text))
-            throw SemanticsException("Illegal re-declaration of parameter $text", ctx)
+            throw SemanticsException(
+                "Illegal re-declaration of parameter $text",
+                ctx
+            )
         st.add(text, this)
+    }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        val instructions = mutableListOf<Instruction>()
+        val offset = ctx.getOffsetOfVariable(text)
+
+        when (type) {
+            is BoolType -> instructions.add(
+                STRBInstr(Register.R0, MemAddr(Register.SP, NumOp(offset)))
+            )
+        }
+        return instructions
     }
 }
