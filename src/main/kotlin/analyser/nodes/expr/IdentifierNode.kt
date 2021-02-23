@@ -2,14 +2,12 @@ package analyser.nodes.expr
 
 import analyser.SymbolTable
 import analyser.nodes.assignment.LHSNode
-import analyser.nodes.type.BoolType
-import analyser.nodes.type.Typable
-import analyser.nodes.type.Type
-import analyser.nodes.type.VoidType
+import analyser.nodes.type.*
 import exceptions.SemanticsException
 import generator.TranslatorContext
 import generator.armInstructions.STRBInstr
 import generator.armInstructions.Instruction
+import generator.armInstructions.STRInstr
 import generator.armInstructions.operands.*
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -39,11 +37,14 @@ data class IdentifierNode(
             val offset = ctx.getOffsetOfVariable(name)
 
             when (type) {
-                is BoolType -> add(
+                is BoolType, CharType -> add(
                     STRBInstr(
                         Register.R0,
                         MemAddr(Register.SP, NumOp(offset))
                     )
+                )
+                is IntType -> add(
+                    STRInstr(Register.R0, MemAddr(Register.SP, NumOp(offset)))
                 )
             }
         }

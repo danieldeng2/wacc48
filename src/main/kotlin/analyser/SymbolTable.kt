@@ -5,6 +5,11 @@ import analyser.nodes.expr.BoolLiteral
 import analyser.nodes.expr.CharLiteral
 import analyser.nodes.expr.IntLiteral
 import analyser.nodes.expr.StringLiteral
+import analyser.nodes.function.ParamNode
+import analyser.nodes.type.BoolType
+import analyser.nodes.type.CharType
+import analyser.nodes.type.IntType
+import analyser.nodes.type.StringType
 
 class SymbolTable(private val parent: SymbolTable?) {
 
@@ -44,11 +49,11 @@ class SymbolTable(private val parent: SymbolTable?) {
     fun getLocalVariablesSize(): Int {
         var size = 0
         for ((_, v) in map) {
-            when (v) {
-                is IntLiteral -> size += 4
-                is CharLiteral -> size += 4
-                is StringLiteral -> size += 4
-                is BoolLiteral -> size += 1
+            when ((v as ParamNode).type) {
+                is CharType -> size += 1
+                is BoolType -> size += 1
+                is IntType -> size += 4
+                is StringType -> size += 4
             }
         }
         return size

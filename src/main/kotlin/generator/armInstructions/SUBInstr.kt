@@ -7,7 +7,7 @@ class SUBInstr(val rd: Register, val rn: Register, val imm: NumOp?) :
     Instruction {
 
     override fun toString() = when (imm) {
-        null -> "$\tSUB $rd, $rn"
-        else -> "$\tSUB $rd, $rn, $imm"
+        null -> "\tSUB ${rd.repr}, ${rn.repr}"
+        else -> "\tSUB ${rd.repr}, ${rn.repr}, $imm"
     }
 }

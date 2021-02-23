@@ -73,14 +73,14 @@ data class FuncNode(
 
         }
 
-        val localStackSize = st.getLocalVariablesSize()
+        val localStackSize = bodyTable.getLocalVariablesSize()
 
         if (localStackSize > 0)
             instructions.add(
                 SUBInstr(
                     Register.SP,
                     Register.SP,
-                    NumOp(st.getLocalVariablesSize())
+                    NumOp(localStackSize)
                 )
             )
 
@@ -91,18 +91,15 @@ data class FuncNode(
                 ADDInstr(
                     Register.SP,
                     Register.SP,
-                    NumOp(st.getLocalVariablesSize())
+                    NumOp(localStackSize)
                 )
             )
 
         return instructions.apply {
             if (identifier == "main") {
-                add(LDRInstr(Register.R0, NumOp(0, isLoad = true)))
-                add(POPInstr(Register.PC))
-                add(Directive(".ltorg"))
-            } else {
-                add(POPInstr(Register.PC))
+                add(MOVInstr(Register.R0, NumOp(0)))
             }
+            add(POPInstr(Register.PC))
         }
     }
 }

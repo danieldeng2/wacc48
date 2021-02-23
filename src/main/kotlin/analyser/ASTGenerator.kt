@@ -18,7 +18,6 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     override fun visitProg(ctx: WACCParser.ProgContext): ASTNode {
         val functions = ctx.func().map { visit(it) as FuncNode }.toMutableList()
 
-
         functions.add(
             FuncNode(
                 "main",
@@ -262,7 +261,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitCharLiteral(ctx: WACCParser.CharLiteralContext): ASTNode =
         CharLiteral(
-            value = ctx.text[0],
+            value = ctx.text[1],
             ctx = ctx
         )
 

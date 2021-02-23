@@ -1,10 +1,8 @@
 package analyser.nodes.function
 
 import analyser.SymbolTable
-import analyser.nodes.type.Type
 import analyser.nodes.ASTNode
-import analyser.nodes.type.BoolType
-import analyser.nodes.type.Typable
+import analyser.nodes.type.*
 import exceptions.SemanticsException
 import generator.TranslatorContext
 import generator.armInstructions.*
@@ -32,15 +30,20 @@ data class ParamNode(
         st.add(text, this)
     }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
-        val offset = ctx.getOffsetOfVariable(text)
+    override fun translate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            val offset = ctx.getOffsetOfVariable(text)
 
-        when (type) {
-            is BoolType -> instructions.add(
-                STRBInstr(Register.R0, MemAddr(Register.SP, NumOp(offset)))
-            )
+            when (type) {
+                is BoolType, CharType -> add(
+                    STRBInstr(
+                        Register.R0,
+                        MemAddr(Register.SP, NumOp(offset))
+                    )
+                )
+                is IntType -> add(
+                    STRInstr(Register.R0, MemAddr(Register.SP, NumOp(offset)))
+                )
+            }
         }
-        return instructions
-    }
 }
