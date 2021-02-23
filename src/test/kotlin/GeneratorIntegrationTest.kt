@@ -22,7 +22,7 @@ class GeneratorIntegrationTest {
     }
 
     private fun checkAllMatches(label: String, printAll: Boolean = false) {
-        val dir = File(object {}.javaClass.getResource(label).file)
+        val dir = File(javaClass.getResource(label).file)
         dir.walk().forEach { f ->
             if (f.isFile) {
                 totalTests++
@@ -30,7 +30,7 @@ class GeneratorIntegrationTest {
                 try {
                     if (printAll) println("Compiler output: ")
                     val compilerResult = compilerPipeline(f.path, printAll)
-                    if (printAll) println("Reference output: ")
+                    if (printAll) println("\nReference output: ")
                     val referenceResult = referencePipeline(f.path, printAll)
                     when {
                         compilerResult.emulatorOut != referenceResult.emulatorOut ->

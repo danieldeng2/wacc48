@@ -11,7 +11,7 @@ class AnalyserIntegrationTest {
 
     @Test
     fun validProgramsShouldNotProduceException() {
-        val dir = File(object {}.javaClass.getResource("valid").file)
+        val dir = File(javaClass.getResource("valid").file)
 
         dir.walk().forEach { f ->
             if (f.isFile) {
