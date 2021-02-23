@@ -6,7 +6,6 @@ import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import kotlin.test.fail
 
 class GlobalReturnTest {
     private val trueBooleanNode = BoolLiteral(

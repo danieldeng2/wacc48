@@ -1,13 +1,10 @@
 import analyser.ASTGenerator
 import org.antlr.v4.runtime.*
 
-import antlr.*
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
 import exceptions.ThrowingErrorListener
-import reference.RefCompiler
-import java.io.File
-
+import generator.TranslatorContext
 
 fun runAnalyser(input: CharStream): ASTNode {
     // Lexical Analysis
@@ -29,9 +26,19 @@ fun runAnalyser(input: CharStream): ASTNode {
     return programNode
 }
 
-// TODO(Implement Generator and remove filename)
-fun runGenerator(pNode: ASTNode, filename: String): List<String> {
-    return RefCompiler(File(filename)).run()
+fun runGenerator(pNode: ASTNode): List<String> {
+    val programInstructions = pNode.translate(TranslatorContext())
+
+    return mutableListOf<String>().apply {
+        add(".text")
+        add("")
+        add(".global main")
+
+        addAll(
+            programInstructions.map { it.toString() }
+        )
+    }
 }
+
 
 

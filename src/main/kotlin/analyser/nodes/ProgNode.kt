@@ -5,6 +5,10 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
+import generator.TranslatorContext
+import generator.armInstructions.*
+import generator.armInstructions.operands.ImmOp
+import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(
@@ -52,4 +56,23 @@ data class ProgNode(
             is ReturnNode -> true
             else -> false
         }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> =
+        mutableListOf<Instruction>().apply {
+            addAll(
+                functions.flatMap {
+                    it.translate(ctx)
+                }
+            )
+            add(LabelInstr("main"))
+            add(PUSHInstr(Register.LR))
+
+            addAll(body.translate(ctx))
+
+            add(LDRInstr(Register.R0, ImmOp(0)))
+            add(POPInstr(Register.PC))
+            add(Directive(".ltorg"))
+
+        }
+
 }

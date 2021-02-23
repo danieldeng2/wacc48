@@ -7,8 +7,7 @@ import analyser.nodes.expr.operators.*
 import analyser.nodes.function.*
 import analyser.nodes.statement.*
 import analyser.nodes.type.*
-import antlr.WACCParser
-import antlr.WACCParserVisitor
+import WACCParserVisitor
 import exceptions.SyntaxException
 import org.antlr.v4.runtime.tree.*
 import java.lang.NumberFormatException
@@ -65,20 +64,20 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
             ctx = ctx
         )
 
-    override fun visitSeqCompositionStat(ctx: WACCParser.SeqCompositionStatContext): ASTNode {
-        val sequence = mutableListOf<StatNode>()
-        var next = ctx as WACCParser.StatContext
-        while (next is WACCParser.SeqCompositionStatContext) {
-            sequence.add(visit(next.stat(0)) as StatNode)
-            next = next.stat(1)
-        }
-        sequence.add(visit(next) as StatNode)
-
-        return SeqNode(
-            sequence = sequence,
+    override fun visitSeqCompositionStat(ctx: WACCParser.SeqCompositionStatContext): ASTNode =
+        SeqNode(
+            sequence =
+            mutableListOf<StatNode>()
+                .apply {
+                    var next = ctx as WACCParser.StatContext
+                    while (next is WACCParser.SeqCompositionStatContext) {
+                        add(visit(next.stat(0)) as StatNode)
+                        next = next.stat(1)
+                    }
+                    add(visit(next) as StatNode)
+                },
             ctx = ctx
         )
-    }
 
 
     override fun visitAssignmentStat(ctx: WACCParser.AssignmentStatContext): ASTNode =

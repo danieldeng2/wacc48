@@ -5,12 +5,13 @@ src/main/java/antlr
 *.tokens
 *.interp
 *.s
-/gen
+src/main/gen
 
 #ignore Java class files
 *.class
 
 #ignore other junk files
+tmp.*
 *~
 .DS_Store
 .idea/shelf
