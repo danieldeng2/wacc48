@@ -26,19 +26,19 @@ fun runAnalyser(input: CharStream): ASTNode {
     return programNode
 }
 
-fun runGenerator(pNode: ASTNode): List<String> {
-    val programInstructions = pNode.translate(TranslatorContext())
-
-    return mutableListOf<String>().apply {
+fun runGenerator(pNode: ASTNode) =
+    mutableListOf<String>().apply {
         add(".text")
         add("")
         add(".global main")
+
+        val programInstructions = pNode.translate(TranslatorContext())
 
         addAll(
             programInstructions.map { it.toString() }
         )
     }
-}
+
 
 
 

@@ -57,13 +57,9 @@ data class ProgNode(
             else -> false
         }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> =
-        mutableListOf<Instruction>().apply {
-            addAll(
-                functions.flatMap {
-                    it.translate(ctx)
-                }
-            )
+    override fun translate(ctx: TranslatorContext) =
+        functions.flatMap {
+            it.translate(ctx)
         }
 
 }

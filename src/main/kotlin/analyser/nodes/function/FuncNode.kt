@@ -66,40 +66,37 @@ data class FuncNode(
         }
     }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> {
-        val instructions = mutableListOf<Instruction>().apply {
+    override fun translate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            val localStackSize = bodyTable.getLocalVariablesSize()
+
             add(LabelInstr(identifier))
             add(PUSHInstr(Register.LR))
 
-        }
-
-        val localStackSize = bodyTable.getLocalVariablesSize()
-
-        if (localStackSize > 0)
-            instructions.add(
-                SUBInstr(
-                    Register.SP,
-                    Register.SP,
-                    NumOp(localStackSize)
+            if (localStackSize > 0)
+                add(
+                    SUBInstr(
+                        Register.SP,
+                        Register.SP,
+                        NumOp(localStackSize)
+                    )
                 )
-            )
 
-        instructions.addAll(body.translate(ctx))
+            addAll(body.translate(ctx))
 
-        if (localStackSize > 0)
-            instructions.add(
-                ADDInstr(
-                    Register.SP,
-                    Register.SP,
-                    NumOp(localStackSize)
+            if (localStackSize > 0)
+                add(
+                    ADDInstr(
+                        Register.SP,
+                        Register.SP,
+                        NumOp(localStackSize)
+                    )
                 )
-            )
 
-        return instructions.apply {
             if (identifier == "main") {
                 add(MOVInstr(Register.R0, NumOp(0)))
             }
             add(POPInstr(Register.PC))
         }
-    }
+
 }
