@@ -2,7 +2,9 @@ package analyser.nodes
 
 import analyser.SymbolTable
 import analyser.nodes.function.FuncNode
+import analyser.nodes.function.ParamListNode
 import analyser.nodes.statement.*
+import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 import exceptions.SyntaxException
 import generator.TranslatorContext
@@ -12,7 +14,6 @@ import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(
-    private val body: StatNode,
     private val functions: List<FuncNode>,
     override val ctx: ParserRuleContext?
 ) : ASTNode {
@@ -22,18 +23,21 @@ data class ProgNode(
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st
         this.funTable = funTable
-        functions.forEach {
+
+        val (main, funcs) = functions.partition { it.identifier == "main" }
+
+        funcs.forEach {
             if (!allPathsTerminated(it.body))
                 throw SyntaxException("Function ${it.identifier} must end with either a return or exit")
         }
 
-        functions.forEach { it.validatePrototype(funTable) }
+        funcs.forEach { it.validatePrototype(funTable) }
         functions.forEach { it.validate(st, funTable) }
 
-        if (hasGlobalReturn(body))
+        if (hasGlobalReturn(main.first { it.identifier == "main" }.body)) {
             throw SemanticsException("Cannot return in global context", ctx)
+        }
 
-        body.validate(st, funTable)
     }
 
     private fun allPathsTerminated(body: StatNode): Boolean =
@@ -64,15 +68,6 @@ data class ProgNode(
                     it.translate(ctx)
                 }
             )
-            add(LabelInstr("main"))
-            add(PUSHInstr(Register.LR))
-
-            addAll(body.translate(ctx))
-
-            add(LDRInstr(Register.R0, ImmOp(0)))
-            add(POPInstr(Register.PC))
-            add(Directive(".ltorg"))
-
         }
 
 }

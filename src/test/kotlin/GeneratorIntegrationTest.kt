@@ -22,24 +22,31 @@ class GeneratorIntegrationTest {
             if (f.isFile) {
                 totalTests++
                 println("${f.path}:")
-                val compilerResult = compilerPipeline(f.path)
-                val referenceResult = referencePipeline(f.path)
-
-                when {
-                    compilerResult.emulatorOut != referenceResult.emulatorOut ->
-                        println("Expected ${referenceResult.emulatorOut} but got ${compilerResult.emulatorOut}")
-                    compilerResult.emulatorExit != referenceResult.emulatorExit ->
-                        println("Expected exit code ${referenceResult.emulatorExit} but got ${compilerResult.emulatorExit}")
-                    else ->
-                        passedTests++
+                try {
+                    val compilerResult = compilerPipeline(f.path)
+                    val referenceResult = referencePipeline(f.path)
+                    when {
+                        compilerResult.emulatorOut != referenceResult.emulatorOut ->
+                            println("Expected ${referenceResult.emulatorOut} but got ${compilerResult.emulatorOut}")
+                        compilerResult.emulatorExit != referenceResult.emulatorExit ->
+                            println("Expected exit code ${referenceResult.emulatorExit} but got ${compilerResult.emulatorExit}")
+                        else ->
+                            passedTests++
+                    }
+                } catch (e: NotImplementedError) {
+                    e.printStackTrace()
                 }
+
             }
         }
         println("$passedTests/$totalTests tests passed for programs in $label")
         assertEquals(totalTests, passedTests)
     }
 
-    private fun compilerPipeline(path: String, stdin: String = ""): EmulatorResult {
+    private fun compilerPipeline(
+        path: String,
+        stdin: String = ""
+    ): EmulatorResult {
         val input = CharStreams.fromFileName(path)
         val pNode = runAnalyser(input)
         val assembly = runGenerator(pNode)
@@ -47,13 +54,19 @@ class GeneratorIntegrationTest {
         return executeAssembly(assembly, stdin)
     }
 
-    private fun referencePipeline(path: String, stdin: String = ""): EmulatorResult {
+    private fun referencePipeline(
+        path: String,
+        stdin: String = ""
+    ): EmulatorResult {
         val assembly = RefCompiler(File(path)).run()
 
         return executeAssembly(assembly, stdin)
     }
 
-    private fun executeAssembly(assembly: List<String>, stdin: String): EmulatorResult {
+    private fun executeAssembly(
+        assembly: List<String>,
+        stdin: String
+    ): EmulatorResult {
         val assemFile = File("tmp.s")
         val writer = FileWriter(assemFile)
         assembly.forEach { writer.appendLine(it) }

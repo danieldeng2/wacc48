@@ -2,7 +2,10 @@ import analyser.SymbolTable
 import org.junit.Test
 import analyser.nodes.ProgNode
 import analyser.nodes.expr.BoolLiteral
+import analyser.nodes.function.FuncNode
+import analyser.nodes.function.ParamListNode
 import analyser.nodes.statement.*
+import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -21,8 +24,15 @@ class GlobalReturnTest {
     // Returns True for a program with global return (semanticError)
     private fun globalReturnSemanticErrorThrown(statNode: StatNode): Boolean {
         val programNode = ProgNode(
-            body = statNode,
-            functions = emptyList(),
+            functions = listOf(
+                FuncNode(
+                    identifier = "main",
+                    paramList = ParamListNode(emptyList(), null),
+                    retType = VoidType,
+                    body = statNode,
+                    ctx = null
+                )
+            ),
             ctx = null
         )
         try {

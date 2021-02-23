@@ -17,9 +17,15 @@ data class FuncNode(
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
 
+    lateinit var paramListTable: SymbolTable
+    lateinit var bodyTable: SymbolTable
+
     fun validatePrototype(ft: SymbolTable) {
         if (ft.containsInCurrentScope(identifier))
-            throw SemanticsException("Illegal re-declaration of function $identifier", ctx)
+            throw SemanticsException(
+                "Illegal re-declaration of function $identifier",
+                ctx
+            )
 
         ft.add(identifier, this)
     }
@@ -28,13 +34,15 @@ data class FuncNode(
         this.st = st
         this.funTable = funTable
 
-        val paramST = SymbolTable(st)
+        this.paramListTable = SymbolTable(st)
+        this.bodyTable = SymbolTable(paramListTable)
 
         retType.validate(st, funTable)
-        paramList.validate(paramST, funTable)
-        body.validate(SymbolTable(paramST), funTable)
+        paramList.validate(paramListTable, funTable)
+        body.validate(bodyTable, funTable)
 
-        validateReturnType(body)
+        if (identifier != "main")
+            validateReturnType(body)
     }
 
     private fun validateReturnType(body: StatNode) {
