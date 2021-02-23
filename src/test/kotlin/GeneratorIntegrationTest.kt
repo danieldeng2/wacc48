@@ -16,15 +16,22 @@ class GeneratorIntegrationTest {
         checkAllMatches("valid/basic")
     }
 
-    private fun checkAllMatches(label: String) {
+    @Test
+    fun sequencesShouldMatchReferenceOutput() {
+        checkAllMatches("valid/sequence")
+    }
+
+    private fun checkAllMatches(label: String, printAll: Boolean = false) {
         val dir = File(object {}.javaClass.getResource(label).file)
         dir.walk().forEach { f ->
             if (f.isFile) {
                 totalTests++
                 println("${f.path}:")
                 try {
-                    val compilerResult = compilerPipeline(f.path)
-                    val referenceResult = referencePipeline(f.path)
+                    if (printAll) println("Compiler output: ")
+                    val compilerResult = compilerPipeline(f.path, printAll)
+                    if (printAll) println("Reference output: ")
+                    val referenceResult = referencePipeline(f.path, printAll)
                     when {
                         compilerResult.emulatorOut != referenceResult.emulatorOut ->
                             println("Expected ${referenceResult.emulatorOut} but got ${compilerResult.emulatorOut}")
@@ -33,6 +40,7 @@ class GeneratorIntegrationTest {
                         else ->
                             passedTests++
                     }
+
                 } catch (e: NotImplementedError) {
                     e.printStackTrace()
                 }
@@ -45,31 +53,37 @@ class GeneratorIntegrationTest {
 
     private fun compilerPipeline(
         path: String,
+        printAll: Boolean,
         stdin: String = ""
     ): EmulatorResult {
         val input = CharStreams.fromFileName(path)
         val pNode = runAnalyser(input)
         val assembly = runGenerator(pNode)
 
-        return executeAssembly(assembly, stdin)
+        return executeAssembly(assembly, stdin, printAll)
     }
 
     private fun referencePipeline(
         path: String,
+        printAll: Boolean,
         stdin: String = ""
     ): EmulatorResult {
         val assembly = RefCompiler(File(path)).run()
 
-        return executeAssembly(assembly, stdin)
+        return executeAssembly(assembly, stdin, printAll)
     }
 
     private fun executeAssembly(
         assembly: List<String>,
-        stdin: String
+        stdin: String,
+        printAll: Boolean
     ): EmulatorResult {
         val assemFile = File("tmp.s")
         val writer = FileWriter(assemFile)
-        assembly.forEach { writer.appendLine(it) }
+        assembly.forEach {
+            if (printAll) println(it)
+            writer.appendLine(it)
+        }
         writer.close()
 
         val res = RefEmulator(assemFile).execute(stdin)
