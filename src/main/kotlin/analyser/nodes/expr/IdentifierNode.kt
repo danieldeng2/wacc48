@@ -34,7 +34,7 @@ data class IdentifierNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val offset = ctx.getOffsetOfVariable(name)
+            val offset = st.getOffsetOfVar(name)
 
             when (type) {
                 is BoolType, CharType -> add(

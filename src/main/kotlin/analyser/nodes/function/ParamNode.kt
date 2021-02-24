@@ -32,7 +32,7 @@ data class ParamNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val offset = ctx.getOffsetOfVariable(text)
+            val offset = st.getOffsetOfVar(text)
 
             when (type) {
                 is BoolType, CharType -> add(
