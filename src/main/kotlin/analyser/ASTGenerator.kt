@@ -209,7 +209,10 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitStrLiteral(ctx: WACCParser.StrLiteralContext): ASTNode =
         StringLiteral(
-            value = ctx.STR_LITER().text,
+            value = ctx.STR_LITER().text.substring(
+                1,
+                ctx.STR_LITER().text.length - 1
+            ),
             ctx = ctx
         )
 

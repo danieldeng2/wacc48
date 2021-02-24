@@ -45,7 +45,7 @@ data class IdentifierNode(
                             MemAddr(Register.SP, NumOp(offset))
                         )
                     )
-                    is IntType -> add(
+                    is IntType, StringType -> add(
                         STRInstr(
                             Register.R0,
                             MemAddr(Register.SP, NumOp(offset))
@@ -54,13 +54,13 @@ data class IdentifierNode(
                 }
             } else {
                 when (type) {
-                    is BoolType, CharType -> add(
+                    is BoolType, CharType, IntType -> add(
                         LDRInstr(
                             Register.R0,
                             MemAddr(Register.SP, NumOp(offset))
                         )
                     )
-                    is IntType -> add(
+                    is StringType -> add(
                         LDRInstr(
                             Register.R0,
                             MemAddr(Register.SP, NumOp(offset))
@@ -68,7 +68,6 @@ data class IdentifierNode(
                     )
                 }
             }
-
 
 
         }

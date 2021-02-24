@@ -3,6 +3,11 @@ package analyser.nodes.expr
 import analyser.SymbolTable
 import analyser.nodes.type.StringType
 import analyser.nodes.type.Type
+import generator.TranslatorContext
+import generator.armInstructions.Instruction
+import generator.armInstructions.LDRInstr
+import generator.armInstructions.operands.LabelOp
+import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 
@@ -19,4 +24,11 @@ data class StringLiteral(
         this.st = st
         this.funTable = funTable
     }
+
+    override fun translate(ctx: TranslatorContext) = listOf(
+        LDRInstr(
+            Register.R0,
+            LabelOp(ctx.addStringToPrint(value))
+        )
+    )
 }

@@ -41,7 +41,7 @@ data class ParamNode(
                         MemAddr(Register.SP, NumOp(offset))
                     )
                 )
-                is IntType -> add(
+                is IntType, StringType -> add(
                     STRInstr(Register.R0, MemAddr(Register.SP, NumOp(offset)))
                 )
             }
