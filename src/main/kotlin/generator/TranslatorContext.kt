@@ -1,5 +1,6 @@
 package generator
 
+import generator.armInstructions.BLInstr
 import generator.armInstructions.Instruction
 import generator.armInstructions.LabelInstr
 import generator.armInstructions.directives.Ascii
@@ -16,8 +17,8 @@ class TranslatorContext {
     private var msgMap: MutableMap<PrintSyscall, Int> = mutableMapOf()
     val data = mutableListOf<Instruction>(LabelInstr("data", isSection = true))
 
-    fun addPrintInt() {
-        if (msgMap.containsKey(PrintInt)) return
+    fun addPrintInt(): BLInstr {
+        if (msgMap.containsKey(PrintInt)) return BLInstr("p_print_int")
         msgMap[PrintInt] = msgCounter
 
         data.apply {
@@ -26,10 +27,11 @@ class TranslatorContext {
             add(Ascii("%d\\0"))
         }
         msgCounter++
+        return BLInstr("p_print_int")
     }
 
-    fun addPrintLn() {
-        if (msgMap.containsKey(PrintLn)) return
+    fun addPrintLn(): BLInstr {
+        if (msgMap.containsKey(PrintLn)) return BLInstr("p_print_ln")
         msgMap[PrintLn] = msgCounter
 
         data.apply {
@@ -38,6 +40,7 @@ class TranslatorContext {
             add(Ascii("\\0"))
         }
         msgCounter++
+        return BLInstr("p_print_ln")
     }
 
     fun translateSyscall(): List<Instruction> {

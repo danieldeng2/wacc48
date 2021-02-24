@@ -2,6 +2,10 @@ package analyser.nodes.statement
 
 import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
+import analyser.nodes.type.IntType
+import generator.TranslatorContext
+import generator.armInstructions.BLInstr
+import generator.armInstructions.Instruction
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class PrintNode(
@@ -17,4 +21,15 @@ data class PrintNode(
         this.funTable = funTable
         value.validate(st, funTable)
     }
+
+    override fun translate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            addAll(value.translate(ctx))
+            when (value.type) {
+                IntType -> add(ctx.addPrintInt())
+                else -> TODO("Implement other print options")
+            }
+
+            if (returnAfterPrint) add(ctx.addPrintLn())
+        }
 }
