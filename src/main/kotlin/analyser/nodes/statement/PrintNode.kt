@@ -3,6 +3,8 @@ package analyser.nodes.statement
 import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.IntType
+import analyser.nodes.type.StringType
+import generator.PrintOptions
 import generator.TranslatorContext
 import generator.armInstructions.BLInstr
 import generator.armInstructions.Instruction
@@ -26,10 +28,11 @@ data class PrintNode(
         mutableListOf<Instruction>().apply {
             addAll(value.translate(ctx))
             when (value.type) {
-                IntType -> add(ctx.addPrintInt())
+                IntType -> add(ctx.addPrintFunc(PrintOptions.INT))
+                StringType -> add(ctx.addPrintFunc(PrintOptions.STRING))
                 else -> TODO("Implement other print options")
             }
 
-            if (returnAfterPrint) add(ctx.addPrintLn())
+            if (returnAfterPrint) add(ctx.addPrintFunc(PrintOptions.NEWLINE))
         }
 }
