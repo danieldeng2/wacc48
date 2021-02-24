@@ -26,9 +26,14 @@ data class DeclarationNode(
             throw SemanticsException("Type mismatch in declaration $name", ctx)
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            addAll(value.translate(ctx))
-            addAll(name.translate(ctx))
-        }
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        val instructions = value.translate(ctx).toMutableList()
+        ctx.isDeclaring = true
+        instructions.addAll(name.translate(ctx))
+        ctx.isDeclaring = false
+
+        return instructions
+    }
+
 }
+

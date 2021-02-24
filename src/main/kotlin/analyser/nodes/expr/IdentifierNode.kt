@@ -7,6 +7,7 @@ import exceptions.SemanticsException
 import generator.TranslatorContext
 import generator.armInstructions.STRBInstr
 import generator.armInstructions.Instruction
+import generator.armInstructions.LDRInstr
 import generator.armInstructions.STRInstr
 import generator.armInstructions.operands.*
 import org.antlr.v4.runtime.ParserRuleContext
@@ -36,17 +37,40 @@ data class IdentifierNode(
         mutableListOf<Instruction>().apply {
             val offset = st.getOffsetOfVar(name)
 
-            when (type) {
-                is BoolType, CharType -> add(
-                    STRBInstr(
-                        Register.R0,
-                        MemAddr(Register.SP, NumOp(offset))
+            if (ctx.isDeclaring) {
+                when (type) {
+                    is BoolType, CharType -> add(
+                        STRBInstr(
+                            Register.R0,
+                            MemAddr(Register.SP, NumOp(offset))
+                        )
                     )
-                )
-                is IntType -> add(
-                    STRInstr(Register.R0, MemAddr(Register.SP, NumOp(offset)))
-                )
+                    is IntType -> add(
+                        STRInstr(
+                            Register.R0,
+                            MemAddr(Register.SP, NumOp(offset))
+                        )
+                    )
+                }
+            } else {
+                when (type) {
+                    is BoolType, CharType -> add(
+                        LDRInstr(
+                            Register.R0,
+                            MemAddr(Register.SP, NumOp(offset))
+                        )
+                    )
+                    is IntType -> add(
+                        LDRInstr(
+                            Register.R0,
+                            MemAddr(Register.SP, NumOp(offset))
+                        )
+                    )
+                }
             }
+
+
+
         }
 
 }
