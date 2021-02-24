@@ -5,6 +5,7 @@ import analyser.SymbolTable
 import analyser.nodes.ASTNode
 import exceptions.ThrowingErrorListener
 import generator.TranslatorContext
+import generator.armInstructions.Instruction
 
 fun runAnalyser(input: CharStream): ASTNode {
     // Lexical Analysis
@@ -26,18 +27,16 @@ fun runAnalyser(input: CharStream): ASTNode {
     return programNode
 }
 
-fun runGenerator(pNode: ASTNode) =
-    mutableListOf<String>().apply {
-        add(".text")
-        add("")
-        add(".global main")
+fun runGenerator(pNode: ASTNode): List<String> {
+    val translatorCtx = TranslatorContext()
+    val programInstructions = pNode.translate(translatorCtx)
 
-        val programInstructions = pNode.translate(TranslatorContext())
-
-        addAll(
-            programInstructions.map { it.toString() }
-        )
+    return mutableListOf<String>().apply {
+        addAll(translatorCtx.data.map { it.toString() })
+        addAll(programInstructions.map { it.toString() })
+        addAll(translatorCtx.translateSyscall().map { it.toString() })
     }
+}
 
 
 
