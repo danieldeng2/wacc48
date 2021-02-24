@@ -9,6 +9,7 @@ import generator.armInstructions.*
 import generator.armInstructions.operands.MemAddr
 import generator.armInstructions.operands.NumOp
 import generator.armInstructions.operands.Register
+import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ParamNode(
@@ -33,17 +34,6 @@ data class ParamNode(
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             val offset = st.getOffsetOfVar(text)
-
-            when (type) {
-                is BoolType, CharType -> add(
-                    STRBInstr(
-                        Register.R0,
-                        MemAddr(Register.SP, NumOp(offset))
-                    )
-                )
-                is IntType, StringType -> add(
-                    STRInstr(Register.R0, MemAddr(Register.SP, NumOp(offset)))
-                )
-            }
+            add(storeLocalVar(type, offset))
         }
 }

@@ -10,6 +10,7 @@ import generator.armInstructions.Instruction
 import generator.armInstructions.LDRInstr
 import generator.armInstructions.STRInstr
 import generator.armInstructions.operands.*
+import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class IdentifierNode(
@@ -36,40 +37,16 @@ data class IdentifierNode(
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             val offset = st.getOffsetOfVar(name)
-
-            if (ctx.isDeclaring) {
-                when (type) {
-                    is BoolType, CharType -> add(
-                        STRBInstr(
-                            Register.R0,
-                            MemAddr(Register.SP, NumOp(offset))
-                        )
+            if (ctx.isDeclaring)
+                add(storeLocalVar(type, offset))
+            else {
+                add(
+                    LDRInstr(
+                        Register.R0,
+                        MemAddr(Register.SP, NumOp(offset))
                     )
-                    is IntType, StringType -> add(
-                        STRInstr(
-                            Register.R0,
-                            MemAddr(Register.SP, NumOp(offset))
-                        )
-                    )
-                }
-            } else {
-                when (type) {
-                    is BoolType, CharType, IntType -> add(
-                        LDRInstr(
-                            Register.R0,
-                            MemAddr(Register.SP, NumOp(offset))
-                        )
-                    )
-                    is StringType -> add(
-                        LDRInstr(
-                            Register.R0,
-                            MemAddr(Register.SP, NumOp(offset))
-                        )
-                    )
-                }
+                )
             }
-
-
         }
 
 }
