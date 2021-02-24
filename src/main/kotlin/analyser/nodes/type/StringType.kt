@@ -7,6 +7,8 @@ object StringType : Type {
     override val ctx: ParserRuleContext? = null
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
+    override val reserveStackSize: Int = 4
+
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st

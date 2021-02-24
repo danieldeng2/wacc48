@@ -4,6 +4,7 @@ import analyser.SymbolTable
 import org.antlr.v4.runtime.ParserRuleContext
 
 object BoolType : Type {
+    override val reserveStackSize: Int = 1
     override val ctx: ParserRuleContext? = null
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable

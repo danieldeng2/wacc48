@@ -1,19 +1,12 @@
 package analyser
 
 import analyser.nodes.ASTNode
-import analyser.nodes.expr.BoolLiteral
-import analyser.nodes.expr.CharLiteral
-import analyser.nodes.expr.IntLiteral
-import analyser.nodes.expr.StringLiteral
-import analyser.nodes.function.ParamNode
-import analyser.nodes.type.BoolType
-import analyser.nodes.type.CharType
-import analyser.nodes.type.IntType
-import analyser.nodes.type.StringType
+import analyser.nodes.type.*
 
 class SymbolTable(private val parent: SymbolTable?) {
 
-    private val map: MutableMap<String, ASTNode> = HashMap()
+    private val map: MutableMap<String, Pair<ASTNode, Int>> = HashMap()
+    private var localStackSize = 0
 
     /**
      * @return whether SymbolTable contains the [key]
@@ -33,29 +26,38 @@ class SymbolTable(private val parent: SymbolTable?) {
      */
     operator fun get(key: String): ASTNode? {
         if (key in map) {
-            return map[key]
+            return map[key]?.first
         }
         return parent?.get(key)
     }
 
     fun add(id: String, node: ASTNode) {
-        map[id] = node
+        localStackSize += getSizeOfVar(node)
+        map[id] = Pair(node, localStackSize)
     }
 
     override fun toString(): String {
         return map.toString()
     }
 
-    fun getLocalVariablesSize(): Int {
-        var size = 0
-        for ((_, v) in map) {
-            when ((v as ParamNode).type) {
-                is CharType -> size += 1
-                is BoolType -> size += 1
-                is IntType -> size += 4
-                is StringType -> size += 4
-            }
+    fun getLocalVariablesSize() = localStackSize
+
+    private fun getSizeOfVar(node: ASTNode): Int =
+        when (node) {
+            !is Typable -> 0
+            else -> node.type.reserveStackSize
         }
-        return size
+
+    fun getOffsetOfVar(id: String): Int {
+        var curST = this
+        var offset = 0
+
+        while (!curST.map.containsKey(id)) {
+            offset += curST.localStackSize
+            curST = curST.parent!!
+        }
+
+        offset += curST.localStackSize - curST.map[id]!!.second
+        return offset
     }
 }
