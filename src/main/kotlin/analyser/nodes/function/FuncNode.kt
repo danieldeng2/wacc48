@@ -10,6 +10,8 @@ import generator.armInstructions.*
 import generator.armInstructions.operands.NumOp
 import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
+import java.lang.Math.min
+import javax.management.Query.div
 
 data class FuncNode(
     val identifier: String,
@@ -18,6 +20,9 @@ data class FuncNode(
     val body: StatNode,
     override val ctx: ParserRuleContext?
 ) : ASTNode {
+
+    private val MAX_IMMEDIATE_VALUE = 1024
+
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
 
@@ -73,26 +78,28 @@ data class FuncNode(
             add(LabelInstr(identifier))
             add(PUSHInstr(Register.LR))
 
-            if (localStackSize > 0)
+            for (size in localStackSize downTo 0 step MAX_IMMEDIATE_VALUE) {
                 add(
                     SUBInstr(
                         Register.SP,
                         Register.SP,
-                        NumOp(localStackSize)
+                        NumOp(minOf(size, MAX_IMMEDIATE_VALUE))
                     )
                 )
+            }
 
             addAll(body.translate(ctx))
 
-            if (localStackSize > 0)
+            for (size in localStackSize downTo 0 step MAX_IMMEDIATE_VALUE) {
                 add(
                     ADDInstr(
                         Register.SP,
                         Register.SP,
-                        NumOp(localStackSize)
+                        NumOp(minOf(size, MAX_IMMEDIATE_VALUE))
                     )
                 )
 
+            }
             if (identifier == "main") {
                 add(MOVInstr(Register.R0, NumOp(0)))
             }
