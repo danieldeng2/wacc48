@@ -1,4 +1,4 @@
-package generator.print
+package generator.translator.print
 
 import generator.armInstructions.*
 import generator.armInstructions.operands.LabelOp

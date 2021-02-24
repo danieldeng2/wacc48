@@ -5,10 +5,10 @@ import generator.armInstructions.Instruction
 import generator.armInstructions.LabelInstr
 import generator.armInstructions.directives.Ascii
 import generator.armInstructions.directives.Word
-import generator.print.PrintSyscall
-import generator.print.PrintInt
-import generator.print.PrintLn
-import generator.print.PrintStr
+import generator.translator.print.PrintSyscall
+import generator.translator.print.PrintInt
+import generator.translator.print.PrintLn
+import generator.translator.print.PrintStr
 
 class TranslatorContext {
 
