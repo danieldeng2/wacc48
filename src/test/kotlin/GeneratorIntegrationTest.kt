@@ -18,8 +18,14 @@ class GeneratorIntegrationTest {
 
     @Test
     fun sequencesShouldMatchReferenceOutput() {
-        checkAllMatches("valid/sequence")
+        checkAllMatches("valid/sequence", printAll = true)
     }
+
+    @Test
+    fun variablesSubdirTestShouldMatchReferenceOutput() {
+        checkAllMatches("valid/sequence", printAll = true)
+    }
+
 
     private fun checkAllMatches(label: String, printAll: Boolean = false) {
         val dir = File(javaClass.getResource(label).file)
