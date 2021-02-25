@@ -8,6 +8,8 @@ object VoidType : Type {
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
 
+    override val reserveStackSize: Int = 0
+
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st
         this.funTable = funTable

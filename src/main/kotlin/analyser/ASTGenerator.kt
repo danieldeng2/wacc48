@@ -15,12 +15,21 @@ import java.lang.NumberFormatException
 class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     WACCParserVisitor<ASTNode> {
 
-    override fun visitProg(ctx: WACCParser.ProgContext): ASTNode =
-        ProgNode(
-            body = visit(ctx.stat()) as StatNode,
-            functions = ctx.func().map { visit(it) as FuncNode },
-            ctx = ctx
+    override fun visitProg(ctx: WACCParser.ProgContext): ASTNode {
+        val functions = ctx.func().map { visit(it) as FuncNode }.toMutableList()
+
+        functions.add(
+            FuncNode(
+                "main",
+                ParamListNode(emptyList(), null),
+                VoidType,
+                visit(ctx.stat()) as StatNode,
+                null
+            )
         )
+
+        return ProgNode(functions = functions, ctx = ctx)
+    }
 
     override fun visitFunc(ctx: WACCParser.FuncContext): ASTNode =
         FuncNode(
@@ -33,7 +42,8 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitParamList(ctx: WACCParser.ParamListContext?): ASTNode =
         ParamListNode(
-            params = ctx?.param()?.map { visit(it) as ParamNode } ?: emptyList(),
+            params = ctx?.param()?.map { visit(it) as ParamNode }
+                ?: emptyList(),
             ctx = ctx
         )
 
@@ -156,7 +166,8 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitArgList(ctx: WACCParser.ArgListContext?): ASTNode =
         ArgListNode(
-            args = ctx?.expr()?.map { visit(it) as ExprNode } ?: emptyList(),
+            args = ctx?.expr()?.map { visit(it) as ExprNode }
+                ?: emptyList(),
             ctx = ctx
         )
 
@@ -198,7 +209,10 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitStrLiteral(ctx: WACCParser.StrLiteralContext): ASTNode =
         StringLiteral(
-            value = ctx.STR_LITER().text,
+            value = ctx.STR_LITER().text.substring(
+                1,
+                ctx.STR_LITER().text.length - 1
+            ),
             ctx = ctx
         )
 
@@ -250,7 +264,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitCharLiteral(ctx: WACCParser.CharLiteralContext): ASTNode =
         CharLiteral(
-            value = ctx.text[0],
+            value = ctx.text[1],
             ctx = ctx
         )
 

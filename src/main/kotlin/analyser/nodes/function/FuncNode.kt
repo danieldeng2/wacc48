@@ -5,7 +5,13 @@ import analyser.nodes.type.Type
 import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
 import exceptions.SemanticsException
+import generator.TranslatorContext
+import generator.armInstructions.*
+import generator.armInstructions.operands.NumOp
+import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
+import java.lang.Math.min
+import javax.management.Query.div
 
 data class FuncNode(
     val identifier: String,
@@ -14,12 +20,21 @@ data class FuncNode(
     val body: StatNode,
     override val ctx: ParserRuleContext?
 ) : ASTNode {
+
+    private val MAX_IMMEDIATE_VALUE = 1024
+
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
 
+    lateinit var paramListTable: SymbolTable
+    lateinit var bodyTable: SymbolTable
+
     fun validatePrototype(ft: SymbolTable) {
         if (ft.containsInCurrentScope(identifier))
-            throw SemanticsException("Illegal re-declaration of function $identifier", ctx)
+            throw SemanticsException(
+                "Illegal re-declaration of function $identifier",
+                ctx
+            )
 
         ft.add(identifier, this)
     }
@@ -28,13 +43,15 @@ data class FuncNode(
         this.st = st
         this.funTable = funTable
 
-        val paramST = SymbolTable(st)
+        this.paramListTable = SymbolTable(st)
+        this.bodyTable = SymbolTable(paramListTable)
 
         retType.validate(st, funTable)
-        paramList.validate(paramST, funTable)
-        body.validate(SymbolTable(paramST), funTable)
+        paramList.validate(paramListTable, funTable)
+        body.validate(bodyTable, funTable)
 
-        validateReturnType(body)
+        if (identifier != "main")
+            validateReturnType(body)
     }
 
     private fun validateReturnType(body: StatNode) {
@@ -53,4 +70,40 @@ data class FuncNode(
                     )
         }
     }
+
+    override fun translate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            val localStackSize = bodyTable.getLocalVariablesSize()
+
+            add(LabelInstr(identifier))
+            add(PUSHInstr(Register.LR))
+
+            for (size in localStackSize downTo 1 step MAX_IMMEDIATE_VALUE) {
+                add(
+                    SUBInstr(
+                        Register.SP,
+                        Register.SP,
+                        NumOp(minOf(size, MAX_IMMEDIATE_VALUE))
+                    )
+                )
+            }
+
+            addAll(body.translate(ctx))
+
+            for (size in localStackSize downTo 1 step MAX_IMMEDIATE_VALUE) {
+                add(
+                    ADDInstr(
+                        Register.SP,
+                        Register.SP,
+                        NumOp(minOf(size, MAX_IMMEDIATE_VALUE))
+                    )
+                )
+
+            }
+            if (identifier == "main") {
+                add(MOVInstr(Register.R0, NumOp(0)))
+            }
+            add(POPInstr(Register.PC))
+        }
+
 }

@@ -1,4 +1,0 @@
-package generator
-
-class TranslatorContext {
-}

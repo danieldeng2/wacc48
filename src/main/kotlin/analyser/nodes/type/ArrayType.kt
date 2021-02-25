@@ -6,6 +6,8 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class ArrayType(val elementType: Type, override val ctx: ParserRuleContext?) : Type {
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
+    override val reserveStackSize: Int = 4
+
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st

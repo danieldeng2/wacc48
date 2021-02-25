@@ -16,11 +16,18 @@ class RefCompiler(
             testFile = MultipartBody.Part.createFormData(
                 "testfile",
                 testFile.name,
-                RequestBody.create(MediaType.parse("application/octet-stream"), testFile)
+                RequestBody.create(
+                    MediaType.parse("application/octet-stream"),
+                    testFile
+                )
             ),
-            options = MultipartBody.Part.createFormData(
+            assemblyOption = MultipartBody.Part.createFormData(
                 "options[]",
                 "-a"
+            ),
+            stackOption = MultipartBody.Part.createFormData(
+                "options[]",
+                "-S"
             ),
             stdin = null
         )
@@ -33,8 +40,10 @@ class RefCompiler(
     private fun parseOutput(rawOutput: String): List<String> {
         val lines = rawOutput.lines()
 
-        val first = lines.indexOf("===========================================================") + 1
-        val last = lines.lastIndexOf("===========================================================")
+        val first =
+            lines.indexOf("===========================================================") + 1
+        val last =
+            lines.lastIndexOf("===========================================================")
 
         return mutableListOf<String>().apply {
             for (i in first until last) {

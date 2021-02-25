@@ -6,6 +6,14 @@ import analyser.nodes.type.Typable
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
+import generator.TranslatorContext
+import generator.armInstructions.Instruction
+import generator.armInstructions.LDRInstr
+import generator.armInstructions.operands.MemAddr
+import generator.armInstructions.operands.NumOp
+import generator.armInstructions.operands.Register
+import generator.translator.loadLocalVar
+import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class IdentifierNode(
@@ -28,4 +36,15 @@ data class IdentifierNode(
 
         type = assignedNode.type
     }
+
+    override fun translate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            val offset = ctx.getOffsetOfLocalVar(name, st)
+            if (ctx.isDeclaring)
+                add(storeLocalVar(type, offset))
+            else {
+                add(loadLocalVar(type, offset))
+            }
+        }
+
 }

@@ -15,7 +15,8 @@ interface ReferenceAPIService {
     @POST("/wacc_compiler/run.cgi")
     fun compileFile(
         @Part testFile: MultipartBody.Part,
-        @Part options: MultipartBody.Part?,
+        @Part assemblyOption: MultipartBody.Part?,
+        @Part stackOption: MultipartBody.Part?,
         @Part stdin: MultipartBody.Part?,
     ): Call<CompilerResult>
 

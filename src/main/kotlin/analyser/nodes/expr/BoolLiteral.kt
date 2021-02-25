@@ -3,6 +3,10 @@ package analyser.nodes.expr
 import analyser.SymbolTable
 import analyser.nodes.type.BoolType
 import analyser.nodes.type.Type
+import generator.TranslatorContext
+import generator.armInstructions.MOVInstr
+import generator.armInstructions.operands.NumOp
+import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class BoolLiteral(
@@ -17,4 +21,10 @@ data class BoolLiteral(
         this.st = st
         this.funTable = funTable
     }
+
+    override fun translate(ctx: TranslatorContext) =
+        when (value) {
+            true -> listOf(MOVInstr(Register.R0, NumOp(1)))
+            false -> listOf(MOVInstr(Register.R0, NumOp(0)))
+        }
 }

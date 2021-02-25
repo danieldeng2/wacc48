@@ -1,7 +1,10 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
+import generator.TranslatorContext
+import generator.armInstructions.Instruction
 import org.antlr.v4.runtime.ParserRuleContext
+import kotlin.reflect.jvm.internal.impl.util.ModuleVisibilityHelper
 
 data class SeqNode(
     val sequence: List<StatNode>,
@@ -48,4 +51,10 @@ data class SeqNode(
 
     override fun subList(fromIndex: Int, toIndex: Int): List<StatNode> =
         sequence.subList(fromIndex, toIndex)
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        val instructions = mutableListOf<Instruction>()
+        sequence.forEach { instructions.addAll(it.translate(ctx)) }
+        return instructions
+    }
 }

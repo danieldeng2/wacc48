@@ -7,9 +7,12 @@ object IntType : Type {
 
     const val min = Int.MIN_VALUE
     const val max = Int.MAX_VALUE
+
     override val ctx: ParserRuleContext? = null
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
+    override val reserveStackSize: Int = 4
+
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st

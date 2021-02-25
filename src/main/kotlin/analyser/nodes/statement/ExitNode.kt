@@ -30,8 +30,10 @@ data class ExitNode(
             )
     }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> =
-        value.translate(ctx).toMutableList().apply {
+    override fun translate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            addAll(value.translate(ctx))
             add(BLInstr("exit"))
         }
+
 }

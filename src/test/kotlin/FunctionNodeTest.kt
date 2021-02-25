@@ -26,6 +26,13 @@ class FunctionNodeTest {
         value = trueBooleanNode,
         ctx = null
     )
+    private val emptyMainNode = FuncNode(
+        "main",
+        ParamListNode(emptyList(), null),
+        VoidType,
+        SkipNode,
+        null
+    )
 
 
     // Creates a program with a single function and validates that this function returns
@@ -41,8 +48,7 @@ class FunctionNodeTest {
             ctx = null
         )
         val programNode = ProgNode(
-            body = SkipNode,
-            functions = listOf(funcNode),
+            functions = listOf(funcNode, emptyMainNode),
             ctx = null
         )
         programNode.validate(SymbolTable(null), SymbolTable(null))
@@ -76,7 +82,10 @@ class FunctionNodeTest {
         val exception = assertFailsWith<SemanticsException> {
             funcNodeDuplicate.validatePrototype(symbolTable)
         }
-        assertEquals(exception.message, "Illegal re-declaration of function func")
+        assertEquals(
+            exception.message,
+            "Illegal re-declaration of function func"
+        )
     }
 
     @Test

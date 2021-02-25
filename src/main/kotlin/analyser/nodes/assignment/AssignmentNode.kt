@@ -3,6 +3,8 @@ package analyser.nodes.assignment
 import analyser.SymbolTable
 import analyser.nodes.statement.StatNode
 import exceptions.SemanticsException
+import generator.TranslatorContext
+import generator.armInstructions.Instruction
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class AssignmentNode(
@@ -20,6 +22,18 @@ data class AssignmentNode(
         value.validate(st, funTable)
 
         if (name.type != value.type)
-            throw SemanticsException("Attempt to assign ${value.type} to ${name.type}", ctx)
+            throw SemanticsException(
+                "Attempt to assign ${value.type} to ${name.type}",
+                ctx
+            )
+    }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        val instructions = value.translate(ctx).toMutableList()
+        ctx.isDeclaring = true
+        instructions.addAll(name.translate(ctx))
+        ctx.isDeclaring = false
+
+        return instructions
     }
 }
