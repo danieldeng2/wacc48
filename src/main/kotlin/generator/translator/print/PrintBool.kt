@@ -5,21 +5,18 @@ import generator.armInstructions.*
 import generator.armInstructions.operands.*
 
 object PrintBool : PrintSyscall {
-    override var label = "p_print_bool"
+    override val label = "p_print_bool"
     private var trueIndex: Int? = null
     private var falseIndex: Int? = null
 
-    private val trueFormatter = "true\\0"
-    private val falseFormatter = "false\\0"
-
-    override fun initFormatters(ctx: TranslatorContext) {
-        trueIndex = ctx.addMessage(trueFormatter)
-        falseIndex = ctx.addMessage(falseFormatter)
+    override fun initIndex(ctx: TranslatorContext) {
+        trueIndex = ctx.addMessage("true\\0")
+        falseIndex = ctx.addMessage("false\\0")
     }
 
     override fun translate() =
         mutableListOf<Instruction>().apply {
-            add(LabelInstr("p_print_bool"))
+            add(LabelInstr(label))
             add(PUSHInstr(Register.LR))
             add(CMPInstr(Register.R0, NumOp(0)))
             add(LDRNEInstr(Register.R0, LabelOp(trueIndex!!)))

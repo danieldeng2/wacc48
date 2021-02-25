@@ -5,6 +5,8 @@ import analyser.nodes.statement.StatNode
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
 import generator.armInstructions.Instruction
+import generator.translator.loadLocalVar
+import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class AssignmentNode(
@@ -18,6 +20,8 @@ data class AssignmentNode(
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st
         this.funTable = funTable
+
+        name.isDeclaring = true
         name.validate(st, funTable)
         value.validate(st, funTable)
 
@@ -28,12 +32,9 @@ data class AssignmentNode(
             )
     }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> {
-        val instructions = value.translate(ctx).toMutableList()
-        ctx.isDeclaring = true
-        instructions.addAll(name.translate(ctx))
-        ctx.isDeclaring = false
-
-        return instructions
-    }
+    override fun translate(ctx: TranslatorContext): List<Instruction> =
+        mutableListOf<Instruction>().apply {
+            addAll(value.translate(ctx))
+            addAll(name.translate(ctx))
+        }
 }

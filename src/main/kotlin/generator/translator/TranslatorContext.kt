@@ -9,11 +9,11 @@ import generator.armInstructions.directives.Word
 import generator.translator.print.*
 
 class TranslatorContext {
-
-    var isDeclaring = false
-
     private var msgCounter = 0
-    private var labelCounter = 0
+
+    var labelCounter = 0
+        get() = field++
+
     var stackPtrOffset = 0
 
     private var stringMap: MutableMap<String, Int> = mutableMapOf()
@@ -24,7 +24,7 @@ class TranslatorContext {
         add(LabelInstr("data", isSection = true))
     }
 
-    private val text = mutableListOf<Instruction>().apply {
+    val text = mutableListOf<Instruction>().apply {
         add(LabelInstr("text", isSection = true))
         add(LabelInstr("global main", isGlobalHeader = true))
     }
@@ -32,13 +32,11 @@ class TranslatorContext {
     /** Adds the built-in print helper methods to the assembly program
      *  @return jump instruction [BLInstr] to helper method
      */
-    fun addPrintFunc(printFunc: PrintSyscall): BLInstr {
+    fun addPrintFunc(printFunc: PrintSyscall) {
         if (printFunc !in printList) {
-            printFunc.initFormatters(this)
+            printFunc.initIndex(this)
             printList.add(printFunc)
         }
-
-        return BLInstr(printFunc.label)
     }
 
     /** Adds the string [msg] into the [data] section of the assembly file
@@ -56,28 +54,19 @@ class TranslatorContext {
         return msgCounter++
     }
 
-    /** Adds a [FuncCode] into the [text] section of the assembly file.
-     *  If [labelName] not specified, this is considered a 'helper' method,
-     *  which starts with "L" and ends with an incremental integer index
-     */
-    fun addFunc(
-        instructions: List<Instruction>
-    ) = text.addAll(instructions)
-
-
-    fun getAndIncLabelCnt() = labelCounter++
 
     /** Puts together all the assembly instructions to form
      *  a complete assembly file
      *  @return list of all instructions in the output assembly file
      */
-    fun assemble(): List<Instruction> = mutableListOf<Instruction>().apply {
-        if (data.size > 1)
-            addAll(data)
+    fun assemble(): List<Instruction> =
+        mutableListOf<Instruction>().apply {
+            if (data.size > 1)
+                addAll(data)
 
-        text.addAll(printList.flatMap { it.translate() })
-        addAll(text)
-    }
+            text.addAll(printList.flatMap { it.translate() })
+            addAll(text)
+        }
 
     fun getOffsetOfLocalVar(id: String, st: SymbolTable) =
         st.getOffsetOfVar(id) + stackPtrOffset

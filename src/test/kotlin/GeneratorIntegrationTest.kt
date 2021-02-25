@@ -48,10 +48,12 @@ class GeneratorIntegrationTest {
                     if (printAll) println("\nReference output: ")
                     val referenceResult = referencePipeline(f.path, printAll)
                     when {
-                        compilerResult.emulatorOut != referenceResult.emulatorOut ->
-                            println("Expected ${referenceResult.emulatorOut} but got ${compilerResult.emulatorOut}")
-                        compilerResult.emulatorExit != referenceResult.emulatorExit ->
-                            println("Expected exit code ${referenceResult.emulatorExit} but got ${compilerResult.emulatorExit}")
+                        compilerResult.emulatorOut != referenceResult.emulatorOut -> {
+                            println("Expected output: ")
+                            println(referenceResult.emulatorOut)
+                            println("Actual output: ")
+                            println(compilerResult.emulatorOut)
+                        }
                         else ->
                             passedTests++
                     }

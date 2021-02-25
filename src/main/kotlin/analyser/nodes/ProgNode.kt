@@ -58,12 +58,11 @@ data class ProgNode(
         }
 
     override fun translate(ctx: TranslatorContext): List<Instruction> {
-        functions.forEach {
-            ctx.addFunc(
+        ctx.text.addAll(
+            functions.flatMap {
                 it.translate(ctx)
-            )
-        }
-
+            }
+        )
         return ctx.assemble()
     }
 

@@ -5,10 +5,7 @@ import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import generator.translator.TranslatorContext
 import generator.armInstructions.*
-import generator.translator.print.PrintBool
-import generator.translator.print.PrintInt
-import generator.translator.print.PrintLn
-import generator.translator.print.PrintStr
+import generator.translator.print.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class PrintNode(
@@ -28,13 +25,20 @@ data class PrintNode(
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             addAll(value.translate(ctx))
-            when (value.type) {
-                IntType -> add(ctx.addPrintFunc(PrintInt))
-                StringType -> add(ctx.addPrintFunc(PrintStr))
-                BoolType -> add(ctx.addPrintFunc(PrintBool))
+
+            val printFunc = when (value.type) {
+                IntType -> PrintInt
+                StringType -> PrintStr
+                BoolType -> PrintBool
                 else -> TODO("Implement ${value.type} print options")
             }
 
-            if (returnAfterPrint) add(ctx.addPrintFunc(PrintLn))
+            ctx.addPrintFunc(printFunc)
+            add(BLInstr(printFunc.label))
+
+            if (returnAfterPrint) {
+                ctx.addPrintFunc(PrintLn)
+                add(BLInstr(PrintLn.label))
+            }
         }
 }

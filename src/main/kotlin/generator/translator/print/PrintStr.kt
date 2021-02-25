@@ -8,17 +8,16 @@ import generator.armInstructions.operands.NumOp
 import generator.armInstructions.operands.Register
 
 object PrintStr : PrintSyscall {
-    override var label = "p_print_string"
-    private var formatter = "%.*s\\0"
+    override val label = "p_print_string"
     private var msgIndex: Int? = null
 
-    override fun initFormatters(ctx: TranslatorContext) {
-        msgIndex = ctx.addMessage(formatter)
+    override fun initIndex(ctx: TranslatorContext) {
+        msgIndex = ctx.addMessage("%.*s\\0")
     }
 
     override fun translate() =
         mutableListOf<Instruction>().apply {
-            add(LabelInstr("p_print_string"))
+            add(LabelInstr(label))
             add(PUSHInstr(Register.LR))
             add(LDRInstr(Register.R1, MemAddr(Register.R0, NumOp(0))))
             add(ADDInstr(Register.R2, Register.R0, NumOp(4)))

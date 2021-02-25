@@ -19,6 +19,7 @@ data class IdentifierNode(
     override var type: Type = VoidType
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
+    override var isDeclaring: Boolean = false
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st
@@ -36,11 +37,12 @@ data class IdentifierNode(
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             val offset = ctx.getOffsetOfLocalVar(name, st)
-            if (ctx.isDeclaring)
-                add(storeLocalVar(type, offset))
-            else {
-                add(loadLocalVar(type, offset))
-            }
+            add(
+                if (isDeclaring)
+                    storeLocalVar(type, offset)
+                else
+                    loadLocalVar(type, offset)
+            )
         }
 
 }

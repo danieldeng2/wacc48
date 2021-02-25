@@ -87,7 +87,7 @@ data class BinOpNode(
             else
                 add(CMPInstr(Register.R0, NumOp(1)))
 
-            val branchFirstOp = ctx.getAndIncLabelCnt()
+            val branchFirstOp = ctx.labelCounter
             add(BEQInstr("L$branchFirstOp"))
             addAll(secondExpr.translate(ctx))
 

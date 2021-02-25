@@ -39,8 +39,8 @@ data class IfNode(
             addAll(proposition.translate(ctx))
             add(CMPInstr(Register.R0, NumOp(0)))
 
-            val falseBranchIndex = ctx.getAndIncLabelCnt()
-            val continueBranch = ctx.getAndIncLabelCnt()
+            val falseBranchIndex = ctx.labelCounter
+            val continueBranch = ctx.labelCounter
 
             add(BEQInstr("L$falseBranchIndex"))
             addAll(trueStat.translate(ctx))

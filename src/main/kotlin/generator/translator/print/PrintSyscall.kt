@@ -4,7 +4,7 @@ import generator.translator.TranslatorContext
 import generator.armInstructions.Instruction
 
 interface PrintSyscall {
-    var label: String
+    val label: String
     fun translate(): List<Instruction>
-    fun initFormatters(ctx: TranslatorContext)
+    fun initIndex(ctx: TranslatorContext)
 }
