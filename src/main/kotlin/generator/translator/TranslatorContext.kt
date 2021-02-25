@@ -1,5 +1,6 @@
 package generator
 
+import analyser.SymbolTable
 import generator.armInstructions.BLInstr
 import generator.armInstructions.Instruction
 import generator.armInstructions.LabelInstr
@@ -24,6 +25,7 @@ class TranslatorContext {
 
     private var msgCounter = 0
     private var labelCounter = 0
+    var stackPtrOffset = 0
 
     private var msgMap: MutableMap<PrintSyscall, Int> = mutableMapOf()
     private var stringMap: MutableMap<String, Int> = mutableMapOf()
@@ -68,13 +70,8 @@ class TranslatorContext {
      *  which starts with "L" and ends with an incremental integer index
      */
     fun addFunc(
-        instructions: List<Instruction>,
-        labelName: String
-    ) = text.add(
-        mutableListOf<Instruction>().apply {
-            add(LabelInstr(labelName))
-            addAll(instructions)
-        })
+        instructions: List<Instruction>
+    ) = text.addAll(listOf(instructions))
 
 
     fun getAndIncLabelCnt() = labelCounter++
@@ -95,6 +92,9 @@ class TranslatorContext {
 
         msgMap.forEach { addAll(it.key.translate(it.value)) }
     }
+
+    fun getOffsetOfLocalVar(id: String, st: SymbolTable) =
+        st.getOffsetOfVar(id) + stackPtrOffset
 }
 
 enum class PrintOptions(
