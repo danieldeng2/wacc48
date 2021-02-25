@@ -4,8 +4,7 @@ import org.antlr.v4.runtime.*
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
 import exceptions.ThrowingErrorListener
-import generator.TranslatorContext
-import generator.armInstructions.Instruction
+import generator.translator.TranslatorContext
 
 fun runAnalyser(input: CharStream): ASTNode {
     // Lexical Analysis

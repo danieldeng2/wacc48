@@ -1,7 +1,6 @@
 package generator.translator
 
 import analyser.nodes.type.*
-import generator.TranslatorContext
 import generator.armInstructions.*
 import generator.armInstructions.operands.MemAddr
 import generator.armInstructions.operands.NumOp

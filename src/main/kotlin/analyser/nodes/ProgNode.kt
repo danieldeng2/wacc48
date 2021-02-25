@@ -5,7 +5,7 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
-import generator.TranslatorContext
+import generator.translator.TranslatorContext
 import generator.armInstructions.*
 import org.antlr.v4.runtime.ParserRuleContext
 

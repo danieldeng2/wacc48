@@ -31,6 +31,11 @@ class GeneratorIntegrationTest {
         checkAllMatches("valid/if")
     }
 
+    @Test
+    fun expressionsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/expressions")
+    }
+
     private fun checkAllMatches(label: String, printAll: Boolean = false) {
         val dir = File(javaClass.getResource(label).file)
         dir.walk().forEach { f ->

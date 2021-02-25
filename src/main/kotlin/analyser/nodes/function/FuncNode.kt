@@ -5,13 +5,11 @@ import analyser.nodes.type.Type
 import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
 import exceptions.SemanticsException
-import generator.TranslatorContext
+import generator.translator.TranslatorContext
 import generator.armInstructions.*
 import generator.armInstructions.operands.NumOp
 import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
-import java.lang.Math.min
-import javax.management.Query.div
 
 data class FuncNode(
     val identifier: String,

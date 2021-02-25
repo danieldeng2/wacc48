@@ -41,6 +41,5 @@ enum class UnaryOperator(
     companion object {
         fun lookupRepresentation(string: String) =
             values().firstOrNull { it.repr == string }
-
     }
 }

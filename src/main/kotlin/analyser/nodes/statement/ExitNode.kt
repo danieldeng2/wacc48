@@ -4,12 +4,9 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.IntType
 import exceptions.SemanticsException
-import generator.TranslatorContext
+import generator.translator.TranslatorContext
 import generator.armInstructions.BLInstr
 import generator.armInstructions.Instruction
-import generator.armInstructions.MOVInstr
-import generator.armInstructions.POPInstr
-import generator.armInstructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ExitNode(

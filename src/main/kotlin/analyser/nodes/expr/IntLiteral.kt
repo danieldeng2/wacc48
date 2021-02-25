@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.type.IntType
 import analyser.nodes.type.Type
 import exceptions.SemanticsException
-import generator.TranslatorContext
+import generator.translator.TranslatorContext
 import generator.armInstructions.Instruction
 import generator.armInstructions.LDRInstr
 import generator.armInstructions.operands.NumOp

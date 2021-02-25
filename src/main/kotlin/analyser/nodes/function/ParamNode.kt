@@ -4,11 +4,8 @@ import analyser.SymbolTable
 import analyser.nodes.ASTNode
 import analyser.nodes.type.*
 import exceptions.SemanticsException
-import generator.TranslatorContext
+import generator.translator.TranslatorContext
 import generator.armInstructions.*
-import generator.armInstructions.operands.MemAddr
-import generator.armInstructions.operands.NumOp
-import generator.armInstructions.operands.Register
 import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
