@@ -78,7 +78,7 @@ data class FuncNode(
             add(LabelInstr(identifier))
             add(PUSHInstr(Register.LR))
 
-            for (size in localStackSize downTo 0 step MAX_IMMEDIATE_VALUE) {
+            for (size in localStackSize downTo 1 step MAX_IMMEDIATE_VALUE) {
                 add(
                     SUBInstr(
                         Register.SP,
@@ -90,7 +90,7 @@ data class FuncNode(
 
             addAll(body.translate(ctx))
 
-            for (size in localStackSize downTo 0 step MAX_IMMEDIATE_VALUE) {
+            for (size in localStackSize downTo 1 step MAX_IMMEDIATE_VALUE) {
                 add(
                     ADDInstr(
                         Register.SP,
