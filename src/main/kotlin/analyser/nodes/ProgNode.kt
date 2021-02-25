@@ -57,13 +57,15 @@ data class ProgNode(
             else -> false
         }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            add(LabelInstr("text", isSection = true))
-            add(LabelInstr("global main", isGlobalHeader = true))
-
-            addAll(functions.flatMap {
-                it.translate(ctx)
-            })
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        functions.forEach {
+            ctx.addFunc(
+                it.translate(ctx),
+                labelName = it.identifier
+            )
         }
+
+        return ctx.assemble()
+    }
+
 }

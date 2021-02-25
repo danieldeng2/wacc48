@@ -31,11 +31,7 @@ fun runGenerator(pNode: ASTNode): List<String> {
     val translatorCtx = TranslatorContext()
     val programInstructions = pNode.translate(translatorCtx)
 
-    return mutableListOf<String>().apply {
-        addAll(translatorCtx.data.map { it.toString() })
-        addAll(programInstructions.map { it.toString() })
-        addAll(translatorCtx.translateSyscall().map { it.toString() })
-    }
+    return programInstructions.map { it.toString() }
 }
 
 

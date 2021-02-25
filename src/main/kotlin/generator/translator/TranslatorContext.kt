@@ -10,17 +10,30 @@ import generator.translator.print.PrintInt
 import generator.translator.print.PrintLn
 import generator.translator.print.PrintStr
 
+/**
+ * Each [FuncCode] represents a label and a set of instructions for that label
+ * where those set of instructions must only consist of mnemonics
+ * i.e. not recursive
+ */
+typealias FuncCode = List<Instruction>
+
+
 class TranslatorContext {
 
     var isDeclaring = false
 
     private var msgCounter = 0
+    private var labelCounter = 0
 
     private var msgMap: MutableMap<PrintSyscall, Int> = mutableMapOf()
     private var stringMap: MutableMap<String, Int> = mutableMapOf()
 
-    val data = mutableListOf<Instruction>(LabelInstr("data", isSection = true))
+    private val data = mutableListOf<Instruction>()
+    private val text = mutableListOf<FuncCode>()
 
+    /** Adds the built-in print helper methods to the assembly program
+     *  @return jump instruction [BLInstr] to helper method
+     */
     fun addPrintFunc(printOptions: PrintOptions): BLInstr {
         if (msgMap.containsKey(printOptions.printObj))
             return BLInstr(printOptions.label)
@@ -33,16 +46,11 @@ class TranslatorContext {
         }
         msgCounter++
         return BLInstr(printOptions.label)
-
     }
 
-    fun translateSyscall(): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
-
-        msgMap.forEach { instructions.addAll(it.key.translate(it.value)) }
-        return instructions
-    }
-
+    /** Adds the string [msg] into the [data] section of the assembly file
+     *  @return integer index of the message
+     */
     fun addStringToPrint(msg: String): Int {
         if (stringMap.containsKey(msg)) return stringMap[msg]!!
 
@@ -53,6 +61,36 @@ class TranslatorContext {
             add(Ascii(msg))
         }
         return msgCounter++
+    }
+
+    /** Adds a [FuncCode] into the [text] section of the assembly file.
+     *  If [labelName] not specified, this is considered a 'helper' method,
+     *  which starts with "L" and ends with an incremental integer index
+     */
+    fun addFunc(
+        instructions: List<Instruction>,
+        labelName: String = "L${labelCounter++}"
+    ) = text.add(
+        mutableListOf<Instruction>().apply {
+            add(LabelInstr(labelName))
+            addAll(instructions)
+        })
+
+    /** Puts together all the assembly instructions to form
+     *  a complete assembly file
+     *  @return list of all instructions in the output assembly file
+     */
+    fun assemble(): List<Instruction> = mutableListOf<Instruction>().apply {
+        if (data.isNotEmpty()) {
+            add(LabelInstr("data", isSection = true))
+            addAll(data)
+        }
+
+        add(LabelInstr("text", isSection = true))
+        add(LabelInstr("global main", isGlobalHeader = true))
+        text.forEach { addAll(it) }
+
+        msgMap.forEach { addAll(it.key.translate(it.value)) }
     }
 }
 
