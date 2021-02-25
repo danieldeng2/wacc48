@@ -29,6 +29,7 @@ data class IfNode(
                 ctx
             )
 
+        proposition.validate(st, funTable)
         trueStat.validate(SymbolTable(st), funTable)
         falseStat.validate(SymbolTable(st), funTable)
     }

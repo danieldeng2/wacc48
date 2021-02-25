@@ -60,8 +60,7 @@ data class ProgNode(
     override fun translate(ctx: TranslatorContext): List<Instruction> {
         functions.forEach {
             ctx.addFunc(
-                it.translate(ctx),
-                labelName = it.identifier
+                it.translate(ctx)
             )
         }
 

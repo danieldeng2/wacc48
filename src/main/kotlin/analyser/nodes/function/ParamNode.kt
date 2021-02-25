@@ -33,7 +33,7 @@ data class ParamNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val offset = st.getOffsetOfVar(text)
+            val offset = ctx.getOffsetOfLocalVar(text, st)
             add(storeLocalVar(type, offset))
         }
 }

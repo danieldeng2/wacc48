@@ -2,14 +2,17 @@ package analyser.nodes.expr
 
 import analyser.SymbolTable
 import analyser.nodes.assignment.LHSNode
-import analyser.nodes.type.*
+import analyser.nodes.type.Typable
+import analyser.nodes.type.Type
+import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 import generator.TranslatorContext
-import generator.armInstructions.STRBInstr
 import generator.armInstructions.Instruction
 import generator.armInstructions.LDRInstr
-import generator.armInstructions.STRInstr
-import generator.armInstructions.operands.*
+import generator.armInstructions.operands.MemAddr
+import generator.armInstructions.operands.NumOp
+import generator.armInstructions.operands.Register
+import generator.translator.loadLocalVar
 import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -36,16 +39,11 @@ data class IdentifierNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val offset = st.getOffsetOfVar(name)
+            val offset = ctx.getOffsetOfLocalVar(name, st)
             if (ctx.isDeclaring)
                 add(storeLocalVar(type, offset))
             else {
-                add(
-                    LDRInstr(
-                        Register.R0,
-                        MemAddr(Register.SP, NumOp(offset))
-                    )
-                )
+                add(loadLocalVar(type, offset))
             }
         }
 

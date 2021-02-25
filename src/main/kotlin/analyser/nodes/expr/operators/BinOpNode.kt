@@ -4,6 +4,12 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import exceptions.SemanticsException
+import generator.TranslatorContext
+import generator.armInstructions.*
+import generator.armInstructions.operands.NumOp
+import generator.armInstructions.operands.Register
+import generator.translator.popAndDecrement
+import generator.translator.pushAndIncrement
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class BinOpNode(
@@ -38,9 +44,60 @@ data class BinOpNode(
                         "${firstExpr.type}, arg 2 of type(s) ${secondExpr.type}",
                 ctx
             )
-
     }
+
+    override fun translate(ctx: TranslatorContext) =
+        when (operator) {
+            BinaryOperator.EQ -> translateEquality(ctx, isEqual = true)
+            BinaryOperator.NEQ -> translateEquality(ctx, isEqual = false)
+            BinaryOperator.AND -> translateLogical(ctx, isAnd = true)
+            BinaryOperator.OR -> translateLogical(ctx, isAnd = false)
+            else -> emptyList()
+        }
+
+    private fun translateEquality(ctx: TranslatorContext, isEqual: Boolean) =
+        mutableListOf<Instruction>().apply {
+            addAll(firstExpr.translate(ctx))
+            add(pushAndIncrement(Register.R0, ctx))
+
+            addAll(secondExpr.translate(ctx))
+            add(MOVInstr(Register.R1, Register.R0))
+            add(popAndDecrement(Register.R0, ctx))
+
+            add(CMPInstr(Register.R0, Register.R1))
+
+            if (isEqual) {
+                add(MOVEQInstr(Register.R0, NumOp(1)))
+                add(MOVNEInstr(Register.R0, NumOp(0)))
+            } else {
+                add(MOVNEInstr(Register.R0, NumOp(1)))
+                add(MOVEQInstr(Register.R0, NumOp(0)))
+            }
+        }
+
+    private fun translateLogical(
+        ctx: TranslatorContext,
+        isAnd: Boolean
+    ): List<Instruction> =
+        mutableListOf<Instruction>().apply {
+            addAll(firstExpr.translate(ctx))
+
+            if (isAnd)
+                add(CMPInstr(Register.R0, NumOp(0)))
+            else
+                add(CMPInstr(Register.R0, NumOp(1)))
+
+            val branchFirstOp = ctx.getAndIncLabelCnt()
+            add(BEQInstr("L$branchFirstOp"))
+            addAll(secondExpr.translate(ctx))
+
+            add(LabelInstr("L$branchFirstOp"))
+            if (isAnd)
+                add(CMPInstr(Register.R0, NumOp(0)))
+
+        }
 }
+
 
 enum class BinaryOperator(
     val repr: String,
