@@ -69,12 +69,15 @@ class TranslatorContext {
      */
     fun addFunc(
         instructions: List<Instruction>,
-        labelName: String = "L${labelCounter++}"
+        labelName: String
     ) = text.add(
         mutableListOf<Instruction>().apply {
             add(LabelInstr(labelName))
             addAll(instructions)
         })
+
+
+    fun getAndIncLabelCnt() = labelCounter++
 
     /** Puts together all the assembly instructions to form
      *  a complete assembly file
@@ -101,7 +104,7 @@ enum class PrintOptions(
 ) {
     INT("p_print_int", PrintInt, "%d\\0"),
     NEWLINE("p_print_ln", PrintLn, "\\0"),
-    STRING("p_print_string", PrintStr, "%.s*\\0")
+    STRING("p_print_string", PrintStr, "%.*s\\0")
 
 
 }
