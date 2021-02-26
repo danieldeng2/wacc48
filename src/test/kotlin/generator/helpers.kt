@@ -14,11 +14,11 @@ import kotlin.test.fail
 
 fun checkAllMatches(label: String) {
     WalkDirectory(label).run { f ->
-        val compilerASM = f.path.replace(".wacc", ".s")
         val refASM = f.path.replace(".wacc", "_ref.s")
+        val compilerASM = f.path.replace(".wacc", ".s")
 
-        val compilerResult = compilerPipeline(f.path, compilerASM)
         val referenceResult = referencePipeline(f.path, refASM)
+        val compilerResult = compilerPipeline(f.path, compilerASM)
         if (compilerResult.emulatorOut != referenceResult.emulatorOut)
             fail(
                 "====Expected Output====\n"
