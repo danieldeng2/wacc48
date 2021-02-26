@@ -282,7 +282,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitPairElem(ctx: WACCParser.PairElemContext): ASTNode =
         PairElemNode(
-            name = visit(ctx.expr()) as ExprNode,
+            expr = visit(ctx.expr()) as ExprNode,
             isFirst = ctx.FST() != null,
             ctx = ctx
         )
