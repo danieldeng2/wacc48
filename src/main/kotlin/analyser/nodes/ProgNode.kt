@@ -5,8 +5,8 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
-import generator.TranslatorContext
-import generator.armInstructions.*
+import generator.translator.TranslatorContext
+import generator.instructions.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(
@@ -30,10 +30,8 @@ data class ProgNode(
         funcs.forEach { it.validatePrototype(funTable) }
         functions.forEach { it.validate(st, funTable) }
 
-        if (hasGlobalReturn(main[0].body)) {
+        if (hasGlobalReturn(main[0].body))
             throw SemanticsException("Cannot return in global context", ctx)
-        }
-
     }
 
     private fun allPathsTerminated(body: StatNode): Boolean =
@@ -58,12 +56,11 @@ data class ProgNode(
         }
 
     override fun translate(ctx: TranslatorContext): List<Instruction> {
-        functions.forEach {
-            ctx.addFunc(
+        ctx.text.addAll(
+            functions.flatMap {
                 it.translate(ctx)
-            )
-        }
-
+            }
+        )
         return ctx.assemble()
     }
 

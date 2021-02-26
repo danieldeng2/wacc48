@@ -3,9 +3,11 @@ import org.antlr.v4.runtime.*
 
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
+import exceptions.SemanticsException
+import exceptions.SyntaxException
 import exceptions.ThrowingErrorListener
-import generator.TranslatorContext
-import generator.armInstructions.Instruction
+import generator.translator.TranslatorContext
+import kotlin.system.exitProcess
 
 fun runAnalyser(input: CharStream): ASTNode {
     // Lexical Analysis
@@ -34,6 +36,13 @@ fun runGenerator(pNode: ASTNode): List<String> {
     return programInstructions.map { it.toString() }
 }
 
-
-
-
+fun runAnalyserCatchError(input: CharStream): ASTNode =
+    try {
+        runAnalyser(input)
+    } catch (e: SyntaxException) {
+        println("Syntax Error: ${e.message}")
+        exitProcess(100)
+    } catch (e: SemanticsException) {
+        println("Semantics Error: ${e.message}")
+        exitProcess(200)
+    }

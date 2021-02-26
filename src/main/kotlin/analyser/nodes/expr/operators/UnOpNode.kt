@@ -4,6 +4,15 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import exceptions.SyntaxException
+import generator.instructions.Instruction
+import generator.instructions.arithmetic.RSBSInstr
+import generator.instructions.branch.BLVSInstr
+import generator.instructions.logical.EORInstr
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
+import generator.translator.TranslatorContext
+import generator.translator.lib.errors.OverflowError
+import generator.translator.loadLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class UnOpNode(
@@ -26,6 +35,30 @@ data class UnOpNode(
                         "does not match required type $type"
             )
     }
+
+    override fun translate(ctx: TranslatorContext) =
+        when (operator) {
+            UnaryOperator.NEGATE -> translateNegate(ctx)
+            UnaryOperator.CHR, UnaryOperator.ORD -> expr.translate(ctx)
+            UnaryOperator.MINUS -> translateMinus(ctx)
+            else -> TODO()
+        }
+
+    private fun translateNegate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            addAll(expr.translate(ctx))
+            add(EORInstr(Register.R0, Register.R0, NumOp(1)))
+        }
+
+    private fun translateMinus(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(OverflowError)
+
+            addAll(expr.translate(ctx))
+            add(RSBSInstr(Register.R0, Register.R0, NumOp(0, false)))
+
+            add(BLVSInstr(OverflowError.label))
+        }
 }
 
 enum class UnaryOperator(
@@ -41,6 +74,5 @@ enum class UnaryOperator(
     companion object {
         fun lookupRepresentation(string: String) =
             values().firstOrNull { it.repr == string }
-
     }
 }

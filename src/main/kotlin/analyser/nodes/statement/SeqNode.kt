@@ -1,10 +1,9 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
-import generator.TranslatorContext
-import generator.armInstructions.Instruction
+import generator.translator.TranslatorContext
+import generator.instructions.Instruction
 import org.antlr.v4.runtime.ParserRuleContext
-import kotlin.reflect.jvm.internal.impl.util.ModuleVisibilityHelper
 
 data class SeqNode(
     val sequence: List<StatNode>,

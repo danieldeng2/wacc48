@@ -2,13 +2,13 @@ package analyser.nodes.statement
 
 import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
-import analyser.nodes.type.IntType
-import analyser.nodes.type.StringType
-import generator.PrintOptions
-import generator.TranslatorContext
-import generator.armInstructions.BLInstr
-import generator.armInstructions.Instruction
+import analyser.nodes.type.*
+import generator.translator.TranslatorContext
+import generator.instructions.*
+import generator.instructions.branch.BLInstr
+import generator.translator.lib.print.*
 import org.antlr.v4.runtime.ParserRuleContext
+import java.rmi.UnexpectedException
 
 data class PrintNode(
     val value: ExprNode,
@@ -27,12 +27,28 @@ data class PrintNode(
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             addAll(value.translate(ctx))
+
+
             when (value.type) {
-                IntType -> add(ctx.addPrintFunc(PrintOptions.INT))
-                StringType -> add(ctx.addPrintFunc(PrintOptions.STRING))
-                else -> TODO("Implement other print options")
+                IntType, StringType, BoolType -> {
+                    val printFunc = when (value.type) {
+                        IntType -> PrintInt
+                        StringType -> PrintStr
+                        BoolType -> PrintBool
+                        else -> throw UnexpectedException(
+                            "Else branch should not be reached for operator ${value.type}"
+                        )
+                    }
+                    ctx.addLibraryFunction(printFunc)
+                    add(BLInstr(printFunc.label))
+                }
+
+                CharType -> add(BLInstr("putchar"))
             }
 
-            if (returnAfterPrint) add(ctx.addPrintFunc(PrintOptions.NEWLINE))
+            if (returnAfterPrint) {
+                ctx.addLibraryFunction(PrintLn)
+                add(BLInstr(PrintLn.label))
+            }
         }
 }

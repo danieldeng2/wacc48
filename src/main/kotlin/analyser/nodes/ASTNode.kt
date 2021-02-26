@@ -1,10 +1,8 @@
 package analyser.nodes
 
 import analyser.SymbolTable
-import analyser.nodes.expr.ExprNode
-import analyser.nodes.function.FuncNode
-import generator.armInstructions.Instruction
-import generator.TranslatorContext
+import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 interface ASTNode {

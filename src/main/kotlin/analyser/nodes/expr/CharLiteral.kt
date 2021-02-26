@@ -3,11 +3,11 @@ package analyser.nodes.expr
 import analyser.SymbolTable
 import analyser.nodes.type.CharType
 import analyser.nodes.type.Type
-import generator.TranslatorContext
-import generator.armInstructions.Instruction
-import generator.armInstructions.MOVInstr
-import generator.armInstructions.operands.CharOp
-import generator.armInstructions.operands.Register
+import generator.translator.TranslatorContext
+import generator.instructions.Instruction
+import generator.instructions.move.MOVInstr
+import generator.instructions.operands.CharOp
+import generator.instructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class CharLiteral(val value: Char, override val ctx: ParserRuleContext?) :

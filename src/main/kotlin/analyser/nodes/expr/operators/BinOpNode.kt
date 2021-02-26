@@ -4,13 +4,27 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import exceptions.SemanticsException
-import generator.TranslatorContext
-import generator.armInstructions.*
-import generator.armInstructions.operands.NumOp
-import generator.armInstructions.operands.Register
+import generator.translator.TranslatorContext
+import generator.instructions.*
+import generator.instructions.arithmetic.ADDSInstr
+import generator.instructions.arithmetic.SMULLInstr
+import generator.instructions.arithmetic.SUBSInstr
+import generator.instructions.branch.BEQInstr
+import generator.instructions.branch.BLInstr
+import generator.instructions.branch.BLNEInstr
+import generator.instructions.branch.BLVSInstr
+import generator.instructions.compare.CMPInstr
+import generator.instructions.directives.LabelInstr
+import generator.instructions.move.*
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
+import generator.instructions.operands.ShiftOp
+import generator.translator.lib.errors.DivideByZeroError
+import generator.translator.lib.errors.OverflowError
 import generator.translator.popAndDecrement
 import generator.translator.pushAndIncrement
 import org.antlr.v4.runtime.ParserRuleContext
+import java.rmi.UnexpectedException
 
 data class BinOpNode(
     val operator: BinaryOperator,
@@ -46,23 +60,70 @@ data class BinOpNode(
             )
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        when (operator) {
-            BinaryOperator.EQ -> translateEquality(ctx, isEqual = true)
-            BinaryOperator.NEQ -> translateEquality(ctx, isEqual = false)
-            BinaryOperator.AND -> translateLogical(ctx, isAnd = true)
-            BinaryOperator.OR -> translateLogical(ctx, isAnd = false)
-            else -> emptyList()
-        }
-
-    private fun translateEquality(ctx: TranslatorContext, isEqual: Boolean) =
+    private fun loadOperandsIntoRegister(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(DivideByZeroError)
+
             addAll(firstExpr.translate(ctx))
             add(pushAndIncrement(Register.R0, ctx))
 
             addAll(secondExpr.translate(ctx))
             add(MOVInstr(Register.R1, Register.R0))
             add(popAndDecrement(Register.R0, ctx))
+        }
+
+    override fun translate(ctx: TranslatorContext) =
+        when (operator) {
+            BinaryOperator.EQ -> translateEquality(ctx, isEqual = true)
+            BinaryOperator.NEQ -> translateEquality(ctx, isEqual = false)
+            BinaryOperator.AND -> translateLogical(ctx, isAnd = true)
+            BinaryOperator.OR -> translateLogical(ctx, isAnd = false)
+            BinaryOperator.PLUS -> translatePlusMinus(ctx, isPlus = true)
+            BinaryOperator.MINUS -> translatePlusMinus(ctx, isPlus = false)
+            BinaryOperator.MULTIPLY -> translateMultiply(ctx)
+            BinaryOperator.DIVIDE -> translateDivide(ctx)
+            BinaryOperator.MODULUS -> translateModulo(ctx)
+            else -> translateComparator(ctx)
+        }
+
+    private fun translateDivide(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(DivideByZeroError)
+
+            addAll(loadOperandsIntoRegister(ctx))
+
+            add(BLInstr(DivideByZeroError.label))
+            add(BLInstr("__aeabi_idiv"))
+        }
+
+    private fun translateMultiply(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(OverflowError)
+
+            addAll(loadOperandsIntoRegister(ctx))
+
+            add(SMULLInstr(Register.R0, Register.R1, Register.R0, Register.R1))
+            add(CMPInstr(Register.R1, ShiftOp(Register.R0, NumOp(31))))
+            add(BLNEInstr(OverflowError.label))
+        }
+
+    private fun translatePlusMinus(ctx: TranslatorContext, isPlus: Boolean) =
+        mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(OverflowError)
+
+            addAll(loadOperandsIntoRegister(ctx))
+
+            if (isPlus)
+                add(ADDSInstr(Register.R0, Register.R0, Register.R1))
+            else
+                add(SUBSInstr(Register.R0, Register.R0, Register.R1))
+
+            add(BLVSInstr(OverflowError.label))
+        }
+
+    private fun translateEquality(ctx: TranslatorContext, isEqual: Boolean) =
+        mutableListOf<Instruction>().apply {
+            addAll(loadOperandsIntoRegister(ctx))
 
             add(CMPInstr(Register.R0, Register.R1))
 
@@ -87,13 +148,58 @@ data class BinOpNode(
             else
                 add(CMPInstr(Register.R0, NumOp(1)))
 
-            val branchFirstOp = ctx.getAndIncLabelCnt()
+            val branchFirstOp = ctx.labelCounter
             add(BEQInstr("L$branchFirstOp"))
             addAll(secondExpr.translate(ctx))
 
             add(LabelInstr("L$branchFirstOp"))
             if (isAnd)
                 add(CMPInstr(Register.R0, NumOp(0)))
+
+        }
+
+    private fun translateModulo(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(DivideByZeroError)
+
+            addAll(loadOperandsIntoRegister(ctx))
+            add(BLInstr(DivideByZeroError.label))
+            add(BLInstr("__aeabi_idivmod"))
+            add(MOVInstr(Register.R0, Register.R1))
+        }
+
+    private fun translateComparator(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            addAll(loadOperandsIntoRegister(ctx))
+
+            add(CMPInstr(Register.R0, Register.R1))
+
+            when (operator) {
+                BinaryOperator.GT -> {
+                    add(MOVGTInstr(Register.R0, NumOp(1)))
+                    add(MOVLEInstr(Register.R0, NumOp(0)))
+                }
+
+                BinaryOperator.GE -> {
+                    add(MOVGEInstr(Register.R0, NumOp(1)))
+                    add(MOVLTInstr(Register.R0, NumOp(0)))
+                }
+
+                BinaryOperator.LT -> {
+                    add(MOVLTInstr(Register.R0, NumOp(1)))
+                    add(MOVGEInstr(Register.R0, NumOp(0)))
+                }
+
+                BinaryOperator.LE -> {
+                    add(MOVLEInstr(Register.R0, NumOp(1)))
+                    add(MOVGTInstr(Register.R0, NumOp(0)))
+                }
+
+                else -> throw UnexpectedException(
+                    "Unexpected fall through to 'else' branch in " +
+                            "${object {}.javaClass.enclosingMethod.name} with operator $operator"
+                )
+            }
 
         }
 }
