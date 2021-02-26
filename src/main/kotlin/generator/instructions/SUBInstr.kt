@@ -1,7 +1,7 @@
-package generator.armInstructions
+package generator.instructions
 
-import generator.armInstructions.operands.NumOp
-import generator.armInstructions.operands.Register
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
 
 class SUBInstr(val rd: Register, val rn: Register, val imm: NumOp) :
     Instruction {

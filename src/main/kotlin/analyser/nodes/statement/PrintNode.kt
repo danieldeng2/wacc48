@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import generator.translator.TranslatorContext
-import generator.armInstructions.*
+import generator.instructions.*
 import generator.translator.print.*
 import org.antlr.v4.runtime.ParserRuleContext
 

@@ -6,7 +6,7 @@ import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
 import generator.translator.TranslatorContext
-import generator.armInstructions.*
+import generator.instructions.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(

@@ -5,9 +5,9 @@ import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.BoolType
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
-import generator.armInstructions.*
-import generator.armInstructions.operands.NumOp
-import generator.armInstructions.operands.Register
+import generator.instructions.*
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class IfNode(

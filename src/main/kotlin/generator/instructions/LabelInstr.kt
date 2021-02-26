@@ -1,4 +1,4 @@
-package generator.armInstructions
+package generator.instructions
 
 class LabelInstr(
     private val label: String,

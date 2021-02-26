@@ -1,4 +1,4 @@
-package generator.armInstructions.operands
+package generator.instructions.operands
 
 class MemAddr(val reg: Register, val offset: NumOp) : LoadableOp {
     override fun toString() = when (offset.value) {

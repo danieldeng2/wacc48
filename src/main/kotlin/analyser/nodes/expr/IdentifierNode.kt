@@ -7,7 +7,7 @@ import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
-import generator.armInstructions.Instruction
+import generator.instructions.Instruction
 import generator.translator.loadLocalVar
 import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext

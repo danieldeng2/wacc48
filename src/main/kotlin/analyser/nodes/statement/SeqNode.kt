@@ -2,7 +2,7 @@ package analyser.nodes.statement
 
 import analyser.SymbolTable
 import generator.translator.TranslatorContext
-import generator.armInstructions.Instruction
+import generator.instructions.Instruction
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class SeqNode(

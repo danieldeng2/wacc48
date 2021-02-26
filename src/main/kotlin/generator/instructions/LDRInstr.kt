@@ -1,7 +1,7 @@
-package generator.armInstructions
+package generator.instructions
 
-import generator.armInstructions.operands.LoadableOp
-import generator.armInstructions.operands.Register
+import generator.instructions.operands.LoadableOp
+import generator.instructions.operands.Register
 
 class LDRInstr(
     private val reg: Register,

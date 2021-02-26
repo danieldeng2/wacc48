@@ -1,6 +1,6 @@
-package generator.armInstructions.directives
+package generator.instructions.directives
 
-import generator.armInstructions.Instruction
+import generator.instructions.Instruction
 
 class Word(val numBytes: Int) : Instruction {
     override fun toString() = "\t.word $numBytes"

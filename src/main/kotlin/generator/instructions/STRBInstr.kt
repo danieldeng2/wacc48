@@ -1,7 +1,7 @@
-package generator.armInstructions
+package generator.instructions
 
-import generator.armInstructions.operands.MemAddr
-import generator.armInstructions.operands.Register
+import generator.instructions.operands.MemAddr
+import generator.instructions.operands.Register
 
 class STRBInstr(val reg: Register, val memAddr: MemAddr) : Instruction {
 

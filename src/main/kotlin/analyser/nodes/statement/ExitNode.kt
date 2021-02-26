@@ -5,8 +5,8 @@ import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.IntType
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
-import generator.armInstructions.BLInstr
-import generator.armInstructions.Instruction
+import generator.instructions.BLInstr
+import generator.instructions.Instruction
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ExitNode(

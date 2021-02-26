@@ -1,10 +1,10 @@
 package generator.translator.print
 
 import generator.translator.TranslatorContext
-import generator.armInstructions.*
-import generator.armInstructions.operands.LabelOp
-import generator.armInstructions.operands.NumOp
-import generator.armInstructions.operands.Register
+import generator.instructions.*
+import generator.instructions.operands.LabelOp
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
 
 object PrintInt : PrintSyscall {
     override val label: String = "p_print_int"

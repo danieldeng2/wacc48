@@ -1,6 +1,6 @@
-package generator.armInstructions
+package generator.instructions
 
-import generator.armInstructions.operands.Register
+import generator.instructions.operands.Register
 
 class POPInstr(private val reg: Register) : Instruction {
     override fun toString() = "\tPOP {${reg.repr}}"

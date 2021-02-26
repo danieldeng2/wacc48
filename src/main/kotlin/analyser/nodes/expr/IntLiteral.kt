@@ -5,10 +5,10 @@ import analyser.nodes.type.IntType
 import analyser.nodes.type.Type
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
-import generator.armInstructions.Instruction
-import generator.armInstructions.LDRInstr
-import generator.armInstructions.operands.NumOp
-import generator.armInstructions.operands.Register
+import generator.instructions.Instruction
+import generator.instructions.LDRInstr
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class IntLiteral(

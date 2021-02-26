@@ -1,7 +1,7 @@
 package generator.translator.print
 
 import generator.translator.TranslatorContext
-import generator.armInstructions.Instruction
+import generator.instructions.Instruction
 
 interface PrintSyscall {
     val label: String

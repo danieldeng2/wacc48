@@ -5,7 +5,7 @@ import analyser.nodes.ASTNode
 import analyser.nodes.type.*
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
-import generator.armInstructions.*
+import generator.instructions.*
 import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 

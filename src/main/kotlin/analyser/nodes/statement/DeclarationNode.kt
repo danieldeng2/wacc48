@@ -5,7 +5,7 @@ import analyser.nodes.assignment.RHSNode
 import analyser.nodes.function.ParamNode
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
-import generator.armInstructions.*
+import generator.instructions.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class DeclarationNode(

@@ -4,9 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.statement.StatNode
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
-import generator.armInstructions.Instruction
-import generator.translator.loadLocalVar
-import generator.translator.storeLocalVar
+import generator.instructions.Instruction
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class AssignmentNode(

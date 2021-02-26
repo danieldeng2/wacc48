@@ -1,4 +1,4 @@
-package generator.armInstructions.operands
+package generator.instructions.operands
 
 interface ImmOp : LoadableOp
 

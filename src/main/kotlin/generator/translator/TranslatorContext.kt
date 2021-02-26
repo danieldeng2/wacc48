@@ -1,11 +1,11 @@
 package generator.translator
 
 import analyser.SymbolTable
-import generator.armInstructions.BLInstr
-import generator.armInstructions.Instruction
-import generator.armInstructions.LabelInstr
-import generator.armInstructions.directives.Ascii
-import generator.armInstructions.directives.Word
+import generator.instructions.BLInstr
+import generator.instructions.Instruction
+import generator.instructions.LabelInstr
+import generator.instructions.directives.Ascii
+import generator.instructions.directives.Word
 import generator.translator.print.*
 
 class TranslatorContext {

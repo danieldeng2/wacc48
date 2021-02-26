@@ -1,7 +1,7 @@
 package analyser.nodes
 
 import analyser.SymbolTable
-import generator.armInstructions.Instruction
+import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 

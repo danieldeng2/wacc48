@@ -1,8 +1,8 @@
 package generator.translator.print
 
 import generator.translator.TranslatorContext
-import generator.armInstructions.*
-import generator.armInstructions.operands.*
+import generator.instructions.*
+import generator.instructions.operands.*
 
 object PrintBool : PrintSyscall {
     override val label = "p_print_bool"
