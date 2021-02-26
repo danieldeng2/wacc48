@@ -1,4 +1,4 @@
-package reference
+package generator.reference
 
 import com.squareup.moshi.Json
 

@@ -1,4 +1,4 @@
-package reference
+package generator.reference
 
 import okhttp3.MediaType
 import okhttp3.MultipartBody

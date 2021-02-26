@@ -1,4 +1,4 @@
-# create a pair(int, char) with a second reference to it
+# create a pair(int, char) with a second generator.reference to it
 
 # Output:
 # #empty#

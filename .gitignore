@@ -7,11 +7,14 @@ src/main/java/antlr
 *.s
 src/main/gen
 
+#ignore reference ruby files
+src/test/resources/refCompile
+src/test/resources/refEmulate
+
 #ignore Java class files
 *.class
 
 #ignore other junk files
-tmp.*
 *~
 .DS_Store
 .idea/shelf
