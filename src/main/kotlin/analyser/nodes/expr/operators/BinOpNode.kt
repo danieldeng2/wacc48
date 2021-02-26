@@ -53,11 +53,12 @@ data class BinOpNode(
             BinaryOperator.NEQ -> translateEquality(ctx, isEqual = false)
             BinaryOperator.AND -> translateLogical(ctx, isAnd = true)
             BinaryOperator.OR -> translateLogical(ctx, isAnd = false)
-            BinaryOperator.PLUS -> translatePlus(ctx)
+            BinaryOperator.PLUS -> translatePlusMinus(ctx, isPlus = true)
+            BinaryOperator.MINUS -> translatePlusMinus(ctx, isPlus = false)
             else -> emptyList()
         }
 
-    private fun translatePlus(ctx: TranslatorContext) =
+    private fun translatePlusMinus(ctx: TranslatorContext, isPlus: Boolean) =
         mutableListOf<Instruction>().apply {
             ctx.addPrintFunc(OverflowError)
 
@@ -68,7 +69,11 @@ data class BinOpNode(
             add(MOVInstr(Register.R1, Register.R0))
             add(popAndDecrement(Register.R0, ctx))
 
-            add(ADDSInstr(Register.R0, Register.R0, Register.R1))
+            if (isPlus)
+                add(ADDSInstr(Register.R0, Register.R0, Register.R1))
+            else
+                add(SUBSInstr(Register.R0, Register.R0, Register.R1))
+
             add(BLVSInstr(OverflowError.label))
         }
 
