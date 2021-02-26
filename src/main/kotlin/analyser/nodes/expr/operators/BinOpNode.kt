@@ -8,6 +8,7 @@ import generator.translator.TranslatorContext
 import generator.instructions.*
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.lib.errors.OverflowError
 import generator.translator.popAndDecrement
 import generator.translator.pushAndIncrement
 import org.antlr.v4.runtime.ParserRuleContext
@@ -52,7 +53,23 @@ data class BinOpNode(
             BinaryOperator.NEQ -> translateEquality(ctx, isEqual = false)
             BinaryOperator.AND -> translateLogical(ctx, isAnd = true)
             BinaryOperator.OR -> translateLogical(ctx, isAnd = false)
+            BinaryOperator.PLUS -> translatePlus(ctx)
             else -> emptyList()
+        }
+
+    private fun translatePlus(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addPrintFunc(OverflowError)
+
+            addAll(firstExpr.translate(ctx))
+            add(pushAndIncrement(Register.R0, ctx))
+
+            addAll(secondExpr.translate(ctx))
+            add(MOVInstr(Register.R1, Register.R0))
+            add(popAndDecrement(Register.R0, ctx))
+
+            add(ADDSInstr(Register.R0, Register.R0, Register.R1))
+            add(BLVSInstr(OverflowError.label))
         }
 
     private fun translateEquality(ctx: TranslatorContext, isEqual: Boolean) =
