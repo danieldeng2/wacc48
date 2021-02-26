@@ -28,13 +28,13 @@ data class PrintNode(
         mutableListOf<Instruction>().apply {
             addAll(value.translate(ctx))
 
-
             when (value.type) {
-                IntType, StringType, BoolType -> {
+                IntType, StringType, BoolType, is GenericPair -> {
                     val printFunc = when (value.type) {
                         IntType -> PrintInt
                         StringType -> PrintStr
                         BoolType -> PrintBool
+                        is GenericPair -> PrintPair
                         else -> throw UnexpectedException(
                             "Else branch should not be reached for operator ${value.type}"
                         )
