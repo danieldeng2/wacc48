@@ -29,7 +29,7 @@ object DivideByZeroError : LibaryFunction {
     override fun initIndex(ctx: TranslatorContext) {
         msgIndex =
             ctx.addMessage(
-                "DivideByZeroError: divide or modulo by zero \\n\\0"
+                "DivideByZeroError: divide or modulo by zero\\n\\0"
             )
         ctx.addLibraryFunction(RuntimeError)
     }
