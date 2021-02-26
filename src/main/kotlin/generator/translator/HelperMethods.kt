@@ -11,40 +11,50 @@ import generator.instructions.stack.PUSHInstr
 import generator.instructions.store.STRBInstr
 import generator.instructions.store.STRInstr
 
-fun storeLocalVar(varType: Type, stackOffset: Int) =
+fun storeLocalVar(
+    varType: Type,
+    stackOffset: Int,
+    rd: Register = Register.SP,
+    rn: Register = Register.R0
+) =
     when (varType) {
         is BoolType, CharType ->
-            STRBInstr(
-                Register.R0,
-                MemAddr(Register.SP, NumOp(stackOffset))
-            )
+            STRBInstr(rn, MemAddr(rd, NumOp(stackOffset)))
 
-        is IntType, StringType ->
-            STRInstr(Register.R0, MemAddr(Register.SP, NumOp(stackOffset)))
+        is IntType, StringType, is PairType ->
+            STRInstr(rn, MemAddr(rd, NumOp(stackOffset)))
 
         else -> TODO("Store other types")
     }
 
-fun loadLocalVar(varType: Type, stackOffset: Int) =
+fun loadLocalVar(
+    varType: Type,
+    stackOffset: Int,
+    rn: Register = Register.SP,
+    rd: Register = Register.R0
+) =
     when (varType) {
         is BoolType, CharType ->
-            LDRSBInstr(
-                Register.R0,
-                MemAddr(Register.SP, NumOp(stackOffset))
-            )
+            LDRSBInstr(rd, MemAddr(rn, NumOp(stackOffset)))
 
-        is IntType, StringType ->
-            LDRInstr(Register.R0, MemAddr(Register.SP, NumOp(stackOffset)))
+        is IntType, StringType, is PairType ->
+            LDRInstr(rd, MemAddr(rn, NumOp(stackOffset)))
 
         else -> TODO("Store other types")
     }
 
-fun pushAndIncrement(reg: Register, ctx: TranslatorContext): PUSHInstr {
-    ctx.stackPtrOffset += 4
-    return PUSHInstr(reg)
+fun pushAndIncrement(
+    ctx: TranslatorContext,
+    vararg registers: Register
+): PUSHInstr {
+    ctx.stackPtrOffset += 4 * registers.size
+    return PUSHInstr(*registers)
 }
 
-fun popAndDecrement(reg: Register, ctx: TranslatorContext): POPInstr {
-    ctx.stackPtrOffset -= 4
-    return POPInstr(reg)
+fun popAndDecrement(
+    ctx: TranslatorContext,
+    vararg registers: Register
+): POPInstr {
+    ctx.stackPtrOffset -= 4 * registers.size
+    return POPInstr(*registers)
 }

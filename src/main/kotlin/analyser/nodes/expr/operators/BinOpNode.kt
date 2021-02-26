@@ -65,11 +65,11 @@ data class BinOpNode(
             ctx.addLibraryFunction(DivideByZeroError)
 
             addAll(firstExpr.translate(ctx))
-            add(pushAndIncrement(Register.R0, ctx))
+            add(pushAndIncrement(ctx, Register.R0))
 
             addAll(secondExpr.translate(ctx))
             add(MOVInstr(Register.R1, Register.R0))
-            add(popAndDecrement(Register.R0, ctx))
+            add(popAndDecrement(ctx, Register.R0))
         }
 
     override fun translate(ctx: TranslatorContext) =
