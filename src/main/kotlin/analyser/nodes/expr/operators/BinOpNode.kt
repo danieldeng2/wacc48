@@ -74,7 +74,7 @@ data class BinOpNode(
             else -> emptyList()
         }
 
-    private fun translateDivide(ctx: TranslatorContext) =
+    private fun loadOperandsIntoRegister(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             ctx.addLibraryFunction(DivideByZeroError)
 
@@ -84,6 +84,13 @@ data class BinOpNode(
             addAll(secondExpr.translate(ctx))
             add(MOVInstr(Register.R1, Register.R0))
             add(popAndDecrement(Register.R0, ctx))
+        }
+
+    private fun translateDivide(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(DivideByZeroError)
+
+            addAll(loadOperandsIntoRegister(ctx))
 
             add(BLInstr(DivideByZeroError.label))
             add(BLInstr("__aeabi_idiv"))
@@ -93,12 +100,7 @@ data class BinOpNode(
         mutableListOf<Instruction>().apply {
             ctx.addLibraryFunction(OverflowError)
 
-            addAll(firstExpr.translate(ctx))
-            add(pushAndIncrement(Register.R0, ctx))
-
-            addAll(secondExpr.translate(ctx))
-            add(MOVInstr(Register.R1, Register.R0))
-            add(popAndDecrement(Register.R0, ctx))
+            addAll(loadOperandsIntoRegister(ctx))
 
             add(SMULLInstr(Register.R0, Register.R1, Register.R0, Register.R1))
             add(CMPInstr(Register.R1, ShiftOp(Register.R0, NumOp(31))))
@@ -109,12 +111,7 @@ data class BinOpNode(
         mutableListOf<Instruction>().apply {
             ctx.addLibraryFunction(OverflowError)
 
-            addAll(firstExpr.translate(ctx))
-            add(pushAndIncrement(Register.R0, ctx))
-
-            addAll(secondExpr.translate(ctx))
-            add(MOVInstr(Register.R1, Register.R0))
-            add(popAndDecrement(Register.R0, ctx))
+            addAll(loadOperandsIntoRegister(ctx))
 
             if (isPlus)
                 add(ADDSInstr(Register.R0, Register.R0, Register.R1))
@@ -126,12 +123,7 @@ data class BinOpNode(
 
     private fun translateEquality(ctx: TranslatorContext, isEqual: Boolean) =
         mutableListOf<Instruction>().apply {
-            addAll(firstExpr.translate(ctx))
-            add(pushAndIncrement(Register.R0, ctx))
-
-            addAll(secondExpr.translate(ctx))
-            add(MOVInstr(Register.R1, Register.R0))
-            add(popAndDecrement(Register.R0, ctx))
+            addAll(loadOperandsIntoRegister(ctx))
 
             add(CMPInstr(Register.R0, Register.R1))
 
