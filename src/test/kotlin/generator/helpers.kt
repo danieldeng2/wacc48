@@ -1,6 +1,6 @@
 package generator
 
-import ResourceWalker
+import WalkDirectory
 import org.antlr.v4.runtime.CharStreams
 import generator.reference.RefCompiler
 import generator.reference.RefEmulator
@@ -13,59 +13,79 @@ import kotlin.test.assertEquals
 import kotlin.test.fail
 
 fun checkAllMatches(label: String) {
-    ResourceWalker().walkDirectory(label) { f ->
-        startTest(f)
-        val compilerResult = compilerPipeline(f.path)
-        val referenceResult = referencePipeline(f.path)
+    WalkDirectory(label).run { f ->
+        val compilerASM = f.path.replace(".wacc", ".s")
+        val refASM = f.path.replace(".wacc", "_ref.s")
+
+        val compilerResult = compilerPipeline(f.path, compilerASM)
+        val referenceResult = referencePipeline(f.path, refASM)
         if (compilerResult.emulatorOut != referenceResult.emulatorOut)
-            error(
-                "\nExpected output: \n"
+            fail(
+                "====Expected Output====\n"
                         + referenceResult.emulatorOut
-                        + "\nActual output: \n"
+                        + "==== Actual Output ==== \n"
                         + compilerResult.emulatorOut
+                        + "=======================\n"
+                        + "Compiler assembly:  $compilerASM\n"
+                        + "Reference assembly: $refASM\n"
+                        + "=======================\n"
             )
 
         if (compilerResult.emulatorExit != referenceResult.emulatorExit)
-            error(
-                "\nExpected exit code:\n"
+            fail(
+                "====Expected Exit Code====\n"
                         + referenceResult.emulatorExit
-                        + "\nActual exit code:\n"
+                        + "\n==== Actual Exit Code ====\n"
                         + compilerResult.emulatorExit
+                        + "\n==========================\n"
+                        + "Compiler assembly:  $compilerASM\n"
+                        + "Reference assembly: $refASM\n"
+                        + "==========================\n"
             )
-
-        passTest()
     }
 }
 
 private fun compilerPipeline(
     path: String,
+    outputName: String,
     stdin: String = ""
 ): EmulatorResult {
     val input = CharStreams.fromFileName(path)
     val pNode = runAnalyser(input)
     val assembly = runGenerator(pNode)
 
-    return executeAssembly(assembly, stdin)
+    return executeAssembly(
+        assembly = assembly,
+        stdin = stdin,
+        file = File(outputName)
+    )
 }
 
 private fun referencePipeline(
     path: String,
+    outputName: String,
     stdin: String = ""
 ): EmulatorResult {
     val assembly = RefCompiler(File(path)).run()
 
-    return executeAssembly(assembly, stdin)
+    return executeAssembly(
+        assembly = assembly,
+        stdin = stdin,
+        file = File(outputName)
+    )
 }
 
-private fun executeAssembly(assembly: List<String>, stdin: String): EmulatorResult {
-    val assemFile = File("tmp.s")
-    val writer = FileWriter(assemFile)
+private fun executeAssembly(
+    assembly: List<String>,
+    file: File,
+    stdin: String
+): EmulatorResult {
+    val writer = FileWriter(file)
+
     assembly.forEach {
         writer.appendLine(it)
     }
-    writer.close()
 
-    val res = RefEmulator(assemFile).execute(stdin)
-    assemFile.delete()
-    return res
+    writer.close()
+    return RefEmulator(file).execute(stdin)
 }
