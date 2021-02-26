@@ -27,4 +27,9 @@ class GeneratorIntegrationTest {
     fun expressionsShouldMatchReferenceOutput() {
         checkAllMatches("valid/expressions")
     }
+
+    @Test
+    fun whileLoopsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/while")
+    }
 }
