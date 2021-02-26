@@ -8,6 +8,7 @@ import generator.instructions.*
 import generator.instructions.branch.BLInstr
 import generator.translator.lib.print.*
 import org.antlr.v4.runtime.ParserRuleContext
+import java.rmi.UnexpectedException
 
 data class PrintNode(
     val value: ExprNode,
@@ -27,15 +28,23 @@ data class PrintNode(
         mutableListOf<Instruction>().apply {
             addAll(value.translate(ctx))
 
-            val printFunc = when (value.type) {
-                IntType -> PrintInt
-                StringType -> PrintStr
-                BoolType -> PrintBool
-                else -> TODO("Implement ${value.type} print options")
-            }
 
-            ctx.addLibraryFunction(printFunc)
-            add(BLInstr(printFunc.label))
+            when (value.type) {
+                IntType, StringType, BoolType -> {
+                    val printFunc = when (value.type) {
+                        IntType -> PrintInt
+                        StringType -> PrintStr
+                        BoolType -> PrintBool
+                        else -> throw UnexpectedException(
+                            "Else branch should not be reached for operator ${value.type}"
+                        )
+                    }
+                    ctx.addLibraryFunction(printFunc)
+                    add(BLInstr(printFunc.label))
+                }
+
+                CharType -> add(BLInstr("putchar"))
+            }
 
             if (returnAfterPrint) {
                 ctx.addLibraryFunction(PrintLn)

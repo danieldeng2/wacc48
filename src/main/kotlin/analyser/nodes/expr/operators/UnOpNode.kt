@@ -4,6 +4,12 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import exceptions.SyntaxException
+import generator.instructions.Instruction
+import generator.instructions.logical.EORInstr
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
+import generator.translator.TranslatorContext
+import generator.translator.loadLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class UnOpNode(
@@ -26,6 +32,19 @@ data class UnOpNode(
                         "does not match required type $type"
             )
     }
+
+    override fun translate(ctx: TranslatorContext) =
+        when (operator) {
+            UnaryOperator.NEGATE -> translateNegate(ctx)
+            UnaryOperator.CHR, UnaryOperator.ORD -> expr.translate(ctx)
+            else -> TODO()
+        }
+
+    private fun translateNegate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            addAll(expr.translate(ctx))
+            add(EORInstr(Register.R0, Register.R0, NumOp(1)))
+        }
 }
 
 enum class UnaryOperator(
