@@ -10,6 +10,7 @@ import generator.instructions.arithmetic.ADDSInstr
 import generator.instructions.arithmetic.SMULLInstr
 import generator.instructions.arithmetic.SUBSInstr
 import generator.instructions.branch.BEQInstr
+import generator.instructions.branch.BLInstr
 import generator.instructions.branch.BLNEInstr
 import generator.instructions.branch.BLVSInstr
 import generator.instructions.compare.CMPInstr
@@ -20,6 +21,7 @@ import generator.instructions.move.MOVNEInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.operands.ShiftOp
+import generator.translator.lib.errors.DivideByZeroError
 import generator.translator.lib.errors.OverflowError
 import generator.translator.popAndDecrement
 import generator.translator.pushAndIncrement
@@ -68,7 +70,23 @@ data class BinOpNode(
             BinaryOperator.PLUS -> translatePlusMinus(ctx, isPlus = true)
             BinaryOperator.MINUS -> translatePlusMinus(ctx, isPlus = false)
             BinaryOperator.MULTIPLY -> translateMultiply(ctx)
+            BinaryOperator.DIVIDE -> translateDivide(ctx)
             else -> emptyList()
+        }
+
+    private fun translateDivide(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addPrintFunc(DivideByZeroError)
+
+            addAll(firstExpr.translate(ctx))
+            add(pushAndIncrement(Register.R0, ctx))
+
+            addAll(secondExpr.translate(ctx))
+            add(MOVInstr(Register.R1, Register.R0))
+            add(popAndDecrement(Register.R0, ctx))
+
+            add(BLInstr(DivideByZeroError.label))
+            add(BLInstr("__aeabi_idiv"))
         }
 
     private fun translateMultiply(ctx: TranslatorContext) =
