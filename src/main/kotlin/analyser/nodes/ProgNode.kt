@@ -30,10 +30,8 @@ data class ProgNode(
         funcs.forEach { it.validatePrototype(funTable) }
         functions.forEach { it.validate(st, funTable) }
 
-        if (hasGlobalReturn(main[0].body)) {
+        if (hasGlobalReturn(main[0].body))
             throw SemanticsException("Cannot return in global context", ctx)
-        }
-
     }
 
     private fun allPathsTerminated(body: StatNode): Boolean =

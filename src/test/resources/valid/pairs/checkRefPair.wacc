@@ -1,4 +1,4 @@
-# create a pair(int, char) with a second reference to it and check it works
+# create a pair(int, char) with a second generator.reference to it and check it works
 
 # Output:
 # #addrs#

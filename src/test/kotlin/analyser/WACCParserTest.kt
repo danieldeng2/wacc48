@@ -1,3 +1,7 @@
+package analyser
+
+import WACCLexer
+import WACCParser
 import junit.framework.TestCase.fail
 import org.antlr.v4.runtime.*
 import org.junit.Test

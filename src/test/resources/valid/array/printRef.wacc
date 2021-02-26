@@ -1,4 +1,4 @@
-# basic array (reference) printing
+# basic array (generator.reference) printing
 
 # Output:
 # Printing an array variable gives an address, such as #addrs#

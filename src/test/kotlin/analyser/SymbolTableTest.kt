@@ -1,3 +1,5 @@
+package analyser
+
 import org.junit.Test
 import analyser.SymbolTable
 import analyser.nodes.expr.BoolLiteral
