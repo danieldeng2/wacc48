@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.type.BoolType
 import analyser.nodes.type.Type
 import generator.translator.TranslatorContext
-import generator.instructions.MOVInstr
+import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext

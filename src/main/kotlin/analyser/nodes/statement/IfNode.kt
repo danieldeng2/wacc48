@@ -6,6 +6,10 @@ import analyser.nodes.type.BoolType
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
 import generator.instructions.*
+import generator.instructions.branch.BEQInstr
+import generator.instructions.branch.BInstr
+import generator.instructions.compare.CMPInstr
+import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext

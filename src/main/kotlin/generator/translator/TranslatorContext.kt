@@ -1,9 +1,9 @@
 package generator.translator
 
 import analyser.SymbolTable
-import generator.instructions.BLInstr
+import generator.instructions.branch.BLInstr
 import generator.instructions.Instruction
-import generator.instructions.LabelInstr
+import generator.instructions.directives.LabelInstr
 import generator.instructions.directives.Ascii
 import generator.instructions.directives.Word
 import generator.translator.lib.LibaryFunction

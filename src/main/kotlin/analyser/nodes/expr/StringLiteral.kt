@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.type.StringType
 import analyser.nodes.type.Type
 import generator.translator.TranslatorContext
-import generator.instructions.LDRInstr
+import generator.instructions.load.LDRInstr
 import generator.instructions.operands.LabelOp
 import generator.instructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext

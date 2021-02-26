@@ -6,6 +6,17 @@ import analyser.nodes.type.*
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
 import generator.instructions.*
+import generator.instructions.arithmetic.ADDSInstr
+import generator.instructions.arithmetic.SMULLInstr
+import generator.instructions.arithmetic.SUBSInstr
+import generator.instructions.branch.BEQInstr
+import generator.instructions.branch.BLNEInstr
+import generator.instructions.branch.BLVSInstr
+import generator.instructions.compare.CMPInstr
+import generator.instructions.directives.LabelInstr
+import generator.instructions.move.MOVEQInstr
+import generator.instructions.move.MOVInstr
+import generator.instructions.move.MOVNEInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.operands.ShiftOp

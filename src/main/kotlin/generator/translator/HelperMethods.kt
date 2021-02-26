@@ -1,10 +1,15 @@
 package generator.translator
 
 import analyser.nodes.type.*
-import generator.instructions.*
+import generator.instructions.load.LDRInstr
+import generator.instructions.load.LDRSBInstr
 import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.instructions.stack.POPInstr
+import generator.instructions.stack.PUSHInstr
+import generator.instructions.store.STRBInstr
+import generator.instructions.store.STRInstr
 
 fun storeLocalVar(varType: Type, stackOffset: Int) =
     when (varType) {

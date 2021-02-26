@@ -2,7 +2,16 @@ package generator.translator.lib.print
 
 import generator.translator.TranslatorContext
 import generator.instructions.*
+import generator.instructions.arithmetic.ADDInstr
+import generator.instructions.branch.BLInstr
+import generator.instructions.compare.CMPInstr
+import generator.instructions.directives.LabelInstr
+import generator.instructions.load.LDREQInstr
+import generator.instructions.load.LDRNEInstr
+import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
+import generator.instructions.stack.POPInstr
+import generator.instructions.stack.PUSHInstr
 import generator.translator.lib.LibaryFunction
 
 object PrintBool : LibaryFunction {

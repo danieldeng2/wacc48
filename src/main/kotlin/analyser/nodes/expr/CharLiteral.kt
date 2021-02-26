@@ -5,7 +5,7 @@ import analyser.nodes.type.CharType
 import analyser.nodes.type.Type
 import generator.translator.TranslatorContext
 import generator.instructions.Instruction
-import generator.instructions.MOVInstr
+import generator.instructions.move.MOVInstr
 import generator.instructions.operands.CharOp
 import generator.instructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext

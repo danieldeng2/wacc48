@@ -6,7 +6,7 @@ import analyser.nodes.type.Type
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
 import generator.instructions.Instruction
-import generator.instructions.LDRInstr
+import generator.instructions.load.LDRInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import org.antlr.v4.runtime.ParserRuleContext

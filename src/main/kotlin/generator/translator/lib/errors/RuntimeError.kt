@@ -1,9 +1,9 @@
 package generator.translator.lib.errors
 
-import generator.instructions.BLInstr
+import generator.instructions.branch.BLInstr
 import generator.instructions.Instruction
-import generator.instructions.LabelInstr
-import generator.instructions.MOVInstr
+import generator.instructions.directives.LabelInstr
+import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext

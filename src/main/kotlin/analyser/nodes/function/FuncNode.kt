@@ -7,8 +7,14 @@ import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
 import generator.instructions.*
+import generator.instructions.arithmetic.ADDInstr
+import generator.instructions.arithmetic.SUBInstr
+import generator.instructions.directives.LabelInstr
+import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.instructions.stack.POPInstr
+import generator.instructions.stack.PUSHInstr
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(
