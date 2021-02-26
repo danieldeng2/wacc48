@@ -27,7 +27,7 @@ object PrintStr : LibaryFunction {
         mutableListOf<Instruction>().apply {
             add(LabelInstr(label))
             add(PUSHInstr(Register.LR))
-            add(LDRInstr(Register.R1, MemAddr(Register.R0, NumOp(0))))
+            add(LDRInstr(Register.R1, MemAddr(Register.R0)))
             add(ADDInstr(Register.R2, Register.R0, NumOp(4)))
             add(LDRInstr(Register.R0, LabelOp(msgIndex!!)))
             add(ADDInstr(Register.R0, Register.R0, NumOp(4)))
