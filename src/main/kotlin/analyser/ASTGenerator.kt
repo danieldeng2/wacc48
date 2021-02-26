@@ -10,7 +10,9 @@ import analyser.nodes.type.*
 import WACCParserVisitor
 import exceptions.SyntaxException
 import org.antlr.v4.runtime.tree.*
+import org.apache.commons.text.StringEscapeUtils
 import java.lang.NumberFormatException
+
 
 class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     WACCParserVisitor<ASTNode> {
@@ -264,7 +266,10 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitCharLiteral(ctx: WACCParser.CharLiteralContext): ASTNode =
         CharLiteral(
-            value = ctx.text[1],
+            value = when (ctx.text.substring(1, ctx.text.length - 1)) {
+                "\\0" -> '\u0000'
+                else -> StringEscapeUtils.unescapeJava(ctx.text)[1]
+            },
             ctx = ctx
         )
 

@@ -18,7 +18,10 @@ class NumOp(val value: Int, val isLoad: Boolean = false) : ImmOp {
 }
 
 class CharOp(val value: Char) : ImmOp {
-    override fun toString() = "#\'$value\'"
+    override fun toString() = when (value) {
+        '\u0000' -> "#0"
+        else -> "#\'$value\'"
+    }
 }
 
 class LabelOp(val index: Int) : ImmOp {

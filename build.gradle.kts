@@ -28,6 +28,7 @@ dependencies {
     testImplementation(kotlin("test-junit"))
     antlr("org.antlr:antlr4:4.9.1")
 
+    implementation("org.apache.commons:commons-text:1.9")
     testImplementation("com.squareup.retrofit2:retrofit:2.9.0")
     testImplementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     testImplementation("com.squareup.moshi:moshi-kotlin:1.11.0")
