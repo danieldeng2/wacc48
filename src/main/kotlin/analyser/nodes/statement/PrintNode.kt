@@ -34,11 +34,11 @@ data class PrintNode(
                 else -> TODO("Implement ${value.type} print options")
             }
 
-            ctx.addPrintFunc(printFunc)
+            ctx.addLibraryFunction(printFunc)
             add(BLInstr(printFunc.label))
 
             if (returnAfterPrint) {
-                ctx.addPrintFunc(PrintLn)
+                ctx.addLibraryFunction(PrintLn)
                 add(BLInstr(PrintLn.label))
             }
         }

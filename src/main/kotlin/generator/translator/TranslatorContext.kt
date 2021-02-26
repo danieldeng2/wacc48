@@ -18,7 +18,7 @@ class TranslatorContext {
 
     private var stringMap: MutableMap<String, Int> = mutableMapOf()
 
-    private val printList = mutableListOf<LibaryFunction>()
+    private val usedLibraryFunctions = mutableListOf<LibaryFunction>()
 
     private val data = mutableListOf<Instruction>().apply {
         add(LabelInstr("data", isSection = true))
@@ -32,10 +32,10 @@ class TranslatorContext {
     /** Adds the built-in print helper methods to the assembly program
      *  @return jump instruction [BLInstr] to helper method
      */
-    fun addPrintFunc(printFunc: LibaryFunction) {
-        if (printFunc !in printList) {
-            printFunc.initIndex(this)
-            printList.add(printFunc)
+    fun addLibraryFunction(builtinFunc: LibaryFunction) {
+        if (builtinFunc !in usedLibraryFunctions) {
+            builtinFunc.initIndex(this)
+            usedLibraryFunctions.add(builtinFunc)
         }
     }
 
@@ -64,7 +64,7 @@ class TranslatorContext {
             if (data.size > 1)
                 addAll(data)
 
-            text.addAll(printList.flatMap { it.translate() })
+            text.addAll(usedLibraryFunctions.flatMap { it.translate() })
             addAll(text)
         }
 

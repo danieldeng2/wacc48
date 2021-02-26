@@ -27,7 +27,7 @@ object OverflowError : LibaryFunction {
                         "to store in a 4-byte signed-integer.\\n"
             )
 
-        ctx.addPrintFunc(RuntimeError)
+        ctx.addLibraryFunction(RuntimeError)
     }
 
 }

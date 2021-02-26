@@ -76,7 +76,7 @@ data class BinOpNode(
 
     private fun translateDivide(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            ctx.addPrintFunc(DivideByZeroError)
+            ctx.addLibraryFunction(DivideByZeroError)
 
             addAll(firstExpr.translate(ctx))
             add(pushAndIncrement(Register.R0, ctx))
@@ -91,7 +91,7 @@ data class BinOpNode(
 
     private fun translateMultiply(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            ctx.addPrintFunc(OverflowError)
+            ctx.addLibraryFunction(OverflowError)
 
             addAll(firstExpr.translate(ctx))
             add(pushAndIncrement(Register.R0, ctx))
@@ -107,7 +107,7 @@ data class BinOpNode(
 
     private fun translatePlusMinus(ctx: TranslatorContext, isPlus: Boolean) =
         mutableListOf<Instruction>().apply {
-            ctx.addPrintFunc(OverflowError)
+            ctx.addLibraryFunction(OverflowError)
 
             addAll(firstExpr.translate(ctx))
             add(pushAndIncrement(Register.R0, ctx))

@@ -31,7 +31,7 @@ object DivideByZeroError : LibaryFunction {
             ctx.addMessage(
                 "DivideByZeroError: divide or modulo by zero \\n\\0"
             )
-        ctx.addPrintFunc(RuntimeError)
+        ctx.addLibraryFunction(RuntimeError)
     }
 
 }
