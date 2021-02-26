@@ -8,6 +8,7 @@ import generator.translator.TranslatorContext
 import generator.instructions.*
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.instructions.operands.ShiftOp
 import generator.translator.lib.errors.OverflowError
 import generator.translator.popAndDecrement
 import generator.translator.pushAndIncrement
@@ -55,7 +56,24 @@ data class BinOpNode(
             BinaryOperator.OR -> translateLogical(ctx, isAnd = false)
             BinaryOperator.PLUS -> translatePlusMinus(ctx, isPlus = true)
             BinaryOperator.MINUS -> translatePlusMinus(ctx, isPlus = false)
+            BinaryOperator.MULTIPLY -> translateMultiply(ctx)
             else -> emptyList()
+        }
+
+    private fun translateMultiply(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addPrintFunc(OverflowError)
+
+            addAll(firstExpr.translate(ctx))
+            add(pushAndIncrement(Register.R0, ctx))
+
+            addAll(secondExpr.translate(ctx))
+            add(MOVInstr(Register.R1, Register.R0))
+            add(popAndDecrement(Register.R0, ctx))
+
+            add(SMULLInstr(Register.R0, Register.R1, Register.R0, Register.R1))
+            add(CMPInstr(Register.R1, ShiftOp(Register.R0, NumOp(31))))
+            add(BLNEInstr(OverflowError.label))
         }
 
     private fun translatePlusMinus(ctx: TranslatorContext, isPlus: Boolean) =
