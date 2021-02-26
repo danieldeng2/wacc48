@@ -5,10 +5,13 @@ import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import exceptions.SyntaxException
 import generator.instructions.Instruction
+import generator.instructions.arithmetic.RSBSInstr
+import generator.instructions.branch.BLVSInstr
 import generator.instructions.logical.EORInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
+import generator.translator.lib.errors.OverflowError
 import generator.translator.loadLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -37,6 +40,7 @@ data class UnOpNode(
         when (operator) {
             UnaryOperator.NEGATE -> translateNegate(ctx)
             UnaryOperator.CHR, UnaryOperator.ORD -> expr.translate(ctx)
+            UnaryOperator.MINUS -> translateMinus(ctx)
             else -> TODO()
         }
 
@@ -44,6 +48,16 @@ data class UnOpNode(
         mutableListOf<Instruction>().apply {
             addAll(expr.translate(ctx))
             add(EORInstr(Register.R0, Register.R0, NumOp(1)))
+        }
+
+    private fun translateMinus(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(OverflowError)
+
+            addAll(expr.translate(ctx))
+            add(RSBSInstr(Register.R0, Register.R0, NumOp(0, false)))
+
+            add(BLVSInstr(OverflowError.label))
         }
 }
 
