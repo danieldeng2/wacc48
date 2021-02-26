@@ -61,6 +61,16 @@ data class BinOpNode(
             )
     }
 
+    private fun translateModulo(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(DivideByZeroError)
+
+            addAll(loadOperandsIntoRegister(ctx))
+            add(BLInstr(DivideByZeroError.label))
+            add(BLInstr("__aeabi_idivmod"))
+            add(MOVInstr(Register.R0, Register.R1))
+        }
+
     override fun translate(ctx: TranslatorContext) =
         when (operator) {
             BinaryOperator.EQ -> translateEquality(ctx, isEqual = true)
@@ -71,6 +81,7 @@ data class BinOpNode(
             BinaryOperator.MINUS -> translatePlusMinus(ctx, isPlus = false)
             BinaryOperator.MULTIPLY -> translateMultiply(ctx)
             BinaryOperator.DIVIDE -> translateDivide(ctx)
+            BinaryOperator.MODULUS -> translateModulo(ctx)
             else -> emptyList()
         }
 
