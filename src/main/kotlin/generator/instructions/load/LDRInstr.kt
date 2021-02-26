@@ -1,11 +1,12 @@
-package generator.instructions
+package generator.instructions.load
 
+import generator.instructions.Instruction
 import generator.instructions.operands.LoadableOp
 import generator.instructions.operands.Register
 
-class LDREQInstr(
+class LDRInstr(
     private val reg: Register,
     private val op: LoadableOp
 ) : Instruction {
-    override fun toString() = "\tLDREQ ${reg.repr}, $op"
+    override fun toString() = "\tLDR ${reg.repr}, $op"
 }

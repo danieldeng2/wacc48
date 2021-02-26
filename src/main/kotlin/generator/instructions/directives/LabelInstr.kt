@@ -1,4 +1,6 @@
-package generator.instructions
+package generator.instructions.directives
+
+import generator.instructions.Instruction
 
 class LabelInstr(
     private val label: String,

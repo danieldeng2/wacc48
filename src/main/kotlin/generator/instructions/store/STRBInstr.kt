@@ -1,5 +1,6 @@
-package generator.instructions
+package generator.instructions.store
 
+import generator.instructions.Instruction
 import generator.instructions.operands.MemAddr
 import generator.instructions.operands.Register
 
