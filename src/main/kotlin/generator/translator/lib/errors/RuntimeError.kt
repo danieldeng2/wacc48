@@ -1,4 +1,4 @@
-package generator.translator.errors
+package generator.translator.lib.errors
 
 import generator.instructions.BLInstr
 import generator.instructions.Instruction
@@ -7,10 +7,10 @@ import generator.instructions.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
-import generator.translator.print.PrintStr
-import generator.translator.print.PrintSyscall
+import generator.translator.lib.print.PrintStr
+import generator.translator.lib.LibaryFunction
 
-object RuntimeError : PrintSyscall {
+object RuntimeError : LibaryFunction {
     override val label = "p_throw_runtime_error"
 
     override fun translate() = mutableListOf<Instruction>().apply {

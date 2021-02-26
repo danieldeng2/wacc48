@@ -1,16 +1,15 @@
-package generator.translator.errors
+package generator.translator.lib.errors
 
 import generator.instructions.BLInstr
 import generator.instructions.Instruction
 import generator.instructions.LDRInstr
 import generator.instructions.LabelInstr
 import generator.instructions.operands.LabelOp
-import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
-import generator.translator.print.PrintSyscall
+import generator.translator.lib.LibaryFunction
 
-object OverflowError : PrintSyscall {
+object OverflowError : LibaryFunction {
 
     override val label = "p_throw_overflow_error"
     private var msgIndex: Int? = null
