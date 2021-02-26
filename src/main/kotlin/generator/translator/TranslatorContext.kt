@@ -6,7 +6,7 @@ import generator.instructions.Instruction
 import generator.instructions.LabelInstr
 import generator.instructions.directives.Ascii
 import generator.instructions.directives.Word
-import generator.translator.print.*
+import generator.translator.lib.LibaryFunction
 
 class TranslatorContext {
     private var msgCounter = 0
@@ -18,7 +18,7 @@ class TranslatorContext {
 
     private var stringMap: MutableMap<String, Int> = mutableMapOf()
 
-    private val printList = mutableListOf<PrintSyscall>()
+    private val printList = mutableListOf<LibaryFunction>()
 
     private val data = mutableListOf<Instruction>().apply {
         add(LabelInstr("data", isSection = true))
@@ -32,7 +32,7 @@ class TranslatorContext {
     /** Adds the built-in print helper methods to the assembly program
      *  @return jump instruction [BLInstr] to helper method
      */
-    fun addPrintFunc(printFunc: PrintSyscall) {
+    fun addPrintFunc(printFunc: LibaryFunction) {
         if (printFunc !in printList) {
             printFunc.initIndex(this)
             printList.add(printFunc)
@@ -48,7 +48,7 @@ class TranslatorContext {
         stringMap[msg] = msgCounter
         data.apply {
             add(LabelInstr("msg_$msgCounter"))
-            add(Word(msg.length))
+            add(Word(msg.length - msg.filter { it == '\\' }.count()))
             add(Ascii(msg))
         }
         return msgCounter++

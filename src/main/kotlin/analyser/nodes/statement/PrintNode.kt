@@ -5,7 +5,7 @@ import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
 import generator.translator.TranslatorContext
 import generator.instructions.*
-import generator.translator.print.*
+import generator.translator.lib.print.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class PrintNode(
