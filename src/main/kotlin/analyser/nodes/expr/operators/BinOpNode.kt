@@ -15,9 +15,7 @@ import generator.instructions.branch.BLNEInstr
 import generator.instructions.branch.BLVSInstr
 import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr
-import generator.instructions.move.MOVEQInstr
-import generator.instructions.move.MOVInstr
-import generator.instructions.move.MOVNEInstr
+import generator.instructions.move.*
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.operands.ShiftOp
@@ -26,6 +24,7 @@ import generator.translator.lib.errors.OverflowError
 import generator.translator.popAndDecrement
 import generator.translator.pushAndIncrement
 import org.antlr.v4.runtime.ParserRuleContext
+import java.rmi.UnexpectedException
 
 data class BinOpNode(
     val operator: BinaryOperator,
@@ -61,14 +60,16 @@ data class BinOpNode(
             )
     }
 
-    private fun translateModulo(ctx: TranslatorContext) =
+    private fun loadOperandsIntoRegister(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             ctx.addLibraryFunction(DivideByZeroError)
 
-            addAll(loadOperandsIntoRegister(ctx))
-            add(BLInstr(DivideByZeroError.label))
-            add(BLInstr("__aeabi_idivmod"))
-            add(MOVInstr(Register.R0, Register.R1))
+            addAll(firstExpr.translate(ctx))
+            add(pushAndIncrement(Register.R0, ctx))
+
+            addAll(secondExpr.translate(ctx))
+            add(MOVInstr(Register.R1, Register.R0))
+            add(popAndDecrement(Register.R0, ctx))
         }
 
     override fun translate(ctx: TranslatorContext) =
@@ -82,19 +83,7 @@ data class BinOpNode(
             BinaryOperator.MULTIPLY -> translateMultiply(ctx)
             BinaryOperator.DIVIDE -> translateDivide(ctx)
             BinaryOperator.MODULUS -> translateModulo(ctx)
-            else -> emptyList()
-        }
-
-    private fun loadOperandsIntoRegister(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            ctx.addLibraryFunction(DivideByZeroError)
-
-            addAll(firstExpr.translate(ctx))
-            add(pushAndIncrement(Register.R0, ctx))
-
-            addAll(secondExpr.translate(ctx))
-            add(MOVInstr(Register.R1, Register.R0))
-            add(popAndDecrement(Register.R0, ctx))
+            else -> translateComparator(ctx)
         }
 
     private fun translateDivide(ctx: TranslatorContext) =
@@ -166,6 +155,51 @@ data class BinOpNode(
             add(LabelInstr("L$branchFirstOp"))
             if (isAnd)
                 add(CMPInstr(Register.R0, NumOp(0)))
+
+        }
+
+    private fun translateModulo(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            ctx.addLibraryFunction(DivideByZeroError)
+
+            addAll(loadOperandsIntoRegister(ctx))
+            add(BLInstr(DivideByZeroError.label))
+            add(BLInstr("__aeabi_idivmod"))
+            add(MOVInstr(Register.R0, Register.R1))
+        }
+
+    private fun translateComparator(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            addAll(loadOperandsIntoRegister(ctx))
+
+            add(CMPInstr(Register.R0, Register.R1))
+
+            when (operator) {
+                BinaryOperator.GT -> {
+                    add(MOVGTInstr(Register.R0, NumOp(1)))
+                    add(MOVLEInstr(Register.R0, NumOp(0)))
+                }
+
+                BinaryOperator.GE -> {
+                    add(MOVGEInstr(Register.R0, NumOp(1)))
+                    add(MOVLTInstr(Register.R0, NumOp(0)))
+                }
+
+                BinaryOperator.LT -> {
+                    add(MOVLTInstr(Register.R0, NumOp(1)))
+                    add(MOVGEInstr(Register.R0, NumOp(0)))
+                }
+
+                BinaryOperator.LE -> {
+                    add(MOVLEInstr(Register.R0, NumOp(1)))
+                    add(MOVGTInstr(Register.R0, NumOp(0)))
+                }
+
+                else -> throw UnexpectedException(
+                    "Unexpected fall through to 'else' branch in " +
+                            "${object {}.javaClass.enclosingMethod.name} with operator $operator"
+                )
+            }
 
         }
 }
