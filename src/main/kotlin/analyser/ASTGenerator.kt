@@ -157,6 +157,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
             )
         }
 
+
     override fun visitAssignRhs(ctx: WACCParser.AssignRhsContext): ASTNode =
         when {
             ctx.expr() != null -> visit(ctx.expr())
@@ -301,7 +302,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     override fun visitArrayElem(ctx: WACCParser.ArrayElemContext): ASTNode =
         ArrayElement(
             name = ctx.IDENT().text,
-            indices = ctx.expr().map { visit(it) as ExprNode },
+            arrIndices = ctx.expr().map { visit(it) as ExprNode },
             ctx = ctx
         )
 

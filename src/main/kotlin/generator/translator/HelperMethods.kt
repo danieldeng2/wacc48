@@ -22,7 +22,7 @@ fun storeLocalVar(
         is BoolType, CharType ->
             STRBInstr(rn, MemAddr(rd, NumOp(stackOffset)))
 
-        is IntType, StringType, is GenericPair ->
+        is IntType, StringType, is GenericPair, is ArrayType ->
             STRInstr(rn, MemAddr(rd, NumOp(stackOffset)))
 
         else -> TODO("Store $varType type")
@@ -38,7 +38,7 @@ fun loadLocalVar(
         is BoolType, CharType ->
             LDRSBInstr(rd, MemAddr(rn, NumOp(stackOffset)))
 
-        is IntType, StringType, is GenericPair ->
+        is IntType, StringType, is GenericPair, is ArrayType ->
             LDRInstr(rd, MemAddr(rn, NumOp(stackOffset)))
 
         else -> TODO("Load $varType type")
