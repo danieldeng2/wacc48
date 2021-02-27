@@ -25,7 +25,7 @@ data class PairElemNode(
     override var type: Type = VoidType
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
-    override var isDeclaring: Boolean = false
+    override var mode: AccessMode = AccessMode.READ
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st

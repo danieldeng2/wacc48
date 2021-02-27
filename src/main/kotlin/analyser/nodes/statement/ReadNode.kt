@@ -1,6 +1,7 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
+import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
 import analyser.nodes.type.*
 import exceptions.SemanticsException
@@ -30,7 +31,7 @@ data class ReadNode(
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st
         this.funTable = funTable
-        value.isDeclaring = false
+        value.mode = AccessMode.ADDRESS
         value.validate(st, funTable)
         if (value.type !in expectedExprTypes)
             throw SemanticsException("Cannot read from type ${value.type}", ctx)

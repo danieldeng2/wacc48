@@ -1,6 +1,7 @@
 package generator.translator
 
 import analyser.nodes.type.*
+import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.load.LDRSBInstr
 import generator.instructions.operands.MemAddr
@@ -42,6 +43,19 @@ fun loadLocalVar(
 
         else -> TODO("Store other types")
     }
+
+fun addressVar(
+    varType: Type,
+    stackOffset: Int,
+    rn: Register = Register.SP,
+    rd: Register = Register.R0
+) =
+    when (varType) {
+        is BoolType, CharType, IntType, StringType ->
+            ADDInstr(rd, rn, NumOp(stackOffset))
+        else -> TODO("Store other types")
+    }
+
 
 fun pushAndIncrement(
     ctx: TranslatorContext,

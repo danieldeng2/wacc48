@@ -25,7 +25,7 @@ object ReadInt : LibaryFunction {
     override fun translate(): List<Instruction> =
         mutableListOf<Instruction>().apply {
             add(LabelInstr(label))
-            add(PUSHInstr(Register.R1))
+            add(PUSHInstr(Register.LR))
             add(MOVInstr(Register.R1, Register.R0))
             add(LDRInstr(Register.R0, LabelOp(msgIndex!!)))
             add(ADDInstr(Register.R0, Register.R0, NumOp(4)))
