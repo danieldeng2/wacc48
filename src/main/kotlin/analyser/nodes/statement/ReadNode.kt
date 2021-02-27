@@ -16,6 +16,7 @@ import generator.translator.lib.print.PrintBool
 import generator.translator.lib.print.PrintInt
 import generator.translator.lib.print.PrintPair
 import generator.translator.lib.print.PrintStr
+import generator.translator.lib.read.ReadChar
 import generator.translator.lib.read.ReadInt
 import org.antlr.v4.runtime.ParserRuleContext
 import java.rmi.UnexpectedException
@@ -43,6 +44,7 @@ data class ReadNode(
 
             val readFunc = when (value.type) {
                 IntType -> ReadInt
+                CharType -> ReadChar
                 else -> throw NotImplementedError(
                     "Implement read for ${value.type}"
                 )
