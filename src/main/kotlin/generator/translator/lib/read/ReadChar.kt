@@ -12,9 +12,9 @@ import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
-import generator.translator.lib.LibaryFunction
+import generator.translator.lib.LibraryFunction
 
-object ReadChar : LibaryFunction {
+object ReadChar : LibraryFunction {
     override val label: String = "p_read_char"
     private var msgIndex: Int? = null
 

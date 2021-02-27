@@ -12,9 +12,9 @@ import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
-import generator.translator.lib.LibaryFunction
+import generator.translator.lib.LibraryFunction
 
-object PrintBool : LibaryFunction {
+object PrintBool : LibraryFunction {
     override val label = "p_print_bool"
     private var trueIndex: Int? = null
     private var falseIndex: Int? = null

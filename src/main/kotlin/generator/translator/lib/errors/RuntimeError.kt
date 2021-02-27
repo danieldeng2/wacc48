@@ -8,9 +8,9 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
 import generator.translator.lib.print.PrintStr
-import generator.translator.lib.LibaryFunction
+import generator.translator.lib.LibraryFunction
 
-object RuntimeError : LibaryFunction {
+object RuntimeError : LibraryFunction {
     override val label = "p_throw_runtime_error"
 
     override fun translate() = mutableListOf<Instruction>().apply {

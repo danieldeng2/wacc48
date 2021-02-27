@@ -1,6 +1,5 @@
 package generator.translator.lib.print
 
-import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.directives.LabelInstr
@@ -12,9 +11,9 @@ import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
-import generator.translator.lib.LibaryFunction
+import generator.translator.lib.LibraryFunction
 
-object PrintPair : LibaryFunction {
+object PrintReference : LibraryFunction {
     private var msgIndex: Int? = null
     override val label = "p_print_reference"
 

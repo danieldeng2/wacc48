@@ -1,6 +1,5 @@
 package generator.translator.lib
 
-import generator.instructions.Instruction
 import generator.instructions.branch.BEQInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.compare.CMPInstr
@@ -16,7 +15,7 @@ import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
 import generator.translator.lib.errors.RuntimeError
 
-object FreePair : LibaryFunction {
+object FreePair : LibraryFunction {
     private var msgIndex: Int? = null
     override val label = "p_free_pair"
 

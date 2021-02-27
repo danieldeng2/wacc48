@@ -1,6 +1,5 @@
 package generator.translator.lib.errors
 
-import generator.instructions.Instruction
 import generator.instructions.branch.BLEQInstr
 import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr
@@ -11,9 +10,9 @@ import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
-import generator.translator.lib.LibaryFunction
+import generator.translator.lib.LibraryFunction
 
-object CheckNullPointer : LibaryFunction {
+object CheckNullPointer : LibraryFunction {
     private var msgIndex: Int? = null
     override val label = "p_check_null_pointer"
 
