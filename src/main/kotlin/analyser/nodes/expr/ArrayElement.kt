@@ -16,6 +16,7 @@ import generator.instructions.store.STRInstr
 import generator.translator.*
 import generator.translator.lib.errors.CheckArrayBounds
 import org.antlr.v4.runtime.ParserRuleContext
+import java.lang.ClassCastException
 
 data class ArrayElement(
     val name: String,
@@ -27,8 +28,6 @@ data class ArrayElement(
     override lateinit var funTable: SymbolTable
     override var mode: AccessMode = AccessMode.READ
 
-    /** Determines what 'print option' will be used. */
-    lateinit var baseType: Type
     override lateinit var type: Type
 
 
@@ -44,11 +43,17 @@ data class ArrayElement(
         if (identTypeTemp !is ArrayType)
             throw SemanticsException("$name is not an array", null)
 
-        type = identTypeTemp.elementType
-
-        for (i in arrIndices.indices)
-            identTypeTemp = (identTypeTemp as ArrayType).elementType
-        baseType = identTypeTemp
+        for (i in arrIndices.indices) {
+            try {
+                identTypeTemp = (identTypeTemp as ArrayType).elementType
+            } catch (e: ClassCastException) {
+                throw SemanticsException(
+                    "Invalid de-referencing of array $name",
+                    ctx
+                )
+            }
+        }
+        type = identTypeTemp
     }
 
     override fun translate(ctx: TranslatorContext) =
@@ -71,15 +76,21 @@ data class ArrayElement(
                     rd = Register.R4
                 )
             )
-            addAll(arrIndices[0].translate(ctx))
 
+            arrIndices.dropLast(1).forEach {
+                addAll(it.translate(ctx))
+                addAll(checkArrayBounds())
+                add(LDRInstr(Register.R4, MemAddr(Register.R4)))
+            }
+            addAll(arrIndices.last().translate(ctx))
             addAll(checkArrayBounds())
+
             add(MOVInstr(Register.R1, Register.R4))
             add(popAndDecrement(ctx, Register.R0, Register.R4))
             add(
                 storeLocalVar(
                     varType = type,
-                    stackOffset = ctx.getOffsetOfLocalVar(name, st),
+                    stackOffset = 0,
                     rn = Register.R0,
                     rd = Register.R1
                 )
@@ -90,7 +101,13 @@ data class ArrayElement(
         mutableListOf<Instruction>().apply {
             ctx.addLibraryFunction(CheckArrayBounds)
 
-            add(LDRInstr(Register.R0, MemAddr(Register.SP)))
+            val offset = ctx.getOffsetOfLocalVar(name, st)
+            add(
+                LDRInstr(
+                    Register.R0,
+                    MemAddr(Register.SP, NumOp(offset))
+                )
+            )
             add(pushAndIncrement(ctx, Register.R4))
             add(MOVInstr(Register.R4, Register.R0))
 
