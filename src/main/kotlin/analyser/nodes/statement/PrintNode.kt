@@ -41,7 +41,7 @@ data class PrintNode(
                         if (value.type is ArrayType && (value.type as ArrayType).elementType == CharType)
                             getPrintOption(StringType)
                         else
-                            getPrintOption(value.baseType)
+                            getPrintOption(value.type)
                     }
 
                     else -> getPrintOption(value.type)
