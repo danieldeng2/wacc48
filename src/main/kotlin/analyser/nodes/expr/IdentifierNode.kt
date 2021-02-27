@@ -43,7 +43,7 @@ data class IdentifierNode(
                 when (mode) {
                     AccessMode.ASSIGN -> storeLocalVar(type, offset)
                     AccessMode.READ -> loadLocalVar(type, offset)
-                    else -> addressVar(type, offset)
+                    else -> addressVar(offset)
                 }
             )
         }

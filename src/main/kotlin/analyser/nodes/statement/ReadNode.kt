@@ -6,20 +6,11 @@ import analyser.nodes.assignment.LHSNode
 import analyser.nodes.type.*
 import exceptions.SemanticsException
 import generator.instructions.Instruction
-import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
-import generator.reference.AddressMode
 import generator.translator.TranslatorContext
-import generator.translator.lib.print.PrintBool
-import generator.translator.lib.print.PrintInt
-import generator.translator.lib.print.PrintPair
-import generator.translator.lib.print.PrintStr
 import generator.translator.lib.read.ReadChar
 import generator.translator.lib.read.ReadInt
 import org.antlr.v4.runtime.ParserRuleContext
-import java.rmi.UnexpectedException
 
 data class ReadNode(
     private val value: LHSNode,

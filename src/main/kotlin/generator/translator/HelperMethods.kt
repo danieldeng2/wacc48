@@ -45,16 +45,11 @@ fun loadLocalVar(
     }
 
 fun addressVar(
-    varType: Type,
     stackOffset: Int,
     rn: Register = Register.SP,
     rd: Register = Register.R0
 ) =
-    when (varType) {
-        is BoolType, CharType, IntType, StringType ->
-            ADDInstr(rd, rn, NumOp(stackOffset))
-        else -> TODO("Address $varType type")
-    }
+    ADDInstr(rd, rn, NumOp(stackOffset))
 
 
 fun pushAndIncrement(

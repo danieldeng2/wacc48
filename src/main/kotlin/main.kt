@@ -5,12 +5,12 @@ import java.io.FileWriter
 import java.nio.file.Path
 
 fun main(args: Array<String>) {
-    if (args.size < 2 || !File(args[1]).exists()) {
+    if (args.size == 0 || !File(args[0]).exists()) {
         print("Usage: compile <WACC Source>")
         return
     }
 
-    val sourceFile = Path.of(args[1])
+    val sourceFile = Path.of(args[0])
     val input: CharStream = CharStreams.fromPath(sourceFile)
     val pNode: ASTNode = runAnalyserCatchError(input)
     val output = runGenerator(pNode)
