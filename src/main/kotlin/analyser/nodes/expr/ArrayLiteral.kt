@@ -7,7 +7,6 @@ import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
-import generator.instructions.load.LDRInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp

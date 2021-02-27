@@ -4,7 +4,10 @@ import analyser.SymbolTable
 import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
 import analyser.nodes.function.ParamNode
-import analyser.nodes.type.*
+import analyser.nodes.type.ArrayType
+import analyser.nodes.type.BoolType
+import analyser.nodes.type.CharType
+import analyser.nodes.type.Type
 import exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
@@ -12,11 +15,9 @@ import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
-import generator.instructions.store.STRInstr
 import generator.translator.*
 import generator.translator.lib.errors.CheckArrayBounds
 import org.antlr.v4.runtime.ParserRuleContext
-import java.lang.ClassCastException
 
 data class ArrayElement(
     val name: String,

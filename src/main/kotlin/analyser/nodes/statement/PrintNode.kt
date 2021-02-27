@@ -1,14 +1,12 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
-import analyser.nodes.assignment.AccessMode
 import analyser.nodes.expr.ArrayElement
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.type.*
-import generator.translator.TranslatorContext
-import generator.instructions.*
+import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
-import generator.translator.lib.LibraryFunction
+import generator.translator.TranslatorContext
 import generator.translator.lib.print.*
 import org.antlr.v4.runtime.ParserRuleContext
 import java.rmi.UnexpectedException
@@ -36,7 +34,7 @@ data class PrintNode(
 
                 val printFunc = when {
                     value.type == ArrayType(CharType, null) -> getPrintOption(StringType)
-                    value is ArrayElement ->  {
+                    value is ArrayElement -> {
 
                         if (value.type is ArrayType && (value.type as ArrayType).elementType == CharType)
                             getPrintOption(StringType)

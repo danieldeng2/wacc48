@@ -3,7 +3,6 @@ package analyser.nodes.expr
 import analyser.SymbolTable
 import analyser.nodes.type.EmptyPair
 import analyser.nodes.type.Type
-import generator.instructions.Instruction
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register

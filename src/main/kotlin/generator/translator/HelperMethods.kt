@@ -1,7 +1,6 @@
 package generator.translator
 
 import analyser.nodes.type.*
-import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.load.LDRSBInstr
 import generator.instructions.operands.MemAddr

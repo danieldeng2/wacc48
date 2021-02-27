@@ -1,5 +1,3 @@
 package generator.instructions
 
-interface Instruction {
-
-}
+interface Instruction

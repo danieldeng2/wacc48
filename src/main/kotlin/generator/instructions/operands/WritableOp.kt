@@ -1,4 +1,3 @@
 package generator.instructions.operands
 
-interface WritableOp {
-}
+interface WritableOp

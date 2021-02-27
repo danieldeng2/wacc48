@@ -1,11 +1,13 @@
+
 import analyser.nodes.ASTNode
-import org.antlr.v4.runtime.*
+import org.antlr.v4.runtime.CharStream
+import org.antlr.v4.runtime.CharStreams
 import java.io.File
 import java.io.FileWriter
 import java.nio.file.Path
 
 fun main(args: Array<String>) {
-    if (args.size == 0 || !File(args[0]).exists()) {
+    if (args.isEmpty() || !File(args[0]).exists()) {
         print("Usage: compile <WACC Source>")
         return
     }
