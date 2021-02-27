@@ -5,6 +5,8 @@ import analyser.nodes.assignment.RHSNode
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
+import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncCallNode(
@@ -39,4 +41,7 @@ data class FuncCallNode(
         type = functionNode.retType
     }
 
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        TODO("Not yet implemented")
+    }
 }

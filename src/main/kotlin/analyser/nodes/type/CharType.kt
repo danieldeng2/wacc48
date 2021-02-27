@@ -1,6 +1,8 @@
 package analyser.nodes.type
 
 import analyser.SymbolTable
+import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 object CharType : Type {
@@ -17,4 +19,6 @@ object CharType : Type {
     override fun toString(): String {
         return "Char"
     }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> = emptyList()
 }

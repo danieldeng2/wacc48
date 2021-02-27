@@ -1,6 +1,8 @@
 package analyser.nodes.type
 
 import analyser.SymbolTable
+import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ArrayType(val elementType: Type, override val ctx: ParserRuleContext?) : Type {
@@ -28,4 +30,7 @@ data class ArrayType(val elementType: Type, override val ctx: ParserRuleContext?
     override fun hashCode(): Int {
         return elementType.hashCode()
     }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> = emptyList()
+
 }

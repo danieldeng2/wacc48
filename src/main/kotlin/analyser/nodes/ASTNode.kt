@@ -13,5 +13,5 @@ interface ASTNode {
 
     fun validate(st: SymbolTable, funTable: SymbolTable)
 
-    fun translate(ctx: TranslatorContext): List<Instruction> = TODO()
+    fun translate(ctx: TranslatorContext): List<Instruction>
 }

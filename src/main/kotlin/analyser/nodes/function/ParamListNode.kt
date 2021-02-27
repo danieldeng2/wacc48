@@ -2,6 +2,8 @@ package analyser.nodes.function
 
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
+import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ParamListNode(
@@ -18,5 +20,9 @@ data class ParamListNode(
         params.forEach {
             it.validate(st, funTable)
         }
+    }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        TODO("Not yet implemented")
     }
 }

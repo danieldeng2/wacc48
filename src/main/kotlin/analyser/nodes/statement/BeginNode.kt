@@ -1,6 +1,8 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
+import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class BeginNode(
@@ -15,5 +17,9 @@ data class BeginNode(
         this.funTable = funTable
         val currST = SymbolTable(st)
         stat.validate(currST, funTable)
+    }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        TODO("Not yet implemented")
     }
 }
