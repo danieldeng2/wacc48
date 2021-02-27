@@ -19,6 +19,7 @@ import generator.instructions.move.*
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.operands.ShiftOp
+import generator.instructions.operands.ShiftType
 import generator.translator.lib.errors.DivideByZeroError
 import generator.translator.lib.errors.OverflowError
 import generator.translator.popAndDecrement
@@ -103,7 +104,7 @@ data class BinOpNode(
             addAll(loadOperandsIntoRegister(ctx))
 
             add(SMULLInstr(Register.R0, Register.R1, Register.R0, Register.R1))
-            add(CMPInstr(Register.R1, ShiftOp(Register.R0, NumOp(31))))
+            add(CMPInstr(Register.R1, ShiftOp(Register.R0, ShiftType.ASR, NumOp(31))))
             add(BLNEInstr(OverflowError.label))
         }
 

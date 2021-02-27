@@ -7,7 +7,9 @@ import exceptions.SyntaxException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.RSBSInstr
 import generator.instructions.branch.BLVSInstr
+import generator.instructions.load.LDRInstr
 import generator.instructions.logical.EORInstr
+import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
@@ -41,7 +43,10 @@ data class UnOpNode(
             UnaryOperator.NEGATE -> translateNegate(ctx)
             UnaryOperator.CHR, UnaryOperator.ORD -> expr.translate(ctx)
             UnaryOperator.MINUS -> translateMinus(ctx)
-            else -> TODO()
+            UnaryOperator.LEN -> mutableListOf<Instruction>().apply {
+                addAll(expr.translate(ctx))
+                add(LDRInstr(Register.R0, MemAddr(Register.R0)))
+            }
         }
 
     private fun translateNegate(ctx: TranslatorContext) =
