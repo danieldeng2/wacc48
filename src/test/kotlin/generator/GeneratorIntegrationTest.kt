@@ -39,7 +39,10 @@ class GeneratorIntegrationTest {
         checkAllMatches("valid/pairs")
     }
 
-    //TODO runtimeErr
+    @Test
+    fun runtimeErrShouldMatchReferenceOutput() {
+        checkAllMatches("valid/runtimeErr")
+    }
 
     //TODO scope
 
