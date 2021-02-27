@@ -1,6 +1,5 @@
 package analyser
 
-import analyser.SymbolTable
 import analyser.nodes.ProgNode
 import analyser.nodes.expr.BoolLiteral
 import analyser.nodes.function.FuncNode

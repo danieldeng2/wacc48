@@ -1,8 +1,7 @@
 package analyser
 
-import org.junit.Test
-import analyser.SymbolTable
 import analyser.nodes.expr.BoolLiteral
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -16,12 +15,12 @@ class SymbolTableTest {
         val node = BoolLiteral(true, null)
         symbolTable.add("Boolean True", node)
 
-        assertEquals(symbolTable.get("Boolean True"), node)
+        assertEquals(symbolTable["Boolean True"], node)
     }
 
     @Test
     fun getReturnsNullForUnknownKey() {
-        assertNull(symbolTable.get("Boolean True"))
+        assertNull(symbolTable["Boolean True"])
     }
 
     @Test
