@@ -44,13 +44,6 @@ fun loadLocalVar(
         else -> TODO("Load $varType type")
     }
 
-fun addressVar(
-    stackOffset: Int,
-    rn: Register = Register.SP,
-    rd: Register = Register.R0
-) =
-    ADDInstr(rd, rn, NumOp(stackOffset))
-
 
 fun pushAndIncrement(
     ctx: TranslatorContext,

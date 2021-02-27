@@ -9,7 +9,9 @@ import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
 import generator.instructions.Instruction
-import generator.translator.addressVar
+import generator.instructions.arithmetic.ADDInstr
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
 import generator.translator.loadLocalVar
 import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
@@ -43,7 +45,7 @@ data class IdentifierNode(
                 when (mode) {
                     AccessMode.ASSIGN -> storeLocalVar(type, offset)
                     AccessMode.READ -> loadLocalVar(type, offset)
-                    else -> addressVar(offset)
+                    else -> ADDInstr(Register.R0, Register.SP, NumOp(offset))
                 }
             )
         }

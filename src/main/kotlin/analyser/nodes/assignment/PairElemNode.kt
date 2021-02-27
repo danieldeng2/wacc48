@@ -54,11 +54,11 @@ data class PairElemNode(
 
             val memOffset = if (isFirst) 0 else 4
 
-            when (mode) {
-                AccessMode.ASSIGN -> addAll(assignToPosition(ctx, memOffset))
-                AccessMode.READ -> addAll(loadFromPosition(ctx, memOffset))
-                else -> TODO()
-            }
+            if (mode == AccessMode.READ)
+                addAll(loadFromPosition(ctx, memOffset))
+            else
+                addAll(assignToPosition(ctx, memOffset))
+
         }
 
     private fun loadFromPosition(ctx: TranslatorContext, memOffset: Int) =
@@ -80,7 +80,6 @@ data class PairElemNode(
         mutableListOf<Instruction>().apply {
             add(pushAndIncrement(ctx, Register.R0))
 
-            // Our type-checking earlier makes sure this is always an IdentifierNode
             val stackOffset = ctx.getOffsetOfLocalVar((expr as IdentifierNode).name, st)
             add(LDRInstr(Register.R0, MemAddr(Register.SP, NumOp(stackOffset))))
 
@@ -102,12 +101,15 @@ data class PairElemNode(
             add(MOVInstr(Register.R1, Register.R0))
             add(popAndDecrement(ctx, Register.R0))
             add(
-                storeLocalVar(
-                    varType = type,
-                    stackOffset = 0,
-                    rn = Register.R0,
-                    rd = Register.R1
-                )
+                if (mode == AccessMode.ASSIGN)
+                    storeLocalVar(
+                        varType = type,
+                        stackOffset = 0,
+                        rn = Register.R0,
+                        rd = Register.R1
+                    )
+                else
+                    ADDInstr(Register.R0, Register.R1, NumOp(0))
             )
         }
 
