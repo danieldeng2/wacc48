@@ -1,12 +1,43 @@
 package generator
+
 import org.junit.Test
 
 
 class GeneratorIntegrationTest {
+
+    //TODO advanced
+    //TODO array
+
     @Test
     fun basicProgramsShouldMatchReferenceOutput() {
         checkAllMatches("valid/basic")
     }
+
+    @Test
+    fun expressionsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/expressions")
+    }
+
+    //TODO function
+
+    @Test
+    fun ifStatementsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/if")
+    }
+
+    @Test
+    fun inputOutputShouldMatchReferenceOutput() {
+        checkAllMatches("valid/IO")
+    }
+
+    @Test
+    fun pairsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/pairs")
+    }
+
+    //TODO runtimeErr
+
+    //TODO scope
 
     @Test
     fun sequencesShouldMatchReferenceOutput() {
@@ -19,27 +50,8 @@ class GeneratorIntegrationTest {
     }
 
     @Test
-    fun ifStatementsShouldMatchReferenceOutput() {
-        checkAllMatches("valid/if")
-    }
-
-    @Test
-    fun expressionsShouldMatchReferenceOutput() {
-        checkAllMatches("valid/expressions")
-    }
-
-    @Test
     fun whileLoopsShouldMatchReferenceOutput() {
         checkAllMatches("valid/while")
     }
 
-    @Test
-    fun pairsShouldMatchReferenceOutput() {
-        checkAllMatches("valid/pairs")
-    }
-
-    @Test
-    fun inputOutputShouldMatchReferenceOutput() {
-        checkAllMatches("valid/IO")
-    }
 }

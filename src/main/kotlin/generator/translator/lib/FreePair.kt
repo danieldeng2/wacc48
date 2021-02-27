@@ -50,7 +50,7 @@ object FreePair : LibaryFunction {
         ctx.addLibraryFunction(RuntimeError)
 
         msgIndex = ctx.addMessage(
-            "NullreferenceError: dereference a null reference\\n\\0"
+            "NullReferenceError: dereference a null reference\\n\\0"
         )
     }
 

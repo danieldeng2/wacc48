@@ -9,7 +9,6 @@ import java.io.FileWriter
 import generator.reference.EmulatorResult
 import runAnalyser
 import runGenerator
-import kotlin.test.assertEquals
 import kotlin.test.fail
 
 fun checkAllMatches(label: String) {
