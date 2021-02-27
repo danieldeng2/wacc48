@@ -13,25 +13,25 @@ import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
 import generator.translator.lib.LibaryFunction
 
-object DivideByZeroError : LibaryFunction {
+object CheckNullPointer : LibaryFunction {
     private var msgIndex: Int? = null
-    override val label = "p_check_divide_by_zero"
+    override val label = "p_check_null_pointer"
 
-    override fun translate() = mutableListOf<Instruction>().apply {
-        add(LabelInstr(label))
-        add(PUSHInstr(Register.LR))
-        add(CMPInstr(Register.R1, NumOp(0)))
-        add(LDREQInstr(Register.R0, LabelOp(msgIndex!!)))
-        add(BLEQInstr(RuntimeError.label))
-        add(POPInstr(Register.PC))
-    }
+    override fun translate() = listOf(
+        LabelInstr(label),
+        PUSHInstr(Register.LR),
+        CMPInstr(Register.R0, NumOp(0)),
+        LDREQInstr(Register.R0, LabelOp(msgIndex!!)),
+        BLEQInstr(RuntimeError.label),
+        POPInstr(Register.PC)
+    )
 
     override fun initIndex(ctx: TranslatorContext) {
-        msgIndex =
-            ctx.addMessage(
-                "DivideByZeroError: divide or modulo by zero\\n\\0"
-            )
         ctx.addLibraryFunction(RuntimeError)
+
+        msgIndex = ctx.addMessage(
+            "NullReferenceError: dereference a null reference\\n\\0"
+        )
     }
 
 }

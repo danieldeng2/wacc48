@@ -32,4 +32,14 @@ class GeneratorIntegrationTest {
     fun whileLoopsShouldMatchReferenceOutput() {
         checkAllMatches("valid/while")
     }
+
+    @Test
+    fun pairsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/pairs")
+    }
+
+    @Test
+    fun inputOutputShouldMatchReferenceOutput() {
+        checkAllMatches("valid/IO")
+    }
 }
