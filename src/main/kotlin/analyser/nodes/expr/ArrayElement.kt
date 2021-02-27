@@ -58,9 +58,8 @@ data class ArrayElement(
 
     override fun translate(ctx: TranslatorContext) =
         when (mode) {
-            AccessMode.ASSIGN -> translateAssignment(ctx)
             AccessMode.READ -> translateRead(ctx)
-            AccessMode.ADDRESS -> TODO("translate ArrayElement with mode $mode")
+            else -> translateAssignment(ctx)
         }
 
 
@@ -88,12 +87,15 @@ data class ArrayElement(
             add(MOVInstr(Register.R1, Register.R4))
             add(popAndDecrement(ctx, Register.R0, Register.R4))
             add(
-                storeLocalVar(
-                    varType = type,
-                    stackOffset = 0,
-                    rn = Register.R0,
-                    rd = Register.R1
-                )
+                if (mode == AccessMode.ASSIGN)
+                    storeLocalVar(
+                        varType = type,
+                        stackOffset = 0,
+                        rn = Register.R0,
+                        rd = Register.R1
+                    )
+                else
+                    ADDInstr(Register.R0, Register.R1, NumOp(0))
             )
         }
 
