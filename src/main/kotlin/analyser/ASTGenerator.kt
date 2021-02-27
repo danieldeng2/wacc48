@@ -10,7 +10,9 @@ import analyser.nodes.type.*
 import WACCParserVisitor
 import exceptions.SyntaxException
 import org.antlr.v4.runtime.tree.*
+import org.apache.commons.text.StringEscapeUtils
 import java.lang.NumberFormatException
+
 
 class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     WACCParserVisitor<ASTNode> {
@@ -155,6 +157,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
             )
         }
 
+
     override fun visitAssignRhs(ctx: WACCParser.AssignRhsContext): ASTNode =
         when {
             ctx.expr() != null -> visit(ctx.expr())
@@ -264,7 +267,10 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitCharLiteral(ctx: WACCParser.CharLiteralContext): ASTNode =
         CharLiteral(
-            value = ctx.text[1],
+            value = when (ctx.text.substring(1, ctx.text.length - 1)) {
+                "\\0" -> '\u0000'
+                else -> StringEscapeUtils.unescapeJava(ctx.text)[1]
+            },
             ctx = ctx
         )
 
@@ -282,7 +288,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
 
     override fun visitPairElem(ctx: WACCParser.PairElemContext): ASTNode =
         PairElemNode(
-            name = visit(ctx.expr()) as ExprNode,
+            expr = visit(ctx.expr()) as ExprNode,
             isFirst = ctx.FST() != null,
             ctx = ctx
         )
@@ -296,7 +302,7 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     override fun visitArrayElem(ctx: WACCParser.ArrayElemContext): ASTNode =
         ArrayElement(
             name = ctx.IDENT().text,
-            indices = ctx.expr().map { visit(it) as ExprNode },
+            arrIndices = ctx.expr().map { visit(it) as ExprNode },
             ctx = ctx
         )
 

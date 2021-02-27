@@ -12,9 +12,9 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
-import generator.translator.lib.LibaryFunction
+import generator.translator.lib.LibraryFunction
 
-object PrintLn : LibaryFunction {
+object PrintLn : LibraryFunction {
     override val label = "p_print_ln"
     private var msgIndex: Int? = null
 

@@ -1,12 +1,11 @@
 package analyser.nodes.function
 
 import analyser.SymbolTable
-import analyser.nodes.type.Type
 import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
+import analyser.nodes.type.Type
 import exceptions.SemanticsException
-import generator.translator.TranslatorContext
-import generator.instructions.*
+import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.arithmetic.SUBInstr
 import generator.instructions.directives.LabelInstr
@@ -15,6 +14,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(
@@ -25,7 +25,7 @@ data class FuncNode(
     override val ctx: ParserRuleContext?
 ) : ASTNode {
 
-    private val MAX_IMMEDIATE_VALUE = 1024
+    private val maxImmediateValue = 1024
 
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
@@ -82,24 +82,24 @@ data class FuncNode(
             add(LabelInstr(identifier))
             add(PUSHInstr(Register.LR))
 
-            for (size in localStackSize downTo 1 step MAX_IMMEDIATE_VALUE) {
+            for (size in localStackSize downTo 1 step maxImmediateValue) {
                 add(
                     SUBInstr(
                         Register.SP,
                         Register.SP,
-                        NumOp(minOf(size, MAX_IMMEDIATE_VALUE))
+                        NumOp(minOf(size, maxImmediateValue))
                     )
                 )
             }
 
             addAll(body.translate(ctx))
 
-            for (size in localStackSize downTo 1 step MAX_IMMEDIATE_VALUE) {
+            for (size in localStackSize downTo 1 step maxImmediateValue) {
                 add(
                     ADDInstr(
                         Register.SP,
                         Register.SP,
-                        NumOp(minOf(size, MAX_IMMEDIATE_VALUE))
+                        NumOp(minOf(size, maxImmediateValue))
                     )
                 )
 

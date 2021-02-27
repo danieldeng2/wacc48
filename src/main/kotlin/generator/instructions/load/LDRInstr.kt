@@ -6,7 +6,7 @@ import generator.instructions.operands.Register
 
 class LDRInstr(
     private val reg: Register,
-    private val op: LoadableOp
+    private val op: LoadableOp,
 ) : Instruction {
     override fun toString() = "\tLDR ${reg.repr}, $op"
 }

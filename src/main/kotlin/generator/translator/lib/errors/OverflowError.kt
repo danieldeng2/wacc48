@@ -7,9 +7,9 @@ import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.LabelOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
-import generator.translator.lib.LibaryFunction
+import generator.translator.lib.LibraryFunction
 
-object OverflowError : LibaryFunction {
+object OverflowError : LibraryFunction {
 
     override val label = "p_throw_overflow_error"
     private var msgIndex: Int? = null

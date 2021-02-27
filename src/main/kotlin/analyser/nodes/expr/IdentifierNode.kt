@@ -1,6 +1,7 @@
 package analyser.nodes.expr
 
 import analyser.SymbolTable
+import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
 import analyser.nodes.type.Typable
 import analyser.nodes.type.Type
@@ -8,6 +9,9 @@ import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
 import generator.translator.TranslatorContext
 import generator.instructions.Instruction
+import generator.instructions.arithmetic.ADDInstr
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
 import generator.translator.loadLocalVar
 import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
@@ -19,7 +23,7 @@ data class IdentifierNode(
     override var type: Type = VoidType
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
-    override var isDeclaring: Boolean = false
+    override var mode: AccessMode = AccessMode.READ
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st
@@ -38,10 +42,11 @@ data class IdentifierNode(
         mutableListOf<Instruction>().apply {
             val offset = ctx.getOffsetOfLocalVar(name, st)
             add(
-                if (isDeclaring)
-                    storeLocalVar(type, offset)
-                else
-                    loadLocalVar(type, offset)
+                when (mode) {
+                    AccessMode.ASSIGN -> storeLocalVar(type, offset)
+                    AccessMode.READ -> loadLocalVar(type, offset)
+                    else -> ADDInstr(Register.R0, Register.SP, NumOp(offset))
+                }
             )
         }
 

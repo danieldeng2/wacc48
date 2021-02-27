@@ -19,7 +19,7 @@ data class AssignmentNode(
         this.st = st
         this.funTable = funTable
 
-        name.isDeclaring = true
+        name.mode = AccessMode.ASSIGN
         name.validate(st, funTable)
         value.validate(st, funTable)
 
