@@ -22,12 +22,15 @@ data class ArrayElement(
     val arrIndices: List<ExprNode>,
     override val ctx: ParserRuleContext?
 ) : ExprNode, LHSNode {
-    override var type: Type = VoidType
+
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
     override var mode: AccessMode = AccessMode.READ
 
-    lateinit var identifierType: ArrayType
+    /** Determines what 'print option' will be used. */
+    lateinit var baseType: Type
+    override lateinit var type: Type
+
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st
@@ -36,12 +39,16 @@ data class ArrayElement(
             throw SemanticsException("Cannot find array $name", ctx)
         arrIndices.forEach { it.validate(st, funTable) }
         val typedElem = st[name] as ParamNode
-        val identTypeTemp = typedElem.type
+
+        var identTypeTemp = typedElem.type
         if (identTypeTemp !is ArrayType)
             throw SemanticsException("$name is not an array", null)
 
-        identifierType = identTypeTemp
-        type = identifierType.elementType
+        type = identTypeTemp.elementType
+
+        for (i in arrIndices.indices)
+            identTypeTemp = (identTypeTemp as ArrayType).elementType
+        baseType = identTypeTemp
     }
 
     override fun translate(ctx: TranslatorContext) =
@@ -59,7 +66,7 @@ data class ArrayElement(
             add(pushAndIncrement(ctx, Register.R0, Register.R4))
             add(
                 loadLocalVar(
-                    varType = identifierType,
+                    varType = ArrayType(type, null),
                     stackOffset = ctx.getOffsetOfLocalVar(name, st),
                     rd = Register.R4
                 )
