@@ -16,9 +16,12 @@ fun checkAllMatches(label: String) {
     WalkDirectory(label).run { f ->
         val refASM = f.path.replace(".wacc", "_ref.s")
         val compilerASM = f.path.replace(".wacc", ".s")
+        val inputFile = File(f.path.replace(".wacc", ".input"))
+        val stdin = if (inputFile.exists()) inputFile.readLines()[0] else ""
 
-        val referenceResult = referencePipeline(f.path, refASM)
-        val compilerResult = compilerPipeline(f.path, compilerASM)
+        val referenceResult = referencePipeline(f.path, refASM, stdin = stdin)
+        val compilerResult = compilerPipeline(f.path, compilerASM, stdin = stdin)
+
         if (compilerResult.emulatorOut != referenceResult.emulatorOut)
             fail(
                 "====Expected Output====\n"
