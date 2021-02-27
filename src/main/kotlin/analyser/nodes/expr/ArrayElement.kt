@@ -13,6 +13,7 @@ import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
+import generator.instructions.load.LDRSBInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
 import generator.translator.*
@@ -118,7 +119,11 @@ data class ArrayElement(
             arrIndices.forEach {
                 addAll(it.translate(ctx))
                 addAll(checkArrayBounds())
-                add(LDRInstr(Register.R4, MemAddr(Register.R4)))
+                if (type is BoolType) {
+                    add(LDRSBInstr(Register.R4, MemAddr(Register.R4)))
+                } else {
+                    add(LDRInstr(Register.R4, MemAddr(Register.R4)))
+                }
             }
 
             add(MOVInstr(Register.R0, Register.R4))

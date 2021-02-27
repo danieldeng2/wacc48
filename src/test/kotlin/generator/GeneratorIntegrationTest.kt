@@ -44,7 +44,10 @@ class GeneratorIntegrationTest {
         checkAllMatches("valid/runtimeErr")
     }
 
-    //TODO scope
+    @Test
+    fun scopeTestsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/scope")
+    }
 
     @Test
     fun sequencesShouldMatchReferenceOutput() {
