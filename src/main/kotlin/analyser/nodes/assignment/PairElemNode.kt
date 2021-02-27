@@ -52,7 +52,8 @@ data class PairElemNode(
             addAll(expr.translate(ctx))
             add(BLInstr(CheckNullPointer.label))
 
-            val memOffset = if (isFirst) {0} else {4}
+            val memOffset = if (isFirst) 0 else 4
+
             add(LDRInstr(Register.R0, MemAddr(Register.R0, NumOp(memOffset))))
             add(
                 loadLocalVar(

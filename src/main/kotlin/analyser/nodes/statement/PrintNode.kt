@@ -27,23 +27,20 @@ data class PrintNode(
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             addAll(value.translate(ctx))
-
-            when (value.type) {
-                IntType, StringType, BoolType, is GenericPair -> {
-                    val printFunc = when (value.type) {
-                        IntType -> PrintInt
-                        StringType -> PrintStr
-                        BoolType -> PrintBool
-                        is GenericPair -> PrintPair
-                        else -> throw UnexpectedException(
-                            "Else branch should not be reached for operator ${value.type}"
-                        )
-                    }
-                    ctx.addLibraryFunction(printFunc)
-                    add(BLInstr(printFunc.label))
+            if (value.type == CharType) {
+                add(BLInstr("putchar"))
+            } else {
+                val printFunc = when (value.type) {
+                    IntType -> PrintInt
+                    StringType -> PrintStr
+                    BoolType -> PrintBool
+                    is GenericPair -> PrintPair
+                    else -> throw UnexpectedException(
+                        "Else branch should not be reached for operator ${value.type}"
+                    )
                 }
-
-                CharType -> add(BLInstr("putchar"))
+                ctx.addLibraryFunction(printFunc)
+                add(BLInstr(printFunc.label))
             }
 
             if (returnAfterPrint) {

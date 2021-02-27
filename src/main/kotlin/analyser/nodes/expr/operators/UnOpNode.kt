@@ -44,14 +44,6 @@ data class UnOpNode(
             else -> TODO()
         }
 
-    private fun translateMinus(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            ctx.addLibraryFunction(OverflowError)
-            addAll(expr.translate(ctx))
-            add(RSBSInstr(Register.R0, Register.R0, NumOp(0)))
-            add(BLVSInstr(OverflowError.label))
-        }
-
     private fun translateNegate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             addAll(expr.translate(ctx))
@@ -61,10 +53,8 @@ data class UnOpNode(
     private fun translateMinus(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             ctx.addLibraryFunction(OverflowError)
-
             addAll(expr.translate(ctx))
-            add(RSBSInstr(Register.R0, Register.R0, NumOp(0, false)))
-
+            add(RSBSInstr(Register.R0, Register.R0, NumOp(0)))
             add(BLVSInstr(OverflowError.label))
         }
 }

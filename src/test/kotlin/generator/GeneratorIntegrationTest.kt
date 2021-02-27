@@ -32,4 +32,9 @@ class GeneratorIntegrationTest {
     fun pairsShouldMatchReferenceOutput() {
         checkAllMatches("valid/pairs")
     }
+
+    @Test
+    fun inputOutputShouldMatchReferenceOutput() {
+        checkAllMatches("valid/IO")
+    }
 }
