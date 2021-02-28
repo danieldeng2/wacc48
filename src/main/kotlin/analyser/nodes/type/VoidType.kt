@@ -1,6 +1,8 @@
 package analyser.nodes.type
 
 import analyser.SymbolTable
+import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 object VoidType : Type {
@@ -26,4 +28,6 @@ object VoidType : Type {
     override fun hashCode(): Int {
         return 0
     }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> = emptyList()
 }

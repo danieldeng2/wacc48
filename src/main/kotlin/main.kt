@@ -1,4 +1,3 @@
-
 import analyser.nodes.ASTNode
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
@@ -8,7 +7,7 @@ import java.nio.file.Path
 
 fun main(args: Array<String>) {
     if (args.isEmpty() || !File(args[0]).exists()) {
-        print("Usage: compile <WACC Source>")
+        println("Usage: compile <WACC Source>")
         return
     }
 

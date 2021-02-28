@@ -1,5 +1,5 @@
 #!/usr/bin/bash
 
-java -jar build/libs/wacc-1.0-SNAPSHOT.jar $@
+java -jar build/libs/wacc-1.0-SNAPSHOT.jar "$@"
 
 exit $?

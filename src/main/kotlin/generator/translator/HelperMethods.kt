@@ -24,7 +24,7 @@ fun storeLocalVar(
         is IntType, StringType, is GenericPair, is ArrayType ->
             STRInstr(rn, MemAddr(rd, NumOp(stackOffset)))
 
-        else -> TODO("Store $varType type")
+        else -> throw UnknownError("Cannot store $varType")
     }
 
 fun loadLocalVar(
@@ -40,7 +40,7 @@ fun loadLocalVar(
         is IntType, StringType, is GenericPair, is ArrayType ->
             LDRInstr(rd, MemAddr(rn, NumOp(stackOffset)))
 
-        else -> TODO("Load $varType type")
+        else -> throw UnknownError("Cannot load $varType")
     }
 
 

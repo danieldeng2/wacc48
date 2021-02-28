@@ -8,7 +8,7 @@ plugins {
     antlr
 }
 
-group = "me.daniel"
+group = "wacc48"
 version = "1.0-SNAPSHOT"
 
 tasks.jar {

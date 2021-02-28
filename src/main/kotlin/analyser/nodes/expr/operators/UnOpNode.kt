@@ -14,7 +14,6 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
 import generator.translator.lib.errors.OverflowError
-import generator.translator.loadLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class UnOpNode(

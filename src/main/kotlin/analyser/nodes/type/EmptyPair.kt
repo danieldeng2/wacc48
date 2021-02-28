@@ -1,6 +1,8 @@
 package analyser.nodes.type
 
 import analyser.SymbolTable
+import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 object EmptyPair : GenericPair {
@@ -26,5 +28,7 @@ object EmptyPair : GenericPair {
     override fun toString(): String {
         return "Pair"
     }
+
+    override fun translate(ctx: TranslatorContext): List<Instruction> = emptyList()
 }
 
