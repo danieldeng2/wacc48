@@ -1,6 +1,7 @@
 package analyser.nodes.type
 
 import analyser.SymbolTable
+import analyser.nodes.function.FuncNode
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
@@ -13,11 +14,14 @@ data class PairType(
 ) : GenericPair {
 
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
     override val reserveStackSize: Int = 4
 
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
     }

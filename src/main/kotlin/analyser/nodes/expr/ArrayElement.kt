@@ -3,7 +3,7 @@ package analyser.nodes.expr
 import analyser.SymbolTable
 import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
-import analyser.nodes.function.ParamNode
+import analyser.nodes.function.FuncNode
 import analyser.nodes.type.ArrayType
 import analyser.nodes.type.BoolType
 import analyser.nodes.type.CharType
@@ -26,21 +26,22 @@ data class ArrayElement(
 ) : ExprNode, LHSNode {
 
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
     override var mode: AccessMode = AccessMode.READ
 
     override lateinit var type: Type
 
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
         if (!st.containsInAnyScope(name))
             throw SemanticsException("Cannot find array $name", ctx)
         arrIndices.forEach { it.validate(st, funTable) }
-        val typedElem = st[name] as ParamNode
-
-        var identTypeTemp = typedElem.type
+        var identTypeTemp = st[name]!!
         if (identTypeTemp !is ArrayType)
             throw SemanticsException("$name is not an array", null)
 

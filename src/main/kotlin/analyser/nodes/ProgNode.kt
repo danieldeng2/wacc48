@@ -5,8 +5,8 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.statement.*
 import exceptions.SemanticsException
 import exceptions.SyntaxException
+import generator.instructions.Instruction
 import generator.translator.TranslatorContext
-import generator.instructions.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(
@@ -14,9 +14,12 @@ data class ProgNode(
     override val ctx: ParserRuleContext?
 ) : ASTNode {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
 

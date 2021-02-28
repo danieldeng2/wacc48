@@ -16,14 +16,17 @@ data class FuncCallNode(
 ) : RHSNode {
     override var type: Type = VoidType
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
-        if (!funTable.containsInAnyScope(name))
+        if (name !in funTable)
             throw SemanticsException("Cannot find function $name", ctx)
-        val functionNode = funTable[name] as FuncNode
+        val functionNode = funTable[name]!!
 
         argList.validate(st, funTable)
 

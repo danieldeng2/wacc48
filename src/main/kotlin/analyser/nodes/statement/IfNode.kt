@@ -2,16 +2,17 @@ package analyser.nodes.statement
 
 import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
+import analyser.nodes.function.FuncNode
 import analyser.nodes.type.BoolType
 import exceptions.SemanticsException
-import generator.translator.TranslatorContext
-import generator.instructions.*
+import generator.instructions.Instruction
 import generator.instructions.branch.BEQInstr
 import generator.instructions.branch.BInstr
 import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class IfNode(
@@ -21,9 +22,12 @@ data class IfNode(
     override val ctx: ParserRuleContext?,
 ) : StatNode {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
 

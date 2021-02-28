@@ -52,7 +52,7 @@ class FunctionNodeTest {
             functions = listOf(funcNode, emptyMainNode),
             ctx = null
         )
-        programNode.validate(SymbolTable(null), SymbolTable(null))
+        programNode.validate(SymbolTable(null), mutableMapOf())
     }
 
     @Test
@@ -77,8 +77,8 @@ class FunctionNodeTest {
             body = SkipNode,
             ctx = null
         )
-        val symbolTable = SymbolTable(null)
-        symbolTable.add("func", funcNode)
+        val symbolTable = mutableMapOf<String, FuncNode>()
+        symbolTable["func"] = funcNode
 
         val exception = assertFailsWith<SemanticsException> {
             funcNodeDuplicate.validatePrototype(symbolTable)
@@ -102,7 +102,7 @@ class FunctionNodeTest {
             ctx = null
         )
         val exception = assertFailsWith<SemanticsException> {
-            funcNode.validate(SymbolTable(null), SymbolTable(null))
+            funcNode.validate(SymbolTable(null), mutableMapOf())
         }
         assertEquals(
             exception.message,
@@ -122,7 +122,7 @@ class FunctionNodeTest {
             body = returnTrueNode,
             ctx = null
         )
-        funcNode.validate(SymbolTable(null), SymbolTable(null))
+        funcNode.validate(SymbolTable(null), mutableMapOf())
     }
 
     @Test

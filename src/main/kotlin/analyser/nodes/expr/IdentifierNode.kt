@@ -3,7 +3,7 @@ package analyser.nodes.expr
 import analyser.SymbolTable
 import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
-import analyser.nodes.type.Typable
+import analyser.nodes.function.FuncNode
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
@@ -22,20 +22,19 @@ data class IdentifierNode(
 ) : LHSNode, ExprNode {
     override var type: Type = VoidType
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
     override var mode: AccessMode = AccessMode.READ
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
         if (!st.containsInAnyScope(name))
             throw SemanticsException("Unknown identifier $name", ctx)
 
-        val assignedNode = st[name]
-        if (assignedNode !is Typable)
-            throw SemanticsException("Unknown type $name", ctx)
-
-        type = assignedNode.type
+        type = st[name]!!
     }
 
     override fun translate(ctx: TranslatorContext) =

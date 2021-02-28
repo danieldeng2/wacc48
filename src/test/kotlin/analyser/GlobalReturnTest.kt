@@ -1,6 +1,5 @@
 package analyser
 
-import org.junit.Test
 import analyser.nodes.ProgNode
 import analyser.nodes.expr.BoolLiteral
 import analyser.nodes.function.FuncNode
@@ -8,6 +7,7 @@ import analyser.nodes.function.ParamListNode
 import analyser.nodes.statement.*
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
+import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -37,7 +37,7 @@ class GlobalReturnTest {
             ctx = null
         )
         try {
-            programNode.validate(SymbolTable(null), SymbolTable(null))
+            programNode.validate(SymbolTable(null), mutableMapOf())
         } catch (e: SemanticsException) {
             if (e.message.equals("Cannot return in global context")) {
                 return true

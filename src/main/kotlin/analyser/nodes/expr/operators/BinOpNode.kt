@@ -2,10 +2,13 @@ package analyser.nodes.expr.operators
 
 import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
-import analyser.nodes.type.*
+import analyser.nodes.function.FuncNode
+import analyser.nodes.type.BoolType
+import analyser.nodes.type.CharType
+import analyser.nodes.type.IntType
+import analyser.nodes.type.Type
 import exceptions.SemanticsException
-import generator.translator.TranslatorContext
-import generator.instructions.*
+import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDSInstr
 import generator.instructions.arithmetic.SMULLInstr
 import generator.instructions.arithmetic.SUBSInstr
@@ -20,6 +23,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.operands.ShiftOp
 import generator.instructions.operands.ShiftType
+import generator.translator.TranslatorContext
 import generator.translator.lib.errors.DivideByZeroError
 import generator.translator.lib.errors.OverflowError
 import generator.translator.popAndDecrement
@@ -35,9 +39,12 @@ data class BinOpNode(
 ) : ExprNode {
     override var type: Type = operator.returnType
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
         firstExpr.validate(st, funTable)

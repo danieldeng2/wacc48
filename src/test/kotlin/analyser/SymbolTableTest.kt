@@ -11,11 +11,11 @@ class SymbolTableTest {
     private val symbolTable = SymbolTable(null)
 
     @Test
-    fun addedNodeIsReturnedByGet() {
+    fun setedNodeIsReturnedByGet() {
         val node = BoolLiteral(true, null)
-        symbolTable.add("Boolean True", node)
+        symbolTable["Boolean True"] = node.type
 
-        assertEquals(symbolTable["Boolean True"], node)
+        assertEquals(symbolTable["Boolean True"], node.type)
     }
 
     @Test
@@ -24,9 +24,9 @@ class SymbolTableTest {
     }
 
     @Test
-    fun containsCurrentScopeReturnsTrueForAddedKey() {
+    fun containsCurrentScopeReturnsTrueForsetedKey() {
         val node = BoolLiteral(true, null)
-        symbolTable.add("Boolean True", node)
+        symbolTable["Boolean True"] = node.type
         assertTrue(symbolTable.containsInCurrentScope("Boolean True"))
     }
 
@@ -39,7 +39,7 @@ class SymbolTableTest {
     fun containsAnyScopeReturnsTrueForKeyInParent() {
         val childTable = SymbolTable(symbolTable)
         val node = BoolLiteral(true, null)
-        symbolTable.add("Boolean True", node)
+        symbolTable["Boolean True"] = node.type
 
         assertTrue(childTable.containsInAnyScope("Boolean True"))
     }
@@ -48,7 +48,7 @@ class SymbolTableTest {
     fun containsCurrentScopeReturnsFalseForKeyInParent() {
         val childTable = SymbolTable(symbolTable)
         val node = BoolLiteral(true, null)
-        symbolTable.add("Boolean True", node)
+        symbolTable["Boolean True"] = node.type
 
         assertFalse(childTable.containsInCurrentScope("Boolean True"))
     }

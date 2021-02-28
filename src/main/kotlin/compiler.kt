@@ -1,12 +1,12 @@
 import analyser.ASTGenerator
-import org.antlr.v4.runtime.*
-
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
 import exceptions.SemanticsException
 import exceptions.SyntaxException
 import exceptions.ThrowingErrorListener
 import generator.translator.TranslatorContext
+import org.antlr.v4.runtime.CharStream
+import org.antlr.v4.runtime.CommonTokenStream
 import kotlin.system.exitProcess
 
 fun runAnalyser(input: CharStream): ASTNode {
@@ -24,7 +24,10 @@ fun runAnalyser(input: CharStream): ASTNode {
 
     // Semantic Analysis
     val programNode = ASTGenerator().visitProg(parser.prog())
-    programNode.validate(SymbolTable(null), SymbolTable(null))
+    programNode.validate(
+        st = SymbolTable(null),
+        funTable = mutableMapOf()
+    )
 
     return programNode
 }

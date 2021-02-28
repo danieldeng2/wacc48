@@ -28,22 +28,24 @@ data class FuncNode(
     private val maxImmediateValue = 1024
 
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
 
     lateinit var paramListTable: SymbolTable
     lateinit var bodyTable: SymbolTable
 
-    fun validatePrototype(ft: SymbolTable) {
-        if (ft.containsInCurrentScope(identifier))
+    fun validatePrototype(ft: MutableMap<String, FuncNode>) {
+        if (identifier in ft)
             throw SemanticsException(
                 "Illegal re-declaration of function $identifier",
                 ctx
             )
-
-        ft.add(identifier, this)
+        ft[identifier] = this
     }
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
 

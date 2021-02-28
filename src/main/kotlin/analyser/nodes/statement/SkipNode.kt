@@ -1,17 +1,21 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
-import generator.translator.TranslatorContext
+import analyser.nodes.function.FuncNode
 import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 object SkipNode : StatNode {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
 
     override val ctx: ParserRuleContext? = null
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
     }

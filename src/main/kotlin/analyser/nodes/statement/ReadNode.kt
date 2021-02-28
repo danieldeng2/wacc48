@@ -3,7 +3,11 @@ package analyser.nodes.statement
 import analyser.SymbolTable
 import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
-import analyser.nodes.type.*
+import analyser.nodes.function.FuncNode
+import analyser.nodes.type.CharType
+import analyser.nodes.type.IntType
+import analyser.nodes.type.StringType
+import analyser.nodes.type.Type
 import exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
@@ -18,9 +22,12 @@ data class ReadNode(
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
         value.mode = AccessMode.ADDRESS

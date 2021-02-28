@@ -3,6 +3,7 @@ package analyser.nodes.assignment
 import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.expr.IdentifierNode
+import analyser.nodes.function.FuncNode
 import analyser.nodes.type.PairType
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
@@ -27,10 +28,13 @@ data class PairElemNode(
 ) : LHSNode, RHSNode {
     override var type: Type = VoidType
     override lateinit var st: SymbolTable
-    override lateinit var funTable: SymbolTable
+    override lateinit var funTable: MutableMap<String, FuncNode>
     override var mode: AccessMode = AccessMode.READ
 
-    override fun validate(st: SymbolTable, funTable: SymbolTable) {
+    override fun validate(
+        st: SymbolTable,
+        funTable: MutableMap<String, FuncNode>
+    ) {
         this.st = st
         this.funTable = funTable
         expr.validate(st, funTable)

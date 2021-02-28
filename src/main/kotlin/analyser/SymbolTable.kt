@@ -1,11 +1,10 @@
 package analyser
 
-import analyser.nodes.ASTNode
-import analyser.nodes.type.Typable
+import analyser.nodes.type.Type
 
 class SymbolTable(private val parent: SymbolTable?) {
 
-    private val map: MutableMap<String, Pair<ASTNode, Int>> = HashMap()
+    private val map: MutableMap<String, Pair<Type, Int>> = HashMap()
     private val isDeclared: MutableSet<String> = HashSet()
     var totalVarSize = 0
         private set
@@ -16,16 +15,16 @@ class SymbolTable(private val parent: SymbolTable?) {
         key in map || parent?.containsInAnyScope(key) ?: false
 
 
-    operator fun get(key: String): ASTNode? {
+    operator fun get(key: String): Type? {
         if (key in map) {
             return map[key]?.first
         }
         return parent?.get(key)
     }
 
-    fun add(id: String, node: ASTNode) {
-        totalVarSize += node.size()
-        map[id] = Pair(node, totalVarSize)
+    operator fun set(id: String, type: Type) {
+        totalVarSize += type.reserveStackSize
+        map[id] = Pair(type, totalVarSize)
     }
 
     fun declareVariable(id: String): Boolean {
@@ -42,10 +41,4 @@ class SymbolTable(private val parent: SymbolTable?) {
         }
         return parent!!.getVariablePosition(id) + totalVarSize
     }
-
-    private fun ASTNode.size() =
-        when (this) {
-            is Typable -> type.reserveStackSize
-            else -> 0
-        }
 }
