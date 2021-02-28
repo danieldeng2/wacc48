@@ -60,4 +60,8 @@ class SymbolTable(private val parent: SymbolTable?) {
         offset += curST.localStackSize - curST.map[id]!!.second
         return offset
     }
+
+    fun getParent(): SymbolTable? {
+        return parent
+    }
 }

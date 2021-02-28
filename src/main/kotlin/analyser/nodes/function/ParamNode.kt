@@ -16,6 +16,7 @@ data class ParamNode(
 ) : ASTNode, Typable {
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
+    var isDeclared: Boolean = false
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st
@@ -32,5 +33,6 @@ data class ParamNode(
         mutableListOf<Instruction>().apply {
             val offset = ctx.getOffsetOfLocalVar(text, st)
             add(storeLocalVar(type, offset))
+            isDeclared = true
         }
 }
