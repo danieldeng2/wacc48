@@ -1,10 +1,10 @@
 package generator.translator
 
 import analyser.SymbolTable
-import generator.instructions.branch.BLInstr
 import generator.instructions.Instruction
-import generator.instructions.directives.LabelInstr
+import generator.instructions.branch.BLInstr
 import generator.instructions.directives.Ascii
+import generator.instructions.directives.LabelInstr
 import generator.instructions.directives.Word
 import generator.translator.lib.LibraryFunction
 
@@ -68,6 +68,6 @@ class TranslatorContext {
             addAll(text)
         }
 
-    fun getOffsetOfLocalVar(id: String, st: SymbolTable) =
-        st.getOffsetOfVar(id) + stackPtrOffset
+    fun getOffsetOfVar(id: String, st: SymbolTable) =
+        st.getVariablePosition(id) + stackPtrOffset
 }

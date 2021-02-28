@@ -3,16 +3,15 @@ package analyser.nodes.expr
 import analyser.SymbolTable
 import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
-import analyser.nodes.function.ParamNode
 import analyser.nodes.type.Typable
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
-import generator.translator.TranslatorContext
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.TranslatorContext
 import generator.translator.loadLocalVar
 import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
@@ -41,15 +40,7 @@ data class IdentifierNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val paramNode = st[name] as ParamNode
-            val offset = if (paramNode.isDeclared) {
-                ctx.getOffsetOfLocalVar(name, st)
-            } else {
-                /* If the variable of this name in this scope is not defined,
-                *  then this identifier is referring to a variable of the same
-                * name in a higher scope */
-                ctx.getOffsetOfLocalVar(name, st.getParent()!!) + st.getLocalVariablesSize()
-            }
+            val offset = ctx.getOffsetOfVar(name, st)
 
             add(
                 when (mode) {

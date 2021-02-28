@@ -2,10 +2,11 @@ package analyser.nodes.function
 
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
-import analyser.nodes.type.*
+import analyser.nodes.type.Typable
+import analyser.nodes.type.Type
 import exceptions.SemanticsException
+import generator.instructions.Instruction
 import generator.translator.TranslatorContext
-import generator.instructions.*
 import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -16,7 +17,6 @@ data class ParamNode(
 ) : ASTNode, Typable {
     override lateinit var st: SymbolTable
     override lateinit var funTable: SymbolTable
-    var isDeclared: Boolean = false
 
     override fun validate(st: SymbolTable, funTable: SymbolTable) {
         this.st = st
@@ -29,10 +29,10 @@ data class ParamNode(
         st.add(text, this)
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            val offset = ctx.getOffsetOfLocalVar(text, st)
-            add(storeLocalVar(type, offset))
-            isDeclared = true
-        }
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        st.declareVariable(text)
+        val offset = ctx.getOffsetOfVar(text, st)
+        return listOf(storeLocalVar(type, offset))
+    }
+
 }

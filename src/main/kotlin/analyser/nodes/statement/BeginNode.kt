@@ -26,16 +26,16 @@ data class BeginNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val localStackSize = currST.getLocalVariablesSize()
+            val variableSize = currST.totalVarSize
 
-            if (localStackSize != 0) {
-                add(SUBInstr(Register.SP, Register.SP, NumOp(localStackSize)))
+            if (variableSize != 0) {
+                add(SUBInstr(Register.SP, Register.SP, NumOp(variableSize)))
             }
 
             addAll(stat.translate(ctx))
 
-            if (localStackSize != 0) {
-                add(ADDInstr(Register.SP, Register.SP, NumOp(localStackSize)))
+            if (variableSize != 0) {
+                add(ADDInstr(Register.SP, Register.SP, NumOp(variableSize)))
             }
         }
 }

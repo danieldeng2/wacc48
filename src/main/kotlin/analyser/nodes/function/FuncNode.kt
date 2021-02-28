@@ -77,7 +77,7 @@ data class FuncNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val localStackSize = bodyTable.getLocalVariablesSize()
+            val localStackSize = bodyTable.totalVarSize
 
             add(LabelInstr(identifier))
             add(PUSHInstr(Register.LR))
