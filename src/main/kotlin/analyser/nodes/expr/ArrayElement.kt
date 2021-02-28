@@ -72,7 +72,7 @@ data class ArrayElement(
             add(
                 loadLocalVar(
                     varType = ArrayType(type, null),
-                    stackOffset = ctx.getOffsetOfLocalVar(name, st),
+                    stackOffset = ctx.getOffsetOfVar(name, st),
                     rd = Register.R4
                 )
             )
@@ -104,7 +104,7 @@ data class ArrayElement(
         mutableListOf<Instruction>().apply {
             ctx.addLibraryFunction(CheckArrayBounds)
 
-            val offset = ctx.getOffsetOfLocalVar(name, st)
+            val offset = ctx.getOffsetOfVar(name, st)
             add(
                 LDRInstr(
                     Register.R0,
@@ -118,7 +118,14 @@ data class ArrayElement(
             arrIndices.forEach {
                 addAll(it.translate(ctx))
                 addAll(checkArrayBounds())
-                add(LDRInstr(Register.R4, MemAddr(Register.R4)))
+                add(
+                    loadLocalVar(
+                        type,
+                        stackOffset = 0,
+                        rn = Register.R4,
+                        rd = Register.R4
+                    )
+                )
             }
 
             add(MOVInstr(Register.R0, Register.R4))

@@ -7,11 +7,11 @@ import analyser.nodes.type.Typable
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
 import exceptions.SemanticsException
-import generator.translator.TranslatorContext
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.TranslatorContext
 import generator.translator.loadLocalVar
 import generator.translator.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
@@ -40,7 +40,8 @@ data class IdentifierNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val offset = ctx.getOffsetOfLocalVar(name, st)
+            val offset = ctx.getOffsetOfVar(name, st)
+
             add(
                 when (mode) {
                     AccessMode.ASSIGN -> storeLocalVar(type, offset)

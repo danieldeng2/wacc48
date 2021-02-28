@@ -80,7 +80,7 @@ data class PairElemNode(
         mutableListOf<Instruction>().apply {
             add(pushAndIncrement(ctx, Register.R0))
 
-            val stackOffset = ctx.getOffsetOfLocalVar((expr as IdentifierNode).name, st)
+            val stackOffset = ctx.getOffsetOfVar((expr as IdentifierNode).name, st)
             add(LDRInstr(Register.R0, MemAddr(Register.SP, NumOp(stackOffset))))
 
             ctx.addLibraryFunction(CheckNullPointer)
