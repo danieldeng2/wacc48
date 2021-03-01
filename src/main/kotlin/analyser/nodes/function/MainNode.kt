@@ -29,12 +29,15 @@ class MainNode(
 
     override fun translate(ctx: TranslatorContext): List<Instruction> =
         mutableListOf<Instruction>().apply {
+            ctx.stackPtrOffset = 0
+
             declareFunction("main") {
                 newScope(st) {
                     addAll(body.translate(ctx))
                 }
                 add(MOVInstr(Register.R0, NumOp(0)))
             }
+
         }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =

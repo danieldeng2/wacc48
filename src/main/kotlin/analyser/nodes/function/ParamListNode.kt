@@ -10,19 +10,22 @@ data class ParamListNode(
     val params: List<ParamNode>,
     val ctx: ParserRuleContext?
 ) : ASTNode {
-
+    private lateinit var st: SymbolTable
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-
-        params.forEach {
+        this.st = st
+        params.asReversed().forEach {
             it.validate(st, funTable)
         }
     }
 
     override fun translate(ctx: TranslatorContext): List<Instruction> {
-        TODO("Not yet implemented")
+        params.forEach {
+            st.declareVariable(it.text)
+        }
+        return emptyList()
     }
 }

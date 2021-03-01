@@ -1,13 +1,16 @@
 package analyser.nodes.function
 
 import analyser.SymbolTable
+import analyser.exceptions.SemanticsException
 import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
 import analyser.nodes.type.Type
-import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
+import generator.instructions.operands.Register
+import generator.instructions.stack.POPInstr
 import generator.translator.TranslatorContext
-import generator.translator.helpers.*
+import generator.translator.helpers.declareFunction
+import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(
@@ -33,8 +36,7 @@ data class FuncNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-
-        this.paramListTable = SymbolTable(st)
+        this.paramListTable = SymbolTable(st, isParamListST = true)
         this.bodyTable = SymbolTable(paramListTable)
 
         retType.validate(st, funTable)
@@ -63,11 +65,17 @@ data class FuncNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
+            paramList.translate(ctx)
+
+            ctx.stackPtrOffset = 0
+
             declareFunction("f_$identifier") {
                 newScope(bodyTable) {
                     addAll(body.translate(ctx))
                 }
             }
+
+            add(POPInstr(Register.PC))
         }
 
 }

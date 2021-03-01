@@ -16,14 +16,15 @@ fun storeLocalVar(
     varType: Type,
     stackOffset: Int,
     rd: Register = Register.SP,
-    rn: Register = Register.R0
+    rn: Register = Register.R0,
+    isArgLoad: Boolean = false
 ) =
     when (varType) {
         is BoolType, CharType ->
-            STRBInstr(rn, MemAddr(rd, NumOp(stackOffset)))
+            STRBInstr(rn, MemAddr(rd, NumOp(stackOffset), isArgLoad))
 
         is IntType, StringType, is GenericPair, is ArrayType ->
-            STRInstr(rn, MemAddr(rd, NumOp(stackOffset)))
+            STRInstr(rn, MemAddr(rd, NumOp(stackOffset), isArgLoad))
 
         else -> throw UnknownError("Cannot store $varType")
     }

@@ -12,24 +12,20 @@
 # Program:
 
 begin
-  char doSomething(int a, bool b, char c, string d, bool[] e, int[] f) is
-    print "a is " ;
+  char doSomething(int a, bool b, char c, string d) is
+		int e = 1;
+		int f = 1;
+		int g = 1;
     println a ;
-    print "b is " ;
     println b ;
-    print "c is " ;
     println c ;
-    print "d is " ;
     println d ;
-    print "e is " ;
-    println e ;
-    print "f is " ;
-    println f ;
+		println e ;
+		println f ;
+		println g ;
     return 'g'
   end
-  bool[] bools = [ false, true ] ;
-  int[] ints = [ 1, 2 ] ;
-  char answer = call doSomething(42, true, 'u', "hello", bools, ints) ;
+  char answer = call doSomething(42, true, 'u', "hello") ;
   print "answer is " ;
   println answer
 end

@@ -17,7 +17,7 @@ data class BeginNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.currST = SymbolTable(st)
+        this.currST = SymbolTable(st, true)
         stat.validate(currST, funTable)
     }
 

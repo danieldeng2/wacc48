@@ -2,7 +2,7 @@ package analyser
 
 import analyser.nodes.type.Type
 
-class SymbolTable(private val parent: SymbolTable?) {
+class SymbolTable(private val parent: SymbolTable?, val isParamListST: Boolean = false) {
 
     private val map: MutableMap<String, Pair<Type, Int>> = HashMap()
     private val isDeclared: MutableSet<String> = HashSet()
@@ -36,8 +36,10 @@ class SymbolTable(private val parent: SymbolTable?) {
     }
 
     fun getVariablePosition(id: String): Int {
+        val offset = if (isParamListST) 4 else 0
+
         if (id in isDeclared) {
-            return totalVarSize - map[id]!!.second
+            return totalVarSize - map[id]!!.second + offset
         }
         return parent!!.getVariablePosition(id) + totalVarSize
     }

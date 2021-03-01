@@ -69,5 +69,5 @@ class TranslatorContext {
         }
 
     fun getOffsetOfVar(id: String, st: SymbolTable) =
-        st.getVariablePosition(id) + stackPtrOffset
+            st.getVariablePosition(id) + stackPtrOffset
 }

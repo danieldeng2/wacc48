@@ -1,10 +1,10 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
+import analyser.exceptions.SemanticsException
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.function.FuncNode
 import analyser.nodes.type.BoolType
-import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BEQInstr
 import generator.instructions.branch.BInstr
@@ -13,7 +13,7 @@ import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
-import generator.translator.helpers.*
+import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class WhileNode(
@@ -27,7 +27,7 @@ data class WhileNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.bodyST = SymbolTable(st)
+        this.bodyST = SymbolTable(st, true)
         proposition.validate(st, funTable)
 
         if (proposition.type != BoolType)

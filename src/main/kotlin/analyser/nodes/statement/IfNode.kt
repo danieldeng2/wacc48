@@ -29,8 +29,8 @@ data class IfNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.trueST = SymbolTable(st)
-        this.falseST = SymbolTable(st)
+        this.trueST = SymbolTable(st, true)
+        this.falseST = SymbolTable(st, true)
 
         if (proposition.type != BoolType)
             throw SemanticsException(
