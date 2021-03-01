@@ -37,7 +37,7 @@ class SymbolTableTest {
 
     @Test
     fun containsAnyScopeReturnsTrueForKeyInParent() {
-        val childTable = SymbolTable(symbolTable)
+        val childTable = SymbolTable(symbolTable, true)
         val node = BoolLiteral(true, null)
         symbolTable["Boolean True"] = node.type
 
@@ -46,7 +46,7 @@ class SymbolTableTest {
 
     @Test
     fun containsCurrentScopeReturnsFalseForKeyInParent() {
-        val childTable = SymbolTable(symbolTable)
+        val childTable = SymbolTable(symbolTable, true)
         val node = BoolLiteral(true, null)
         symbolTable["Boolean True"] = node.type
 

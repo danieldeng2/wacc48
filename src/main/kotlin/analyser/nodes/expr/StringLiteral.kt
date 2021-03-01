@@ -13,9 +13,8 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class StringLiteral(
     val value: String,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ExprNode {
-    override lateinit var st: SymbolTable
 
 
     override var type: Type = StringType
@@ -24,7 +23,6 @@ data class StringLiteral(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
     }
 
     override fun translate(ctx: TranslatorContext) = listOf(

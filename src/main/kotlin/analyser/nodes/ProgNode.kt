@@ -1,37 +1,33 @@
 package analyser.nodes
 
 import analyser.SymbolTable
+import analyser.exceptions.SyntaxException
 import analyser.nodes.function.FuncNode
+import analyser.nodes.function.MainNode
 import analyser.nodes.statement.*
-import exceptions.SemanticsException
-import exceptions.SyntaxException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(
-    private val functions: List<FuncNode>,
-    override val ctx: ParserRuleContext?
+    val functions: List<FuncNode>,
+    val main: MainNode,
+    val ctx: ParserRuleContext?
 ) : ASTNode {
-    override lateinit var st: SymbolTable
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
-        val (main, funcs) = functions.partition { it.identifier == "main" }
-
-        funcs.forEach {
+        functions.forEach {
             if (!allPathsTerminated(it.body))
                 throw SyntaxException("Function ${it.identifier} must end with either a return or exit")
         }
 
-        funcs.forEach { it.validatePrototype(funTable) }
+        functions.forEach { it.validatePrototype(funTable) }
         functions.forEach { it.validate(st, funTable) }
 
-        if (hasGlobalReturn(main[0].body))
-            throw SemanticsException("Cannot return in global context", ctx)
+        main.validate(st, funTable)
     }
 
     private fun allPathsTerminated(body: StatNode): Boolean =
@@ -45,22 +41,16 @@ data class ProgNode(
             else -> false
         }
 
-    private fun hasGlobalReturn(body: StatNode): Boolean =
-        when (body) {
-            is IfNode -> hasGlobalReturn(body.trueStat) || hasGlobalReturn(body.falseStat)
-            is SeqNode -> body.any { hasGlobalReturn(it) }
-            is WhileNode -> hasGlobalReturn(body.body)
-            is BeginNode -> hasGlobalReturn(body.stat)
-            is ReturnNode -> true
-            else -> false
+    override fun translate(ctx: TranslatorContext): List<Instruction> {
+        ctx.text.apply {
+            addAll(
+                functions.flatMap {
+                    it.translate(ctx)
+                }
+            )
+            addAll(main.translate(ctx))
         }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> {
-        ctx.text.addAll(
-            functions.flatMap {
-                it.translate(ctx)
-            }
-        )
         return ctx.assemble()
     }
 

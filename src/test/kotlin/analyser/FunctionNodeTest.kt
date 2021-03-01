@@ -3,6 +3,7 @@ package analyser
 import analyser.nodes.ProgNode
 import analyser.nodes.expr.BoolLiteral
 import analyser.nodes.function.FuncNode
+import analyser.nodes.function.MainNode
 import analyser.nodes.function.ParamListNode
 import analyser.nodes.statement.IfNode
 import analyser.nodes.statement.ReturnNode
@@ -11,8 +12,8 @@ import analyser.nodes.statement.StatNode
 import analyser.nodes.type.BoolType
 import analyser.nodes.type.IntType
 import analyser.nodes.type.VoidType
-import exceptions.SemanticsException
-import exceptions.SyntaxException
+import analyser.exceptions.SemanticsException
+import analyser.exceptions.SyntaxException
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -27,12 +28,8 @@ class FunctionNodeTest {
         value = trueBooleanNode,
         ctx = null
     )
-    private val emptyMainNode = FuncNode(
-        "main",
-        ParamListNode(emptyList(), null),
-        VoidType,
-        SkipNode,
-        null
+    private val emptyMainNode = MainNode(
+        SkipNode, null
     )
 
 
@@ -49,7 +46,8 @@ class FunctionNodeTest {
             ctx = null
         )
         val programNode = ProgNode(
-            functions = listOf(funcNode, emptyMainNode),
+            functions = listOf(funcNode),
+            main = emptyMainNode,
             ctx = null
         )
         programNode.validate(SymbolTable(null), mutableMapOf())

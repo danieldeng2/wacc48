@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.function.FuncNode
 import analyser.nodes.type.*
-import exceptions.SyntaxException
+import analyser.exceptions.SyntaxException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.RSBSInstr
 import generator.instructions.branch.BLVSInstr
@@ -20,17 +20,16 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class UnOpNode(
     val operator: UnaryOperator,
     val expr: ExprNode,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : ExprNode {
     override var type: Type = operator.returnType
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         expr.validate(st, funTable)
 
         if (expr.type !in operator.expectedExprTypes)

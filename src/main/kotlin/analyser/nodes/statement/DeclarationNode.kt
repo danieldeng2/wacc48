@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.assignment.RHSNode
 import analyser.nodes.function.FuncNode
 import analyser.nodes.function.ParamNode
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
@@ -12,16 +12,13 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class DeclarationNode(
     val name: ParamNode,
     val value: RHSNode,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : StatNode {
-    override lateinit var st: SymbolTable
-
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
         name.validate(st, funTable)
         value.validate(st, funTable)
 

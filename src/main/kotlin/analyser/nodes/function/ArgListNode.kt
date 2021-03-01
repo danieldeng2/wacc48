@@ -5,26 +5,40 @@ import analyser.nodes.ASTNode
 import analyser.nodes.expr.ExprNode
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
+import generator.translator.helpers.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ArgListNode(
     val args: List<ExprNode>,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ASTNode {
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
         args.forEach {
             it.validate(st, funTable)
         }
     }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> {
-        TODO("Not yet implemented")
-    }
+    override fun translate(ctx: TranslatorContext) =
+        mutableListOf<Instruction>().apply {
+            val stackPtrTemp = ctx.stackPtrOffset
+
+            args.asReversed().forEach {
+                addAll(it.translate(ctx))
+                add(
+                    storeLocalVar(
+                        varType = it.type,
+                        stackOffset = -it.type.reserveStackSize,
+                        isArgLoad = true
+                    )
+                )
+                ctx.stackPtrOffset += it.type.reserveStackSize
+            }
+
+            ctx.stackPtrOffset = stackPtrTemp
+        }
 }

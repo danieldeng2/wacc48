@@ -10,10 +10,9 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class PairType(
     var firstType: Type,
     var secondType: Type,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : GenericPair {
 
-    override lateinit var st: SymbolTable
 
     override val reserveStackSize: Int = 4
 
@@ -22,7 +21,6 @@ data class PairType(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
     }
 
     override fun equals(other: Any?): Boolean {

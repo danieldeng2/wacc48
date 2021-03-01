@@ -6,17 +6,13 @@ import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
-data class ArrayType(val elementType: Type, override val ctx: ParserRuleContext?) : Type {
-    override lateinit var st: SymbolTable
-
+data class ArrayType(val elementType: Type, val ctx: ParserRuleContext?) : Type {
     override val reserveStackSize: Int = 4
-
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
     }
 
     override fun equals(other: Any?): Boolean {

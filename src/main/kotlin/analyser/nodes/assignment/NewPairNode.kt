@@ -14,25 +14,22 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
 import generator.translator.TranslatorContext
-import generator.translator.popAndDecrement
-import generator.translator.pushAndIncrement
-import generator.translator.storeLocalVar
+import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class NewPairNode(
     val firstElem: ExprNode,
     val secondElem: ExprNode,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : RHSNode {
     override var type: Type = VoidType
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         firstElem.validate(st, funTable)
         secondElem.validate(st, funTable)
 

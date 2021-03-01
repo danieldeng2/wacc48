@@ -8,22 +8,24 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class ParamListNode(
     val params: List<ParamNode>,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ASTNode {
-    override lateinit var st: SymbolTable
-
+    private lateinit var st: SymbolTable
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        params.forEach {
+        params.asReversed().forEach {
             it.validate(st, funTable)
         }
     }
 
     override fun translate(ctx: TranslatorContext): List<Instruction> {
-        TODO("Not yet implemented")
+        params.forEach {
+            st.declareVariable(it.text)
+        }
+        return emptyList()
     }
 }

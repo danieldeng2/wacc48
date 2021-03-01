@@ -1,8 +1,8 @@
 package analyser
 
 import WalkDirectory
-import exceptions.SemanticsException
-import exceptions.SyntaxException
+import analyser.exceptions.SemanticsException
+import analyser.exceptions.SyntaxException
 import org.antlr.v4.runtime.CharStreams
 import org.junit.Test
 import runAnalyser

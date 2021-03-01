@@ -3,32 +3,31 @@ package analyser.nodes.expr
 import analyser.SymbolTable
 import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
+
 import analyser.nodes.function.FuncNode
 import analyser.nodes.type.ArrayType
 import analyser.nodes.type.BoolType
 import analyser.nodes.type.CharType
 import analyser.nodes.type.Type
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
-import generator.translator.*
+import generator.translator.TranslatorContext
 import generator.translator.lib.errors.CheckArrayBounds
+import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ArrayElement(
     val name: String,
     val arrIndices: List<ExprNode>,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ExprNode, LHSNode {
-
-    override lateinit var st: SymbolTable
-
+    private lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
-
     override lateinit var type: Type
 
 
@@ -40,13 +39,13 @@ data class ArrayElement(
         if (!st.containsInAnyScope(name))
             throw SemanticsException("Cannot find array $name", ctx)
         arrIndices.forEach { it.validate(st, funTable) }
-        var identTypeTemp = st[name]!!
-        if (identTypeTemp !is ArrayType)
+        var identityType = st[name]!!
+        if (identityType !is ArrayType)
             throw SemanticsException("$name is not an array", null)
 
         for (i in arrIndices.indices) {
             try {
-                identTypeTemp = (identTypeTemp as ArrayType).elementType
+                identityType = (identityType as ArrayType).elementType
             } catch (e: ClassCastException) {
                 throw SemanticsException(
                     "Invalid de-referencing of array $name",
@@ -54,7 +53,7 @@ data class ArrayElement(
                 )
             }
         }
-        type = identTypeTemp
+        type = identityType
     }
 
     override fun translate(ctx: TranslatorContext) =
@@ -88,15 +87,12 @@ data class ArrayElement(
             add(MOVInstr(Register.R1, Register.R4))
             add(popAndDecrement(ctx, Register.R0, Register.R4))
             add(
-                if (mode == AccessMode.ASSIGN)
-                    storeLocalVar(
-                        varType = type,
-                        stackOffset = 0,
-                        rn = Register.R0,
-                        rd = Register.R1
-                    )
-                else
-                    ADDInstr(Register.R0, Register.R1, NumOp(0))
+                readOrAssign(
+                    varType = type,
+                    stackOffset = 0,
+                    rn = Register.R0,
+                    rd = Register.R1
+                )
             )
         }
 

@@ -8,16 +8,15 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class SeqNode(
     val sequence: List<StatNode>,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : StatNode, List<StatNode> {
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         sequence.forEach { it.validate(st, funTable) }
     }
 

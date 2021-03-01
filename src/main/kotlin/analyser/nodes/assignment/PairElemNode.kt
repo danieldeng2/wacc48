@@ -7,7 +7,7 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.type.PairType
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
@@ -17,18 +17,18 @@ import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
-import generator.translator.*
+import generator.translator.TranslatorContext
 import generator.translator.lib.errors.CheckNullPointer
+import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class PairElemNode(
     private val expr: ExprNode,
     private val isFirst: Boolean,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : LHSNode, RHSNode {
     override var type: Type = VoidType
-    override lateinit var st: SymbolTable
-
+    lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
 
     override fun validate(
@@ -48,7 +48,6 @@ data class PairElemNode(
                 else -> nameType.secondType
             }
         }
-
     }
 
     override fun translate(ctx: TranslatorContext) =
@@ -104,15 +103,12 @@ data class PairElemNode(
             add(MOVInstr(Register.R1, Register.R0))
             add(popAndDecrement(ctx, Register.R0))
             add(
-                if (mode == AccessMode.ASSIGN)
-                    storeLocalVar(
-                        varType = type,
-                        stackOffset = 0,
-                        rn = Register.R0,
-                        rd = Register.R1
-                    )
-                else
-                    ADDInstr(Register.R0, Register.R1, NumOp(0))
+                readOrAssign(
+                    varType = type,
+                    stackOffset = 0,
+                    rn = Register.R0,
+                    rd = Register.R1
+                )
             )
         }
 

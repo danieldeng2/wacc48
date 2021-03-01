@@ -10,4 +10,3 @@ enum class AccessMode {
 interface LHSNode : ASTNode, Typable {
     var mode: AccessMode
 }
-

@@ -5,7 +5,7 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.type.ArrayType
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.instructions.move.MOVInstr
@@ -14,24 +14,23 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
 import generator.translator.TranslatorContext
-import generator.translator.storeLocalVar
+import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 
 data class ArrayLiteral(
     val values: List<ExprNode>,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ExprNode {
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, ctx)
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         if (values.isNotEmpty()) {
             values[0].validate(st, funTable)
             elemType = values[0].type

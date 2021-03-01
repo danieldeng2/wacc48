@@ -8,7 +8,7 @@ import analyser.nodes.type.CharType
 import analyser.nodes.type.IntType
 import analyser.nodes.type.StringType
 import analyser.nodes.type.Type
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.translator.TranslatorContext
@@ -18,17 +18,16 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class ReadNode(
     private val value: LHSNode,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         value.mode = AccessMode.ADDRESS
         value.validate(st, funTable)
         if (value.type !in expectedExprTypes)

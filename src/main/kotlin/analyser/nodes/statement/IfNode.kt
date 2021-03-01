@@ -1,10 +1,10 @@
 package analyser.nodes.statement
 
 import analyser.SymbolTable
+import analyser.exceptions.SemanticsException
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.function.FuncNode
 import analyser.nodes.type.BoolType
-import exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BEQInstr
 import generator.instructions.branch.BInstr
@@ -13,22 +13,25 @@ import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
+import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class IfNode(
     val proposition: ExprNode,
     val trueStat: StatNode,
     val falseStat: StatNode,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : StatNode {
-    override lateinit var st: SymbolTable
-
+    lateinit var trueST: SymbolTable
+    lateinit var falseST: SymbolTable
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+        this.trueST = SymbolTable(st)
+        this.falseST = SymbolTable(st)
+
         if (proposition.type != BoolType)
             throw SemanticsException(
                 "If statement proposition must be boolean",
@@ -36,8 +39,8 @@ data class IfNode(
             )
 
         proposition.validate(st, funTable)
-        trueStat.validate(SymbolTable(st), funTable)
-        falseStat.validate(SymbolTable(st), funTable)
+        trueStat.validate(trueST, funTable)
+        falseStat.validate(falseST, funTable)
     }
 
     override fun translate(ctx: TranslatorContext) =
@@ -49,12 +52,15 @@ data class IfNode(
             val continueBranch = ctx.labelCounter
 
             add(BEQInstr("L$falseBranchIndex"))
-            addAll(trueStat.translate(ctx))
+            newScope(trueST) {
+                addAll(trueStat.translate(ctx))
+            }
             add(BInstr("L$continueBranch"))
 
             add(LabelInstr("L$falseBranchIndex"))
-            addAll(falseStat.translate(ctx))
-
+            newScope(falseST) {
+                addAll(falseStat.translate(ctx))
+            }
             add(LabelInstr("L$continueBranch"))
         }
 }

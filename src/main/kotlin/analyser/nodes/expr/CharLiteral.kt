@@ -11,16 +11,14 @@ import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
-data class CharLiteral(val value: Char, override val ctx: ParserRuleContext?) :
+data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) :
     ExprNode {
     override var type: Type = CharType
-    override lateinit var st: SymbolTable
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
     }
 
     override fun translate(ctx: TranslatorContext): List<Instruction> =

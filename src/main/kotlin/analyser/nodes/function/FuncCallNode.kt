@@ -1,28 +1,32 @@
 package analyser.nodes.function
 
 import analyser.SymbolTable
+import analyser.exceptions.SemanticsException
 import analyser.nodes.assignment.RHSNode
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
-import exceptions.SemanticsException
 import generator.instructions.Instruction
+import generator.instructions.arithmetic.ADDInstr
+import generator.instructions.branch.BLInstr
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncCallNode(
     val name: String,
     val argList: ArgListNode,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : RHSNode {
     override var type: Type = VoidType
-    override lateinit var st: SymbolTable
     lateinit var functionNode: FuncNode
+    var argListSize: Int = 0
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         if (name !in funTable)
             throw SemanticsException("Cannot find function $name", ctx)
         this.functionNode = funTable[name]!!
@@ -41,9 +45,21 @@ data class FuncCallNode(
         }
 
         type = functionNode.retType
+        argListSize = argList.args.sumBy {
+            it.type.reserveStackSize
+        }
     }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> {
-        TODO("Not yet implemented")
+    override fun translate(ctx: TranslatorContext) = mutableListOf<Instruction>().apply {
+
+        addAll(argList.translate(ctx))
+        add(BLInstr("f_$name"))
+
+        if (argListSize != 0)
+            add(ADDInstr(Register.SP, Register.SP, NumOp(argListSize)))
+
     }
+
 }
+
+

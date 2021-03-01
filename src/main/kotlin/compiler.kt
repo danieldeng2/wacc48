@@ -1,9 +1,9 @@
 import analyser.ASTGenerator
 import analyser.SymbolTable
 import analyser.nodes.ASTNode
-import exceptions.SemanticsException
-import exceptions.SyntaxException
-import exceptions.ThrowingErrorListener
+import analyser.exceptions.SemanticsException
+import analyser.exceptions.SyntaxException
+import analyser.exceptions.ThrowingErrorListener
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream

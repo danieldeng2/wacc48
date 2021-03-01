@@ -1,22 +1,21 @@
 package analyser.nodes.function
 
 import analyser.SymbolTable
+import analyser.exceptions.SemanticsException
 import analyser.nodes.ASTNode
 import analyser.nodes.type.Typable
 import analyser.nodes.type.Type
-import exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
-import generator.translator.storeLocalVar
+import generator.translator.helpers.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ParamNode(
     override var type: Type,
     val text: String,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ASTNode, Typable {
-    override lateinit var st: SymbolTable
-
+    private lateinit var st: SymbolTable
 
     override fun validate(
         st: SymbolTable,

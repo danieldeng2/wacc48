@@ -1,4 +1,4 @@
-package analyser.nodes.expr.operators
+ package analyser.nodes.expr.operators
 
 import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
@@ -7,7 +7,7 @@ import analyser.nodes.type.BoolType
 import analyser.nodes.type.CharType
 import analyser.nodes.type.IntType
 import analyser.nodes.type.Type
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDSInstr
 import generator.instructions.arithmetic.SMULLInstr
@@ -26,8 +26,7 @@ import generator.instructions.operands.ShiftType
 import generator.translator.TranslatorContext
 import generator.translator.lib.errors.DivideByZeroError
 import generator.translator.lib.errors.OverflowError
-import generator.translator.popAndDecrement
-import generator.translator.pushAndIncrement
+import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 import java.rmi.UnexpectedException
 
@@ -35,17 +34,16 @@ data class BinOpNode(
     val operator: BinaryOperator,
     val firstExpr: ExprNode,
     val secondExpr: ExprNode,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         firstExpr.validate(st, funTable)
         secondExpr.validate(st, funTable)
 
