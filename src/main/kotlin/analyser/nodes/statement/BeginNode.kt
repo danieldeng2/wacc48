@@ -3,11 +3,8 @@ package analyser.nodes.statement
 import analyser.SymbolTable
 import analyser.nodes.function.FuncNode
 import generator.instructions.Instruction
-import generator.instructions.arithmetic.ADDInstr
-import generator.instructions.arithmetic.SUBInstr
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
+import generator.translator.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class BeginNode(
@@ -29,16 +26,13 @@ data class BeginNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val variableSize = currST.totalVarSize
 
-            if (variableSize != 0) {
-                add(SUBInstr(Register.SP, Register.SP, NumOp(variableSize)))
-            }
+            if (currST.totalVarSize == 0)
+                addAll(stat.translate(ctx))
+            else
+                newScope(currST) {
+                    addAll(stat.translate(ctx))
+                }
 
-            addAll(stat.translate(ctx))
-
-            if (variableSize != 0) {
-                add(ADDInstr(Register.SP, Register.SP, NumOp(variableSize)))
-            }
         }
 }

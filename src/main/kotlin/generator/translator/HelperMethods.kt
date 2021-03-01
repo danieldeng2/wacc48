@@ -1,6 +1,10 @@
 package generator.translator
 
+import analyser.SymbolTable
 import analyser.nodes.type.*
+import generator.instructions.Instruction
+import generator.instructions.arithmetic.ADDInstr
+import generator.instructions.arithmetic.SUBInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.load.LDRSBInstr
 import generator.instructions.operands.MemAddr
@@ -42,6 +46,36 @@ fun loadLocalVar(
 
         else -> throw UnknownError("Cannot load $varType")
     }
+
+fun MutableList<Instruction>.newScope(
+    st: SymbolTable,
+    bodyBuilder: MutableList<Instruction>.() -> Unit
+) {
+    val maxImmediateValue = 1024
+    val localStackSize = st.totalVarSize
+
+    for (size in localStackSize downTo 1 step maxImmediateValue) {
+        add(
+            SUBInstr(
+                Register.SP,
+                Register.SP,
+                NumOp(minOf(size, maxImmediateValue))
+            )
+        )
+    }
+
+    bodyBuilder()
+
+    for (size in localStackSize downTo 1 step maxImmediateValue) {
+        add(
+            ADDInstr(
+                Register.SP,
+                Register.SP,
+                NumOp(minOf(size, maxImmediateValue))
+            )
+        )
+    }
+}
 
 
 fun pushAndIncrement(

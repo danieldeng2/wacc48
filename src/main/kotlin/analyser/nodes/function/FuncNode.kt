@@ -6,8 +6,6 @@ import analyser.nodes.statement.*
 import analyser.nodes.type.Type
 import exceptions.SemanticsException
 import generator.instructions.Instruction
-import generator.instructions.arithmetic.ADDInstr
-import generator.instructions.arithmetic.SUBInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
@@ -15,6 +13,7 @@ import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
+import generator.translator.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(
@@ -24,11 +23,7 @@ data class FuncNode(
     val body: StatNode,
     override val ctx: ParserRuleContext?
 ) : ASTNode {
-
-    private val maxImmediateValue = 1024
-
     override lateinit var st: SymbolTable
-
 
     lateinit var paramListTable: SymbolTable
     lateinit var bodyTable: SymbolTable
@@ -77,33 +72,13 @@ data class FuncNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            val localStackSize = bodyTable.totalVarSize
-
             add(LabelInstr(identifier))
             add(PUSHInstr(Register.LR))
 
-            for (size in localStackSize downTo 1 step maxImmediateValue) {
-                add(
-                    SUBInstr(
-                        Register.SP,
-                        Register.SP,
-                        NumOp(minOf(size, maxImmediateValue))
-                    )
-                )
+            newScope(bodyTable) {
+                addAll(body.translate(ctx))
             }
 
-            addAll(body.translate(ctx))
-
-            for (size in localStackSize downTo 1 step maxImmediateValue) {
-                add(
-                    ADDInstr(
-                        Register.SP,
-                        Register.SP,
-                        NumOp(minOf(size, maxImmediateValue))
-                    )
-                )
-
-            }
             if (identifier == "main") {
                 add(MOVInstr(Register.R0, NumOp(0)))
             }
