@@ -6,11 +6,11 @@ import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
 import analyser.nodes.type.Type
 import generator.instructions.Instruction
+import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.Register
-import generator.instructions.stack.POPInstr
+import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
-import generator.translator.helpers.declareFunction
-import generator.translator.helpers.newScope
+import generator.translator.helpers.startScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(
@@ -48,34 +48,36 @@ data class FuncNode(
 
     private fun validateReturnType(body: StatNode) {
         when (body) {
-            is SeqNode -> validateReturnType(body.last())
+            is SeqNode -> body.forEach { validateReturnType(it) }
             is BeginNode -> validateReturnType(body.stat)
             is IfNode -> {
                 validateReturnType(body.trueStat)
                 validateReturnType(body.falseStat)
             }
-            is ReturnNode ->
+            is WhileNode -> validateReturnType(body.body)
+            is ReturnNode -> {
+                body.bodyTable = bodyTable
                 if (body.value.type != retType)
                     throw SemanticsException(
                         "The expected return type of Function $identifier is: $retType," +
                                 " actual return type: ${body.value.type}", ctx
                     )
+            }
         }
     }
+
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
             paramList.translate(ctx)
-
             ctx.stackPtrOffset = 0
 
-            declareFunction("f_$identifier") {
-                newScope(bodyTable) {
-                    addAll(body.translate(ctx))
-                }
-            }
+            add(LabelInstr("f_$identifier"))
+            add(PUSHInstr(Register.LR))
 
-            add(POPInstr(Register.PC))
+            startScope(bodyTable)
+
+            addAll(body.translate(ctx))
         }
 
 }

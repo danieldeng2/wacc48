@@ -4,50 +4,45 @@ import analyser.SymbolTable
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.arithmetic.SUBInstr
-import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
-import generator.instructions.stack.POPInstr
-import generator.instructions.stack.PUSHInstr
+
+const val MAX_VALUE = 1024
 
 fun MutableList<Instruction>.newScope(
     st: SymbolTable,
     bodyBuilder: MutableList<Instruction>.() -> Unit
 ) {
-    val maxImmediateValue = 1024
+    startScope(st)
+    bodyBuilder()
+    endScope(st)
+}
+
+
+fun MutableList<Instruction>.startScope(st: SymbolTable) {
     val localVarSize = st.totalVarSize
 
-    for (size in localVarSize downTo 1 step maxImmediateValue) {
+    for (size in localVarSize downTo 1 step MAX_VALUE) {
         add(
             SUBInstr(
                 Register.SP,
                 Register.SP,
-                NumOp(minOf(size, maxImmediateValue))
-            )
-        )
-    }
-
-    bodyBuilder()
-
-    for (size in localVarSize downTo 1 step maxImmediateValue) {
-        add(
-            ADDInstr(
-                Register.SP,
-                Register.SP,
-                NumOp(minOf(size, maxImmediateValue))
+                NumOp(minOf(size, MAX_VALUE))
             )
         )
     }
 }
 
-fun MutableList<Instruction>.declareFunction(
-    identifier: String,
-    bodyBuilder: MutableList<Instruction>.() -> Unit
-) {
-    add(LabelInstr(identifier))
-    add(PUSHInstr(Register.LR))
+fun MutableList<Instruction>.endScope(st: SymbolTable) {
+    val localVarSize = st.totalVarSize
 
-    bodyBuilder()
-
-    add(POPInstr(Register.PC))
+    for (size in localVarSize downTo 1 step MAX_VALUE) {
+        add(
+            ADDInstr(
+                Register.SP,
+                Register.SP,
+                NumOp(minOf(size, MAX_VALUE))
+            )
+        )
+    }
 }

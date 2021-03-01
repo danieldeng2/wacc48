@@ -5,11 +5,13 @@ import analyser.exceptions.SemanticsException
 import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
 import generator.instructions.Instruction
+import generator.instructions.directives.LabelInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.instructions.stack.POPInstr
+import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
-import generator.translator.helpers.declareFunction
 import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -31,13 +33,15 @@ class MainNode(
         mutableListOf<Instruction>().apply {
             ctx.stackPtrOffset = 0
 
-            declareFunction("main") {
-                newScope(st) {
-                    addAll(body.translate(ctx))
-                }
-                add(MOVInstr(Register.R0, NumOp(0)))
-            }
+            add(LabelInstr("main"))
+            add(PUSHInstr(Register.LR))
 
+            newScope(st) {
+                addAll(body.translate(ctx))
+            }
+            add(MOVInstr(Register.R0, NumOp(0)))
+
+            add(POPInstr(Register.PC))
         }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =
