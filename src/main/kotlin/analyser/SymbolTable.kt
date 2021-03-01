@@ -43,4 +43,11 @@ class SymbolTable(private val parent: SymbolTable?, val isParamListST: Boolean =
         }
         return parent!!.getVariablePosition(id) + totalVarSize
     }
+
+    fun varSizeTotal(): Int {
+        if (parent == null || parent.isParamListST) {
+            return totalVarSize
+        }
+        return totalVarSize + parent.totalVarSize
+    }
 }

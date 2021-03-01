@@ -56,7 +56,6 @@ data class FuncNode(
             }
             is WhileNode -> validateReturnType(body.body)
             is ReturnNode -> {
-                body.bodyTable = bodyTable
                 if (body.value.type != retType)
                     throw SemanticsException(
                         "The expected return type of Function $identifier is: $retType," +

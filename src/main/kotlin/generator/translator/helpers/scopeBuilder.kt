@@ -46,3 +46,17 @@ fun MutableList<Instruction>.endScope(st: SymbolTable) {
         )
     }
 }
+
+fun MutableList<Instruction>.endAllScopes(st: SymbolTable) {
+    val localVarSize = st.varSizeTotal()
+    for (size in localVarSize downTo 1 step MAX_VALUE) {
+        add(
+            ADDInstr(
+                Register.SP,
+                Register.SP,
+                NumOp(minOf(size, MAX_VALUE))
+            )
+        )
+    }
+}
+
