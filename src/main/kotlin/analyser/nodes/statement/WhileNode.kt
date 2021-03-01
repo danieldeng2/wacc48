@@ -27,7 +27,7 @@ data class WhileNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.bodyST = SymbolTable(st, true)
+        this.bodyST = SymbolTable(st)
         proposition.validate(st, funTable)
 
         if (proposition.type != BoolType)

@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.function.FuncNode
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
-import generator.translator.helpers.*
+import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class BeginNode(
@@ -17,7 +17,7 @@ data class BeginNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.currST = SymbolTable(st, true)
+        this.currST = SymbolTable(st)
         stat.validate(currST, funTable)
     }
 
