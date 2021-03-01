@@ -1,17 +1,21 @@
 package analyser
 
-import analyser.nodes.*
+import WACCParser
+import WACCParserVisitor
+import analyser.nodes.ASTNode
+import analyser.nodes.ProgNode
 import analyser.nodes.assignment.*
 import analyser.nodes.expr.*
-import analyser.nodes.expr.operators.*
+import analyser.nodes.expr.operators.BinOpNode
+import analyser.nodes.expr.operators.BinaryOperator
+import analyser.nodes.expr.operators.UnOpNode
+import analyser.nodes.expr.operators.UnaryOperator
 import analyser.nodes.function.*
 import analyser.nodes.statement.*
 import analyser.nodes.type.*
-import WACCParserVisitor
 import exceptions.SyntaxException
-import org.antlr.v4.runtime.tree.*
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor
 import org.apache.commons.text.StringEscapeUtils
-import java.lang.NumberFormatException
 
 
 class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
@@ -20,17 +24,14 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     override fun visitProg(ctx: WACCParser.ProgContext): ASTNode {
         val functions = ctx.func().map { visit(it) as FuncNode }.toMutableList()
 
-        functions.add(
-            FuncNode(
-                "main",
-                ParamListNode(emptyList(), null),
-                VoidType,
-                visit(ctx.stat()) as StatNode,
-                null
-            )
+        return ProgNode(
+            functions = functions,
+            main = MainNode(
+                body = visit(ctx.stat()) as StatNode,
+                ctx = ctx
+            ),
+            ctx = ctx
         )
-
-        return ProgNode(functions = functions, ctx = ctx)
     }
 
     override fun visitFunc(ctx: WACCParser.FuncContext): ASTNode =

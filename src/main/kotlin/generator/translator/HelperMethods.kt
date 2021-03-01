@@ -5,6 +5,7 @@ import analyser.nodes.type.*
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.arithmetic.SUBInstr
+import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.load.LDRSBInstr
 import generator.instructions.operands.MemAddr
@@ -75,6 +76,18 @@ fun MutableList<Instruction>.newScope(
             )
         )
     }
+}
+
+fun MutableList<Instruction>.declareFunction(
+    identifier: String,
+    bodyBuilder: MutableList<Instruction>.() -> Unit
+) {
+    add(LabelInstr(identifier))
+    add(PUSHInstr(Register.LR))
+
+    bodyBuilder()
+
+    add(POPInstr(Register.PC))
 }
 
 

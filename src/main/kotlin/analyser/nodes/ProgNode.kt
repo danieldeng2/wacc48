@@ -2,36 +2,32 @@ package analyser.nodes
 
 import analyser.SymbolTable
 import analyser.nodes.function.FuncNode
+import analyser.nodes.function.MainNode
 import analyser.nodes.statement.*
-import exceptions.SemanticsException
 import exceptions.SyntaxException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(
-    private val functions: List<FuncNode>,
+    val functions: List<FuncNode>,
+    val main: MainNode,
     val ctx: ParserRuleContext?
 ) : ASTNode {
-
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-
-        val (main, funcs) = functions.partition { it.identifier == "main" }
-
-        funcs.forEach {
+        functions.forEach {
             if (!allPathsTerminated(it.body))
                 throw SyntaxException("Function ${it.identifier} must end with either a return or exit")
         }
 
-        funcs.forEach { it.validatePrototype(funTable) }
+        functions.forEach { it.validatePrototype(funTable) }
         functions.forEach { it.validate(st, funTable) }
 
-        if (hasGlobalReturn(main[0].body))
-            throw SemanticsException("Cannot return in global context", ctx)
+        main.validate(st, funTable)
     }
 
     private fun allPathsTerminated(body: StatNode): Boolean =
@@ -42,16 +38,6 @@ data class ProgNode(
                     && allPathsTerminated(body.falseStat)
             is ReturnNode -> true
             is ExitNode -> true
-            else -> false
-        }
-
-    private fun hasGlobalReturn(body: StatNode): Boolean =
-        when (body) {
-            is IfNode -> hasGlobalReturn(body.trueStat) || hasGlobalReturn(body.falseStat)
-            is SeqNode -> body.any { hasGlobalReturn(it) }
-            is WhileNode -> hasGlobalReturn(body.body)
-            is BeginNode -> hasGlobalReturn(body.stat)
-            is ReturnNode -> true
             else -> false
         }
 

@@ -22,7 +22,10 @@ class GeneratorIntegrationTest {
         checkAllMatches("valid/expressions")
     }
 
-    //TODO function
+    @Test
+    fun functionShouldMatchReferenceOutput() {
+        checkAllMatches("valid/function")
+    }
 
     @Test
     fun ifStatementsShouldMatchReferenceOutput() {

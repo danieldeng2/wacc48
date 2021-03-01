@@ -6,13 +6,8 @@ import analyser.nodes.statement.*
 import analyser.nodes.type.Type
 import exceptions.SemanticsException
 import generator.instructions.Instruction
-import generator.instructions.directives.LabelInstr
-import generator.instructions.move.MOVInstr
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
-import generator.instructions.stack.POPInstr
-import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
+import generator.translator.declareFunction
 import generator.translator.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -47,8 +42,7 @@ data class FuncNode(
         paramList.validate(paramListTable, funTable)
         body.validate(bodyTable, funTable)
 
-        if (identifier != "main")
-            validateReturnType(body)
+        validateReturnType(body)
     }
 
     private fun validateReturnType(body: StatNode) {
@@ -70,17 +64,11 @@ data class FuncNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            add(LabelInstr(identifier))
-            add(PUSHInstr(Register.LR))
-
-            newScope(bodyTable) {
-                addAll(body.translate(ctx))
+            declareFunction("f_$identifier") {
+                newScope(bodyTable) {
+                    addAll(body.translate(ctx))
+                }
             }
-
-            if (identifier == "main") {
-                add(MOVInstr(Register.R0, NumOp(0)))
-            }
-            add(POPInstr(Register.PC))
         }
 
 }
