@@ -1,10 +1,10 @@
 package analyser
 
+import analyser.exceptions.SemanticsException
 import analyser.nodes.ProgNode
 import analyser.nodes.expr.BoolLiteral
 import analyser.nodes.function.MainNode
 import analyser.nodes.statement.*
-import exceptions.SemanticsException
 import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

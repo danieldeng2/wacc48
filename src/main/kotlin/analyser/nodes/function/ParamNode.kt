@@ -1,13 +1,13 @@
 package analyser.nodes.function
 
 import analyser.SymbolTable
+import analyser.exceptions.SemanticsException
 import analyser.nodes.ASTNode
 import analyser.nodes.type.Typable
 import analyser.nodes.type.Type
-import exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
-import generator.translator.storeLocalVar
+import generator.translator.helpers.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ParamNode(

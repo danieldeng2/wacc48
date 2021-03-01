@@ -8,7 +8,7 @@ import analyser.nodes.type.CharType
 import analyser.nodes.type.IntType
 import analyser.nodes.type.StringType
 import analyser.nodes.type.Type
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.translator.TranslatorContext

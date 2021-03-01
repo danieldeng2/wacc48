@@ -4,11 +4,10 @@ import analyser.SymbolTable
 import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
 import analyser.nodes.type.Type
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
-import generator.translator.declareFunction
-import generator.translator.newScope
+import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(

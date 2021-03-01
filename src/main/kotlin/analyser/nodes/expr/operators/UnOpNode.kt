@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.function.FuncNode
 import analyser.nodes.type.*
-import exceptions.SyntaxException
+import analyser.exceptions.SyntaxException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.RSBSInstr
 import generator.instructions.branch.BLVSInstr

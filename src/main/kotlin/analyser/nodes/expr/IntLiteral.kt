@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.function.FuncNode
 import analyser.nodes.type.IntType
 import analyser.nodes.type.Type
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.load.LDRInstr
 import generator.instructions.operands.NumOp

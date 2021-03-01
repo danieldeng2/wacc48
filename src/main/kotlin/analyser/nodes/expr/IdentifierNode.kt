@@ -1,19 +1,19 @@
 package analyser.nodes.expr
 
 import analyser.SymbolTable
+import analyser.exceptions.SemanticsException
 import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
 import analyser.nodes.function.FuncNode
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
-import exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
-import generator.translator.loadLocalVar
-import generator.translator.storeLocalVar
+import generator.translator.helpers.loadLocalVar
+import generator.translator.helpers.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class IdentifierNode(

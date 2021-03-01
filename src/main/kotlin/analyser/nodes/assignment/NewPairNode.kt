@@ -14,9 +14,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
 import generator.translator.TranslatorContext
-import generator.translator.popAndDecrement
-import generator.translator.pushAndIncrement
-import generator.translator.storeLocalVar
+import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class NewPairNode(

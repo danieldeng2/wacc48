@@ -1,16 +1,16 @@
 package analyser.nodes.function
 
 import analyser.SymbolTable
+import analyser.exceptions.SemanticsException
 import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
-import exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
-import generator.translator.declareFunction
-import generator.translator.newScope
+import generator.translator.helpers.declareFunction
+import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 class MainNode(
@@ -21,6 +21,8 @@ class MainNode(
 
     override fun validate(st: SymbolTable, funTable: MutableMap<String, FuncNode>) {
         this.st = st
+        body.validate(st, funTable)
+
         if (hasGlobalReturn(body))
             throw SemanticsException("Cannot return in global context", ctx)
     }

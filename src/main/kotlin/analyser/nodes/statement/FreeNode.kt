@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.expr.ExprNode
 import analyser.nodes.function.FuncNode
 import analyser.nodes.type.GenericPair
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.translator.TranslatorContext

@@ -3,7 +3,7 @@ package analyser.nodes.assignment
 import analyser.SymbolTable
 import analyser.nodes.function.FuncNode
 import analyser.nodes.statement.StatNode
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext

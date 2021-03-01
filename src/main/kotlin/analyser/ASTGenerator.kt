@@ -13,7 +13,7 @@ import analyser.nodes.expr.operators.UnaryOperator
 import analyser.nodes.function.*
 import analyser.nodes.statement.*
 import analyser.nodes.type.*
-import exceptions.SyntaxException
+import analyser.exceptions.SyntaxException
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor
 import org.apache.commons.text.StringEscapeUtils
 

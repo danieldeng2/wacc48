@@ -1,4 +1,4 @@
-package exceptions
+package analyser.exceptions
 
 import org.antlr.v4.runtime.BaseErrorListener
 import org.antlr.v4.runtime.RecognitionException

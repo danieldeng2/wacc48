@@ -5,7 +5,7 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.type.ArrayType
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.instructions.move.MOVInstr
@@ -14,7 +14,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
 import generator.translator.TranslatorContext
-import generator.translator.storeLocalVar
+import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 

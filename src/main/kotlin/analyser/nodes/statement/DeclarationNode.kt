@@ -4,7 +4,7 @@ import analyser.SymbolTable
 import analyser.nodes.assignment.RHSNode
 import analyser.nodes.function.FuncNode
 import analyser.nodes.function.ParamNode
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext

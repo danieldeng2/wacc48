@@ -12,8 +12,8 @@ import analyser.nodes.statement.StatNode
 import analyser.nodes.type.BoolType
 import analyser.nodes.type.IntType
 import analyser.nodes.type.VoidType
-import exceptions.SemanticsException
-import exceptions.SyntaxException
+import analyser.exceptions.SemanticsException
+import analyser.exceptions.SyntaxException
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

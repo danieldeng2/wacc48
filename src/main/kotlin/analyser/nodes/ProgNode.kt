@@ -1,10 +1,10 @@
 package analyser.nodes
 
 import analyser.SymbolTable
+import analyser.exceptions.SyntaxException
 import analyser.nodes.function.FuncNode
 import analyser.nodes.function.MainNode
 import analyser.nodes.statement.*
-import exceptions.SyntaxException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
@@ -42,11 +42,15 @@ data class ProgNode(
         }
 
     override fun translate(ctx: TranslatorContext): List<Instruction> {
-        ctx.text.addAll(
-            functions.flatMap {
-                it.translate(ctx)
-            }
-        )
+        ctx.text.apply {
+            addAll(
+                functions.flatMap {
+                    it.translate(ctx)
+                }
+            )
+            addAll(main.translate(ctx))
+        }
+
         return ctx.assemble()
     }
 

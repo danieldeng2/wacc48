@@ -7,7 +7,7 @@ import analyser.nodes.function.FuncNode
 import analyser.nodes.type.PairType
 import analyser.nodes.type.Type
 import analyser.nodes.type.VoidType
-import exceptions.SemanticsException
+import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
@@ -19,9 +19,7 @@ import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
 import generator.translator.TranslatorContext
 import generator.translator.lib.errors.CheckNullPointer
-import generator.translator.loadLocalVar
-import generator.translator.popAndDecrement
-import generator.translator.pushAndIncrement
+import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class PairElemNode(
