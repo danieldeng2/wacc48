@@ -52,9 +52,9 @@ fun MutableList<Instruction>.newScope(
     bodyBuilder: MutableList<Instruction>.() -> Unit
 ) {
     val maxImmediateValue = 1024
-    val localStackSize = st.totalVarSize
+    val localVarSize = st.totalVarSize
 
-    for (size in localStackSize downTo 1 step maxImmediateValue) {
+    for (size in localVarSize downTo 1 step maxImmediateValue) {
         add(
             SUBInstr(
                 Register.SP,
@@ -66,7 +66,7 @@ fun MutableList<Instruction>.newScope(
 
     bodyBuilder()
 
-    for (size in localStackSize downTo 1 step maxImmediateValue) {
+    for (size in localVarSize downTo 1 step maxImmediateValue) {
         add(
             ADDInstr(
                 Register.SP,

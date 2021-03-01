@@ -22,17 +22,16 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class NewPairNode(
     val firstElem: ExprNode,
     val secondElem: ExprNode,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : RHSNode {
     override var type: Type = VoidType
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         firstElem.validate(st, funTable)
         secondElem.validate(st, funTable)
 

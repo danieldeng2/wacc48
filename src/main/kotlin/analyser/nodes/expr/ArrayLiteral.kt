@@ -20,18 +20,17 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class ArrayLiteral(
     val values: List<ExprNode>,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ExprNode {
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, ctx)
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         if (values.isNotEmpty()) {
             values[0].validate(st, funTable)
             elemType = values[0].type

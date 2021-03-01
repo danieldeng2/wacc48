@@ -12,16 +12,13 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class DeclarationNode(
     val name: ParamNode,
     val value: RHSNode,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : StatNode {
-    override lateinit var st: SymbolTable
-
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
         name.validate(st, funTable)
         value.validate(st, funTable)
 

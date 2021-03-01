@@ -35,17 +35,16 @@ data class BinOpNode(
     val operator: BinaryOperator,
     val firstExpr: ExprNode,
     val secondExpr: ExprNode,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         firstExpr.validate(st, funTable)
         secondExpr.validate(st, funTable)
 

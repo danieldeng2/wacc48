@@ -24,11 +24,10 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class PairElemNode(
     private val expr: ExprNode,
     private val isFirst: Boolean,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : LHSNode, RHSNode {
     override var type: Type = VoidType
-    override lateinit var st: SymbolTable
-
+    lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
 
     override fun validate(

@@ -12,16 +12,15 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class ExitNode(
     val value: ExprNode,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : StatNode {
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         value.validate(st, funTable)
         if (value.type != IntType)
             throw SemanticsException(

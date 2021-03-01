@@ -18,11 +18,10 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class IdentifierNode(
     val name: String,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : LHSNode, ExprNode {
     override var type: Type = VoidType
-    override lateinit var st: SymbolTable
-
+    private lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
 
     override fun validate(

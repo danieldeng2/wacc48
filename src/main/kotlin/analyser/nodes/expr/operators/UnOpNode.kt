@@ -20,17 +20,16 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class UnOpNode(
     val operator: UnaryOperator,
     val expr: ExprNode,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : ExprNode {
     override var type: Type = operator.returnType
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         expr.validate(st, funTable)
 
         if (expr.type !in operator.expectedExprTypes)

@@ -13,27 +13,27 @@ import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
+import generator.translator.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class WhileNode(
     val proposition: ExprNode,
     val body: StatNode,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : StatNode {
-    override lateinit var st: SymbolTable
-
+    private lateinit var bodyST: SymbolTable
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+        this.bodyST = SymbolTable(st)
         proposition.validate(st, funTable)
 
         if (proposition.type != BoolType)
             throw SemanticsException("While statement proposition must be boolean", ctx)
 
-        body.validate(SymbolTable(st), funTable)
+        body.validate(bodyST, funTable)
     }
 
     override fun translate(ctx: TranslatorContext) =
@@ -44,7 +44,10 @@ data class WhileNode(
             add(BInstr("L$propositionIndex"))
 
             add(LabelInstr("L$bodyIndex"))
-            addAll(body.translate(ctx))
+
+            newScope(bodyST) {
+                addAll(body.translate(ctx))
+            }
 
             add(LabelInstr("L$propositionIndex"))
             addAll(proposition.translate(ctx))

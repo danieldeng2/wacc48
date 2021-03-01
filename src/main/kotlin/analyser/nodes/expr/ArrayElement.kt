@@ -22,13 +22,10 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class ArrayElement(
     val name: String,
     val arrIndices: List<ExprNode>,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ExprNode, LHSNode {
-
-    override lateinit var st: SymbolTable
-
+    private lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
-
     override lateinit var type: Type
 
 
@@ -40,13 +37,13 @@ data class ArrayElement(
         if (!st.containsInAnyScope(name))
             throw SemanticsException("Cannot find array $name", ctx)
         arrIndices.forEach { it.validate(st, funTable) }
-        var identTypeTemp = st[name]!!
-        if (identTypeTemp !is ArrayType)
+        var identityType = st[name]!!
+        if (identityType !is ArrayType)
             throw SemanticsException("$name is not an array", null)
 
         for (i in arrIndices.indices) {
             try {
-                identTypeTemp = (identTypeTemp as ArrayType).elementType
+                identityType = (identityType as ArrayType).elementType
             } catch (e: ClassCastException) {
                 throw SemanticsException(
                     "Invalid de-referencing of array $name",
@@ -54,7 +51,7 @@ data class ArrayElement(
                 )
             }
         }
-        type = identTypeTemp
+        type = identityType
     }
 
     override fun translate(ctx: TranslatorContext) =

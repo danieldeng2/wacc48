@@ -14,17 +14,16 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class IntLiteral(
     val value: Int,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = IntType
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         if (value > IntType.max || value < IntType.min)
             throw SemanticsException("IntLiteral $value is out of range", ctx)
     }

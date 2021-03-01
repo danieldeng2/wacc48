@@ -13,10 +13,9 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class ParamNode(
     override var type: Type,
     val text: String,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ASTNode, Typable {
-    override lateinit var st: SymbolTable
-
+    private lateinit var st: SymbolTable
 
     override fun validate(
         st: SymbolTable,

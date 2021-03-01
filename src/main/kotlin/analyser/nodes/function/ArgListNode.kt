@@ -9,16 +9,15 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class ArgListNode(
     val args: List<ExprNode>,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ASTNode {
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         args.forEach {
             it.validate(st, funTable)
         }

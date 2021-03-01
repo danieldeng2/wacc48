@@ -12,17 +12,17 @@ import org.antlr.v4.runtime.ParserRuleContext
 data class FuncCallNode(
     val name: String,
     val argList: ArgListNode,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : RHSNode {
     override var type: Type = VoidType
-    override lateinit var st: SymbolTable
+
     lateinit var functionNode: FuncNode
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         if (name !in funTable)
             throw SemanticsException("Cannot find function $name", ctx)
         this.functionNode = funTable[name]!!

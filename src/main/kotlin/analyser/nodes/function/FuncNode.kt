@@ -21,10 +21,8 @@ data class FuncNode(
     val paramList: ParamListNode,
     val retType: Type,
     val body: StatNode,
-    override val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?
 ) : ASTNode {
-    override lateinit var st: SymbolTable
-
     lateinit var paramListTable: SymbolTable
     lateinit var bodyTable: SymbolTable
 
@@ -41,7 +39,7 @@ data class FuncNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         this.paramListTable = SymbolTable(st)
         this.bodyTable = SymbolTable(paramListTable)
 

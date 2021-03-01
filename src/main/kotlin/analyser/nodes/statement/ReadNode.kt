@@ -18,17 +18,16 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class ReadNode(
     private val value: LHSNode,
-    override val ctx: ParserRuleContext?,
+    val ctx: ParserRuleContext?,
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
-    override lateinit var st: SymbolTable
 
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        this.st = st
+
         value.mode = AccessMode.ADDRESS
         value.validate(st, funTable)
         if (value.type !in expectedExprTypes)
