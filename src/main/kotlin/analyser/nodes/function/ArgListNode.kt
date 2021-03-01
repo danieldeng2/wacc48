@@ -25,6 +25,8 @@ data class ArgListNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
+            val stackPtrTemp = ctx.stackPtrOffset
+
             args.asReversed().forEach {
                 addAll(it.translate(ctx))
                 add(
@@ -34,6 +36,9 @@ data class ArgListNode(
                         isArgLoad = true
                     )
                 )
+                ctx.stackPtrOffset += it.type.reserveStackSize
             }
+
+            ctx.stackPtrOffset = stackPtrTemp
         }
 }

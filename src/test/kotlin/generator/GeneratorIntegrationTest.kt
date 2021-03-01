@@ -5,8 +5,6 @@ import org.junit.Test
 
 class GeneratorIntegrationTest {
 
-    //TODO advanced
-
     @Test
     fun arraysShouldMatchReferenceOutput() {
         checkAllMatches("valid/array")
