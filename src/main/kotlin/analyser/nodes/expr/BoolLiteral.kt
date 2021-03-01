@@ -16,14 +16,13 @@ data class BoolLiteral(
 ) : ExprNode {
     override var type: Type = BoolType
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
     }
 
     override fun translate(ctx: TranslatorContext) =

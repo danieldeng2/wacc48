@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class ArrayType(val elementType: Type, override val ctx: ParserRuleContext?) : Type {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
     override val reserveStackSize: Int = 4
 
 
@@ -17,7 +17,6 @@ data class ArrayType(val elementType: Type, override val ctx: ParserRuleContext?
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
     }
 
     override fun equals(other: Any?): Boolean {

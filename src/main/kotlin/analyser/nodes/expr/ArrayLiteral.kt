@@ -25,14 +25,13 @@ data class ArrayLiteral(
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, ctx)
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         if (values.isNotEmpty()) {
             values[0].validate(st, funTable)
             elemType = values[0].type

@@ -26,14 +26,13 @@ data class NewPairNode(
 ) : RHSNode {
     override var type: Type = VoidType
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         firstElem.validate(st, funTable)
         secondElem.validate(st, funTable)
 

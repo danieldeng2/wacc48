@@ -10,14 +10,13 @@ object BoolType : Type {
     override val reserveStackSize: Int = 1
     override val ctx: ParserRuleContext? = null
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
     }
 
     override fun toString(): String {

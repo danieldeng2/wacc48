@@ -15,7 +15,7 @@ data class BeginNode(
     override val ctx: ParserRuleContext?,
 ) : StatNode {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
     private lateinit var currST: SymbolTable
 
     override fun validate(
@@ -23,7 +23,6 @@ data class BeginNode(
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         this.currST = SymbolTable(st)
         stat.validate(currST, funTable)
     }

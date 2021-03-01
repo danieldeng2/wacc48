@@ -21,14 +21,13 @@ data class WhileNode(
     override val ctx: ParserRuleContext?,
 ) : StatNode {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         proposition.validate(st, funTable)
 
         if (proposition.type != BoolType)

@@ -22,14 +22,13 @@ data class ReadNode(
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         value.mode = AccessMode.ADDRESS
         value.validate(st, funTable)
         if (value.type !in expectedExprTypes)

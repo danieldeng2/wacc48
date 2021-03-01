@@ -16,7 +16,7 @@ data class StringLiteral(
     override val ctx: ParserRuleContext?
 ) : ExprNode {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override var type: Type = StringType
 
@@ -25,7 +25,6 @@ data class StringLiteral(
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
     }
 
     override fun translate(ctx: TranslatorContext) = listOf(

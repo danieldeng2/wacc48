@@ -14,7 +14,7 @@ data class PairType(
 ) : GenericPair {
 
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
     override val reserveStackSize: Int = 4
 
 
@@ -23,7 +23,6 @@ data class PairType(
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
     }
 
     override fun equals(other: Any?): Boolean {

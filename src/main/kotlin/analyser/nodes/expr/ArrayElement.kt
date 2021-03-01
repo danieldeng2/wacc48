@@ -26,7 +26,7 @@ data class ArrayElement(
 ) : ExprNode, LHSNode {
 
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
     override var mode: AccessMode = AccessMode.READ
 
     override lateinit var type: Type
@@ -37,7 +37,6 @@ data class ArrayElement(
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         if (!st.containsInAnyScope(name))
             throw SemanticsException("Cannot find array $name", ctx)
         arrIndices.forEach { it.validate(st, funTable) }

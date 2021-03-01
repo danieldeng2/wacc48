@@ -12,7 +12,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 object PairLiteral : ExprNode {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override var type: Type = EmptyPair
     override val ctx: ParserRuleContext? = null
@@ -22,7 +22,6 @@ object PairLiteral : ExprNode {
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
     }
 
     override fun toString(): String {

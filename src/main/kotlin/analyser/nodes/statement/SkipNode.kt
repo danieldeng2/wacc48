@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 object SkipNode : StatNode {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override val ctx: ParserRuleContext? = null
 
@@ -17,7 +17,6 @@ object SkipNode : StatNode {
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
     }
 
     override fun toString(): String {

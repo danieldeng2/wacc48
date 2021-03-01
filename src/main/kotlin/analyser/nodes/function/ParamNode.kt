@@ -16,14 +16,13 @@ data class ParamNode(
     override val ctx: ParserRuleContext?
 ) : ASTNode, Typable {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         if (st.containsInCurrentScope(text))
             throw SemanticsException(
                 "Illegal re-declaration of parameter $text",

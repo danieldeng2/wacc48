@@ -11,7 +11,6 @@ data class ParamListNode(
     override val ctx: ParserRuleContext?
 ) : ASTNode {
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
 
 
     override fun validate(
@@ -19,7 +18,6 @@ data class ParamListNode(
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         params.forEach {
             it.validate(st, funTable)
         }

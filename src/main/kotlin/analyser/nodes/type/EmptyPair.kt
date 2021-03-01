@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 object EmptyPair : GenericPair {
     override val ctx: ParserRuleContext? = null
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
     override val reserveStackSize: Int = 4
 
 
@@ -18,7 +18,6 @@ object EmptyPair : GenericPair {
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
     }
 
     override fun equals(other: Any?): Boolean {

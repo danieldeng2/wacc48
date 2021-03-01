@@ -39,14 +39,13 @@ data class BinOpNode(
 ) : ExprNode {
     override var type: Type = operator.returnType
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         firstExpr.validate(st, funTable)
         secondExpr.validate(st, funTable)
 

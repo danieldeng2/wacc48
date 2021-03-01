@@ -10,7 +10,6 @@ interface ASTNode {
 
     val ctx: ParserRuleContext?
     val st: SymbolTable
-    val funTable: MutableMap<String, FuncNode>
 
     fun validate(st: SymbolTable, funTable: MutableMap<String, FuncNode>)
 

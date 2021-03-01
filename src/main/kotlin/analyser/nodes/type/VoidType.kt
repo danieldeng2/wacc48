@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 object VoidType : Type {
     override val ctx: ParserRuleContext? = null
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     override val reserveStackSize: Int = 0
 
@@ -18,7 +18,6 @@ object VoidType : Type {
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
     }
 
     override fun toString(): String {

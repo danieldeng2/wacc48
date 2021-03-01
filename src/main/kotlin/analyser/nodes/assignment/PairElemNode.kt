@@ -28,7 +28,7 @@ data class PairElemNode(
 ) : LHSNode, RHSNode {
     override var type: Type = VoidType
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
     override var mode: AccessMode = AccessMode.READ
 
     override fun validate(
@@ -36,7 +36,6 @@ data class PairElemNode(
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         expr.validate(st, funTable)
 
         if (expr.type !is PairType)

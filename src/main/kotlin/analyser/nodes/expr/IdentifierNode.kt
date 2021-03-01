@@ -22,7 +22,7 @@ data class IdentifierNode(
 ) : LHSNode, ExprNode {
     override var type: Type = VoidType
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
     override var mode: AccessMode = AccessMode.READ
 
     override fun validate(
@@ -30,7 +30,6 @@ data class IdentifierNode(
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
         if (!st.containsInAnyScope(name))
             throw SemanticsException("Unknown identifier $name", ctx)
 

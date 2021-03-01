@@ -28,7 +28,7 @@ data class FuncNode(
     private val maxImmediateValue = 1024
 
     override lateinit var st: SymbolTable
-    override lateinit var funTable: MutableMap<String, FuncNode>
+
 
     lateinit var paramListTable: SymbolTable
     lateinit var bodyTable: SymbolTable
@@ -47,8 +47,6 @@ data class FuncNode(
         funTable: MutableMap<String, FuncNode>
     ) {
         this.st = st
-        this.funTable = funTable
-
         this.paramListTable = SymbolTable(st)
         this.bodyTable = SymbolTable(paramListTable)
 
