@@ -6,6 +6,7 @@ import analyser.nodes.ASTNode
 import analyser.nodes.statement.*
 import analyser.nodes.type.Type
 import generator.instructions.Instruction
+import generator.instructions.directives.Directive
 import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.Register
 import generator.instructions.stack.PUSHInstr
@@ -77,6 +78,8 @@ data class FuncNode(
             startScope(bodyTable)
 
             addAll(body.translate(ctx))
+
+            add(Directive(".ltorg"))
         }
 
 }
