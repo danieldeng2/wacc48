@@ -55,7 +55,8 @@ data class FuncCallNode(
         addAll(argList.translate(ctx))
         add(BLInstr("f_$name"))
 
-        add(ADDInstr(Register.SP, Register.SP, NumOp(argListSize)))
+        if (argListSize != 0)
+            add(ADDInstr(Register.SP, Register.SP, NumOp(argListSize)))
 
     }
 
