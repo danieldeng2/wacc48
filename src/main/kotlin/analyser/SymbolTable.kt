@@ -45,9 +45,14 @@ class SymbolTable(private val parent: SymbolTable?, val isParamListST: Boolean =
     }
 
     fun varSizeTotal(): Int {
-        if (parent == null || parent.isParamListST) {
-            return totalVarSize
+        var curScope = this
+        var size = 0
+
+        while (curScope.parent != null) {
+            if (!curScope.isParamListST)
+                size += curScope.totalVarSize
+            curScope = curScope.parent!!
         }
-        return totalVarSize + parent.totalVarSize
+        return size
     }
 }
