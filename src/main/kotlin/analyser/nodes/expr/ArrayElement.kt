@@ -3,6 +3,7 @@ package analyser.nodes.expr
 import analyser.SymbolTable
 import analyser.nodes.assignment.AccessMode
 import analyser.nodes.assignment.LHSNode
+import analyser.nodes.assignment.readOrAssign
 import analyser.nodes.function.FuncNode
 import analyser.nodes.type.ArrayType
 import analyser.nodes.type.BoolType
@@ -15,8 +16,11 @@ import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
-import generator.translator.*
+import generator.translator.TranslatorContext
 import generator.translator.lib.errors.CheckArrayBounds
+import generator.translator.loadLocalVar
+import generator.translator.popAndDecrement
+import generator.translator.pushAndIncrement
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ArrayElement(
@@ -85,15 +89,12 @@ data class ArrayElement(
             add(MOVInstr(Register.R1, Register.R4))
             add(popAndDecrement(ctx, Register.R0, Register.R4))
             add(
-                if (mode == AccessMode.ASSIGN)
-                    storeLocalVar(
-                        varType = type,
-                        stackOffset = 0,
-                        rn = Register.R0,
-                        rd = Register.R1
-                    )
-                else
-                    ADDInstr(Register.R0, Register.R1, NumOp(0))
+                readOrAssign(
+                    varType = type,
+                    stackOffset = 0,
+                    rn = Register.R0,
+                    rd = Register.R1
+                )
             )
         }
 

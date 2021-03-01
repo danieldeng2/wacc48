@@ -20,7 +20,6 @@ data class FreeNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-
         value.validate(st, funTable)
 
         if (value.type !is GenericPair)

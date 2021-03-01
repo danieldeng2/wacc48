@@ -17,8 +17,11 @@ import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
-import generator.translator.*
+import generator.translator.TranslatorContext
 import generator.translator.lib.errors.CheckNullPointer
+import generator.translator.loadLocalVar
+import generator.translator.popAndDecrement
+import generator.translator.pushAndIncrement
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class PairElemNode(
@@ -47,7 +50,6 @@ data class PairElemNode(
                 else -> nameType.secondType
             }
         }
-
     }
 
     override fun translate(ctx: TranslatorContext) =
@@ -103,15 +105,12 @@ data class PairElemNode(
             add(MOVInstr(Register.R1, Register.R0))
             add(popAndDecrement(ctx, Register.R0))
             add(
-                if (mode == AccessMode.ASSIGN)
-                    storeLocalVar(
-                        varType = type,
-                        stackOffset = 0,
-                        rn = Register.R0,
-                        rd = Register.R1
-                    )
-                else
-                    ADDInstr(Register.R0, Register.R1, NumOp(0))
+                readOrAssign(
+                    varType = type,
+                    stackOffset = 0,
+                    rn = Register.R0,
+                    rd = Register.R1
+                )
             )
         }
 
