@@ -12,6 +12,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
+import generator.translator.ArmConstants.NUM_BYTE_ADDRESS
 import generator.translator.TranslatorContext
 import generator.translator.lib.errors.RuntimeError
 
@@ -35,7 +36,7 @@ object FreePair : LibraryFunction {
 
         // Free snd element
         LDRInstr(Register.R0, MemAddr(Register.SP)),
-        LDRInstr(Register.R0, MemAddr(Register.R0, NumOp(4))),
+        LDRInstr(Register.R0, MemAddr(Register.R0, NumOp(NUM_BYTE_ADDRESS))),
         BLInstr("free"),
 
         // Free the pair object

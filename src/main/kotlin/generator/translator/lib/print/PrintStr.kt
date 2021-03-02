@@ -13,6 +13,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
+import generator.translator.ArmConstants.NUM_BYTE_ADDRESS
 import generator.translator.lib.LibraryFunction
 
 object PrintStr : LibraryFunction {
@@ -28,9 +29,9 @@ object PrintStr : LibraryFunction {
             add(LabelInstr(label))
             add(PUSHInstr(Register.LR))
             add(LDRInstr(Register.R1, MemAddr(Register.R0)))
-            add(ADDInstr(Register.R2, Register.R0, NumOp(4)))
+            add(ADDInstr(Register.R2, Register.R0, NumOp(NUM_BYTE_ADDRESS)))
             add(LDRInstr(Register.R0, LabelOp(msgIndex!!)))
-            add(ADDInstr(Register.R0, Register.R0, NumOp(4)))
+            add(ADDInstr(Register.R0, Register.R0, NumOp(NUM_BYTE_ADDRESS)))
             add(BLInstr("printf"))
             add(MOVInstr(Register.R0, NumOp(0)))
             add(BLInstr("fflush"))

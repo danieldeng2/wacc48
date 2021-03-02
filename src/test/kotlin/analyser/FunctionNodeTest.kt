@@ -8,9 +8,9 @@ import datastructures.nodes.statement.IfNode
 import datastructures.nodes.statement.ReturnNode
 import datastructures.nodes.statement.SkipNode
 import datastructures.nodes.statement.StatNode
-import datastructures.nodes.type.BoolType
-import datastructures.nodes.type.IntType
-import datastructures.nodes.type.VoidType
+import datastructures.type.BoolType
+import datastructures.type.IntType
+import datastructures.type.VoidType
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import datastructures.SymbolTable

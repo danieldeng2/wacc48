@@ -2,7 +2,7 @@ package generator.translator.helpers
 
 import datastructures.nodes.assignment.AccessMode
 import datastructures.nodes.assignment.LHSNode
-import datastructures.nodes.type.*
+import datastructures.type.*
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.load.LDRSBInstr
