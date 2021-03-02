@@ -1,6 +1,7 @@
 package analyser
 
 import WACCParser
+import WACCParserBaseVisitor
 import WACCParserVisitor
 import analyser.nodes.ASTNode
 import analyser.nodes.ProgNode
@@ -18,8 +19,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor
 import org.apache.commons.text.StringEscapeUtils
 
 
-class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
-    WACCParserVisitor<ASTNode> {
+class ASTGenerator : WACCParserBaseVisitor<ASTNode>() {
 
     override fun visitProg(ctx: WACCParser.ProgContext): ASTNode {
         val functions = ctx.func().map { visit(it) as FuncNode }.toMutableList()
@@ -37,16 +37,10 @@ class ASTGenerator : AbstractParseTreeVisitor<ASTNode>(),
     override fun visitFunc(ctx: WACCParser.FuncContext): ASTNode =
         FuncNode(
             identifier = ctx.IDENT().text,
-            paramList = visitParamList(ctx.paramList()) as ParamListNode,
+            paramList = ctx.paramList()?.param()?.map { visit(it) as ParamNode }
+                ?: emptyList(),
             retType = visit(ctx.type()) as Type,
             body = visit(ctx.stat()) as StatNode,
-            ctx = ctx
-        )
-
-    override fun visitParamList(ctx: WACCParser.ParamListContext?): ASTNode =
-        ParamListNode(
-            params = ctx?.param()?.map { visit(it) as ParamNode }
-                ?: emptyList(),
             ctx = ctx
         )
 

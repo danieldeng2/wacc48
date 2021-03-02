@@ -4,7 +4,6 @@ import analyser.nodes.ProgNode
 import analyser.nodes.expr.BoolLiteral
 import analyser.nodes.function.FuncNode
 import analyser.nodes.function.MainNode
-import analyser.nodes.function.ParamListNode
 import analyser.nodes.statement.IfNode
 import analyser.nodes.statement.ReturnNode
 import analyser.nodes.statement.SkipNode
@@ -37,10 +36,7 @@ class FunctionNodeTest {
     private fun validateProgramWithFunctionBody(body: StatNode) {
         val funcNode = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = BoolType,
             body = body,
             ctx = null
@@ -57,20 +53,14 @@ class FunctionNodeTest {
     fun functionsCannotBeReDeclared() {
         val funcNode = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = VoidType,
             body = SkipNode,
             ctx = null
         )
         val funcNodeDuplicate = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = VoidType,
             body = SkipNode,
             ctx = null
@@ -91,10 +81,7 @@ class FunctionNodeTest {
     fun incorrectReturnTypeThrowsSemanticError() {
         val funcNode = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = IntType,
             body = returnTrueNode,
             ctx = null
@@ -112,10 +99,7 @@ class FunctionNodeTest {
     fun correctReturnTypeValidates() {
         val funcNode = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = BoolType,
             body = returnTrueNode,
             ctx = null

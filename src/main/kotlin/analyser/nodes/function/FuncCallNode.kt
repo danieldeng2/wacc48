@@ -34,7 +34,7 @@ data class FuncCallNode(
         argList.validate(st, funTable)
 
         val args = argList.args
-        val params = functionNode.paramList.params
+        val params = functionNode.paramList
 
         if (args.size != params.size)
             throw SemanticsException("Number of arguments do not match parameter: $name", ctx)

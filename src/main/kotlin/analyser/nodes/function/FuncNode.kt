@@ -3,6 +3,7 @@ package analyser.nodes.function
 import analyser.SymbolTable
 import analyser.exceptions.SemanticsException
 import analyser.nodes.ASTNode
+import analyser.nodes.expr.ExprNode
 import analyser.nodes.statement.*
 import analyser.nodes.type.Type
 import generator.instructions.Instruction
@@ -16,7 +17,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(
     val identifier: String,
-    val paramList: ParamListNode,
+    val paramList: List<ParamNode>,
     val retType: Type,
     val body: StatNode,
     val ctx: ParserRuleContext?
@@ -41,7 +42,9 @@ data class FuncNode(
         this.bodyTable = SymbolTable(paramListTable)
 
         retType.validate(st, funTable)
-        paramList.validate(paramListTable, funTable)
+        paramList.asReversed().forEach {
+            it.validate(paramListTable, funTable)
+        }
         body.validate(bodyTable, funTable)
 
         validateReturnType(body)
@@ -69,7 +72,10 @@ data class FuncNode(
 
     override fun translate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {
-            paramList.translate(ctx)
+            paramList.forEach {
+                paramListTable.declareVariable(it.text)
+            }
+
             ctx.stackPtrOffset = 0
 
             add(LabelInstr("f_$identifier"))
