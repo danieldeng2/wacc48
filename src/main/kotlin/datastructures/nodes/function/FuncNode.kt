@@ -4,7 +4,7 @@ import datastructures.SymbolTable
 import analyser.exceptions.SemanticsException
 import datastructures.nodes.ASTNode
 import datastructures.nodes.statement.*
-import datastructures.nodes.type.Type
+import datastructures.type.Type
 import generator.instructions.Instruction
 import generator.instructions.directives.Directive
 import generator.instructions.directives.LabelInstr

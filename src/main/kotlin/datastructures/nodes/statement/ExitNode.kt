@@ -3,7 +3,7 @@ package datastructures.nodes.statement
 import datastructures.SymbolTable
 import datastructures.nodes.expr.ExprNode
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.IntType
+import datastructures.type.IntType
 import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr

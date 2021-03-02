@@ -3,7 +3,7 @@ package datastructures.nodes.expr.operators
 import datastructures.SymbolTable
 import datastructures.nodes.expr.ExprNode
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.*
+import datastructures.type.*
 import analyser.exceptions.SyntaxException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.RSBSInstr

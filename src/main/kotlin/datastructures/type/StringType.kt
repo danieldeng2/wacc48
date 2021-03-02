@@ -1,4 +1,4 @@
-package datastructures.nodes.type
+package datastructures.type
 
 object StringType : Type {
     override val reserveStackSize: Int = 4

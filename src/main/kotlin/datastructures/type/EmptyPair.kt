@@ -1,4 +1,4 @@
-package datastructures.nodes.type
+package datastructures.type
 
 object EmptyPair : GenericPair {
     override val reserveStackSize: Int = 4

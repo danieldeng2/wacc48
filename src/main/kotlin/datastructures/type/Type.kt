@@ -1,4 +1,4 @@
-package datastructures.nodes.type
+package datastructures.type
 
 interface Type {
     val reserveStackSize: Int

@@ -4,7 +4,7 @@ import datastructures.SymbolTable
 import analyser.exceptions.SemanticsException
 import datastructures.nodes.expr.ExprNode
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.BoolType
+import datastructures.type.BoolType
 import generator.instructions.Instruction
 import generator.instructions.branch.BEQInstr
 import generator.instructions.branch.BInstr

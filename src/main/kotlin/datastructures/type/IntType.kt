@@ -1,4 +1,4 @@
-package datastructures.nodes.type
+package datastructures.type
 
 object IntType : Type {
     const val min = Int.MIN_VALUE

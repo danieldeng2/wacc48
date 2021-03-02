@@ -3,8 +3,8 @@ package datastructures.nodes.function
 import datastructures.SymbolTable
 import analyser.exceptions.SemanticsException
 import datastructures.nodes.ASTNode
-import datastructures.nodes.type.Typable
-import datastructures.nodes.type.Type
+import datastructures.type.Typable
+import datastructures.type.Type
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
 import generator.translator.helpers.storeLocalVar

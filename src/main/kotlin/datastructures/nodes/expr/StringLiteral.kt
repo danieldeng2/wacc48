@@ -2,8 +2,8 @@ package datastructures.nodes.expr
 
 import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.StringType
-import datastructures.nodes.type.Type
+import datastructures.type.StringType
+import datastructures.type.Type
 import generator.instructions.load.LDRInstr
 import generator.instructions.operands.LabelOp
 import generator.instructions.operands.Register

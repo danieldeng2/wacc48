@@ -2,8 +2,8 @@ package datastructures.nodes.expr
 
 import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.IntType
-import datastructures.nodes.type.Type
+import datastructures.type.IntType
+import datastructures.type.Type
 import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.load.LDRInstr

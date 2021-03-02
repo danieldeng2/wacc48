@@ -12,7 +12,7 @@ import datastructures.nodes.expr.operators.UnOpNode
 import datastructures.nodes.expr.operators.UnaryOperator
 import datastructures.nodes.function.*
 import datastructures.nodes.statement.*
-import datastructures.nodes.type.*
+import datastructures.type.*
 import analyser.exceptions.SyntaxException
 import org.apache.commons.text.StringEscapeUtils
 

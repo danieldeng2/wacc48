@@ -4,7 +4,7 @@ import datastructures.SymbolTable
 import datastructures.nodes.expr.ArrayElement
 import datastructures.nodes.expr.ExprNode
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.*
+import datastructures.type.*
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.translator.TranslatorContext

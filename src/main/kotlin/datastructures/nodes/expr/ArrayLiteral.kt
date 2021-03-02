@@ -2,9 +2,9 @@ package datastructures.nodes.expr
 
 import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.ArrayType
-import datastructures.nodes.type.Type
-import datastructures.nodes.type.VoidType
+import datastructures.type.ArrayType
+import datastructures.type.Type
+import datastructures.type.VoidType
 import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr

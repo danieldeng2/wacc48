@@ -1,6 +1,6 @@
 package datastructures
 
-import datastructures.nodes.type.Type
+import datastructures.type.Type
 
 class SymbolTable(private val parent: SymbolTable?, val isParamListST: Boolean = false) {
 

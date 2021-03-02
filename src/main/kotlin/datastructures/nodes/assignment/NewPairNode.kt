@@ -3,9 +3,9 @@ package datastructures.nodes.assignment
 import datastructures.SymbolTable
 import datastructures.nodes.expr.ExprNode
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.PairType
-import datastructures.nodes.type.Type
-import datastructures.nodes.type.VoidType
+import datastructures.type.PairType
+import datastructures.type.Type
+import datastructures.type.VoidType
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.instructions.move.MOVInstr

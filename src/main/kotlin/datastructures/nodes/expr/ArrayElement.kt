@@ -5,10 +5,10 @@ import datastructures.nodes.assignment.AccessMode
 import datastructures.nodes.assignment.LHSNode
 
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.ArrayType
-import datastructures.nodes.type.BoolType
-import datastructures.nodes.type.CharType
-import datastructures.nodes.type.Type
+import datastructures.type.ArrayType
+import datastructures.type.BoolType
+import datastructures.type.CharType
+import datastructures.type.Type
 import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr

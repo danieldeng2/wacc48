@@ -2,8 +2,8 @@ package datastructures.nodes.expr
 
 import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.EmptyPair
-import datastructures.nodes.type.Type
+import datastructures.type.EmptyPair
+import datastructures.type.Type
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register

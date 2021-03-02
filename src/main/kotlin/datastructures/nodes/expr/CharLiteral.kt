@@ -2,8 +2,8 @@ package datastructures.nodes.expr
 
 import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
-import datastructures.nodes.type.CharType
-import datastructures.nodes.type.Type
+import datastructures.type.CharType
+import datastructures.type.Type
 import generator.instructions.Instruction
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.CharOp
