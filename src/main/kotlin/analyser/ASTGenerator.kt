@@ -39,14 +39,14 @@ class ASTGenerator : WACCParserBaseVisitor<ASTNode>() {
             identifier = ctx.IDENT().text,
             paramList = ctx.paramList()?.param()?.map { visit(it) as ParamNode }
                 ?: emptyList(),
-            retType = visit(ctx.type()) as Type,
+            retType = findType(ctx.type()),
             body = visit(ctx.stat()) as StatNode,
             ctx = ctx
         )
 
     override fun visitParam(ctx: WACCParser.ParamContext): ASTNode =
         ParamNode(
-            type = visit(ctx.type()) as Type,
+            type = findType(ctx.type()),
             text = ctx.IDENT().text,
             ctx = ctx
         )
@@ -169,42 +169,6 @@ class ASTGenerator : WACCParserBaseVisitor<ASTNode>() {
             ctx = ctx
         )
 
-    override fun visitType(ctx: WACCParser.TypeContext): ASTNode =
-        when {
-            ctx.type() != null ->
-                ArrayType(
-                    elementType = visit(ctx.type()) as Type,
-                    ctx = ctx
-                )
-            ctx.baseType() != null -> visit(ctx.baseType())
-            else -> visit(ctx.pairType())
-        }
-
-    override fun visitBaseType(ctx: WACCParser.BaseTypeContext): ASTNode =
-        when {
-            ctx.BOOL() != null -> BoolType
-            ctx.CHAR() != null -> CharType
-            ctx.STRING() != null -> StringType
-            else -> IntType
-        }
-
-    override fun visitPairType(ctx: WACCParser.PairTypeContext): ASTNode =
-        PairType(
-            firstType = visit(ctx.pairElemType(0)) as Type,
-            secondType = visit(ctx.pairElemType(1)) as Type,
-            ctx = ctx
-        )
-
-    override fun visitPairElemType(ctx: WACCParser.PairElemTypeContext): ASTNode =
-        when {
-            ctx.type() != null -> ArrayType(
-                elementType = visit(ctx.type()) as Type,
-                ctx = ctx
-            )
-            ctx.baseType() != null -> visit(ctx.baseType())
-            else -> EmptyPair
-        }
-
     override fun visitStrLiteral(ctx: WACCParser.StrLiteralContext): ASTNode =
         StringLiteral(
             value = ctx.STR_LITER().text.substring(
@@ -235,7 +199,6 @@ class ASTGenerator : WACCParserBaseVisitor<ASTNode>() {
             ctx = ctx
         )
 
-
     override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode =
         BinOpNode(
             operator = BinaryOperator.lookupRepresentation(
@@ -249,6 +212,7 @@ class ASTGenerator : WACCParserBaseVisitor<ASTNode>() {
 
     override fun visitPairLiteral(ctx: WACCParser.PairLiteralContext): ASTNode =
         PairLiteral
+
 
     override fun visitIntLiteral(ctx: WACCParser.IntLiteralContext): ASTNode =
         IntLiteral(
@@ -315,4 +279,35 @@ class ASTGenerator : WACCParserBaseVisitor<ASTNode>() {
             ctx = ctx
         )
 
+    private fun findType(ctx: WACCParser.TypeContext): Type =
+        when {
+            ctx.type() != null -> ArrayType(
+                elementType = findType(ctx.type()),
+                ctx = ctx
+            )
+            ctx.baseType() != null -> findBaseType(ctx.baseType())
+            else -> PairType(
+                firstType = findPairElemType(ctx.pairType().pairElemType(0)),
+                secondType = findPairElemType(ctx.pairType().pairElemType(1)),
+                ctx = ctx
+            )
+        }
+
+    private fun findBaseType(ctx: WACCParser.BaseTypeContext): Type =
+        when {
+            ctx.BOOL() != null -> BoolType
+            ctx.CHAR() != null -> CharType
+            ctx.STRING() != null -> StringType
+            else -> IntType
+        }
+
+    private fun findPairElemType(ctx: WACCParser.PairElemTypeContext): Type =
+        when {
+            ctx.type() != null -> ArrayType(
+                elementType = findType(ctx.type()),
+                ctx = ctx
+            )
+            ctx.baseType() != null -> findBaseType(ctx.baseType())
+            else -> EmptyPair
+        }
 }

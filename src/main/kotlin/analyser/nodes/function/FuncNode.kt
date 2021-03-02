@@ -41,7 +41,6 @@ data class FuncNode(
         this.paramListTable = SymbolTable(st, isParamListST = true)
         this.bodyTable = SymbolTable(paramListTable)
 
-        retType.validate(st, funTable)
         paramList.asReversed().forEach {
             it.validate(paramListTable, funTable)
         }
