@@ -1,27 +1,29 @@
-import analyser.nodes.ASTNode
-import org.antlr.v4.runtime.*
-import exceptions.SemanticsException
-import exceptions.SyntaxException
-import kotlin.system.exitProcess
+import datastructures.nodes.ASTNode
+import org.antlr.v4.runtime.CharStream
+import org.antlr.v4.runtime.CharStreams
+import java.io.File
+import java.io.FileWriter
+import java.nio.file.Path
 
 fun main(args: Array<String>) {
-    val input: CharStream = when {
-        args.isEmpty() -> CharStreams.fromStream(System.`in`)
-        else -> CharStreams.fromFileName(args[0])
-    }
-    val pNode: ASTNode
-
-    try {
-        pNode = runCompiler(input)
-    } catch (e: SyntaxException) {
-        println("Syntax Error: ${e.message}")
-        exitProcess(100)
-    } catch (e: SemanticsException) {
-        println("Semantics Error: ${e.message}")
-        exitProcess(200)
+    if (args.isEmpty() || !File(args[0]).exists()) {
+        println("Usage: compile <WACC Source>")
+        return
     }
 
-    // Print out AST tree
-    println(pNode)
+    val sourceFile = Path.of(args[0])
+    val input: CharStream = CharStreams.fromPath(sourceFile)
+    val pNode: ASTNode = runAnalyserCatchError(input)
+    val output = runGenerator(pNode)
+    writeResult(sourceFile.fileName.toString(), output)
 }
+
+private fun writeResult(inputName: String, output: List<String>) {
+    val outName = inputName.replace(".wacc", ".s")
+    val writer = FileWriter(outName)
+    output.forEach { writer.appendLine(it) }
+    writer.close()
+}
+
+
 

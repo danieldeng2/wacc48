@@ -1,21 +1,16 @@
-image: gradle:6.8.1-jdk11
-
-before_script:
-  - apt-get -y update
-  - apt-get install -y build-essential
+image: openjdk:11
 
 stages:
-  - antlrBuild 
+  - gradleBuild
   - gradleTest
 
-parser-generate:
-  stage: antlrBuild
+gradle-build:
+  stage: gradleBuild
   script: 
-    - make
+    - ./gradlew jar
 
 gradle-test:
   stage: gradleTest 
   script: 
-    - make
-    - ./gradlew test
+    - ./gradlew clean test
 

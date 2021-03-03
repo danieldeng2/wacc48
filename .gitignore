@@ -4,7 +4,12 @@ src/antlr
 src/main/java/antlr
 *.tokens
 *.interp
-/gen
+*.s
+src/main/gen
+
+#ignore reference ruby files
+src/test/resources/refCompile
+src/test/resources/refEmulate
 
 #ignore Java class files
 *.class
@@ -34,8 +39,6 @@ workspace.xml
 /js/js.translator/testData/out-pir/
 .gradle/
 build/
-!**/src/**/build
-!**/test/**/build
 *.iml
 !**/testData/**/*.iml
 .idea/libraries/Gradle*.xml
