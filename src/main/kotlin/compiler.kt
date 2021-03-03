@@ -1,10 +1,10 @@
 import analyser.ASTGeneratorVisitor
-import datastructures.SymbolTable
-import datastructures.nodes.ASTNode
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import analyser.exceptions.ThrowingErrorListener
-import generator.translator.TranslatorContext
+import tree.SymbolTable
+import tree.nodes.ASTNode
+import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
 import kotlin.system.exitProcess
@@ -33,10 +33,8 @@ fun runAnalyser(input: CharStream): ASTNode {
 }
 
 fun runGenerator(pNode: ASTNode): List<String> {
-    val translatorCtx = TranslatorContext()
-    val programInstructions = pNode.translate(translatorCtx)
-
-    return programInstructions.map { it.toString() }
+    val codeGen = CodeGeneratorVisitor(pNode)
+    return codeGen.translate().map { it.toString() }
 }
 
 fun runAnalyserCatchError(input: CharStream): ASTNode =

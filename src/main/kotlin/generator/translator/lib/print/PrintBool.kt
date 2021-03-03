@@ -1,7 +1,6 @@
 package generator.translator.lib.print
 
-import generator.translator.TranslatorContext
-import generator.instructions.*
+import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.compare.CMPInstr
@@ -9,10 +8,13 @@ import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDREQInstr
 import generator.instructions.load.LDRNEInstr
 import generator.instructions.move.MOVInstr
-import generator.instructions.operands.*
+import generator.instructions.operands.LabelOp
+import generator.instructions.operands.NumOp
+import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
 import generator.translator.ArmConstants.NUM_BYTE_ADDRESS
+import generator.translator.TranslatorContext
 import generator.translator.lib.LibraryFunction
 
 object PrintBool : LibraryFunction {

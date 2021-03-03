@@ -1,7 +1,7 @@
 package generator.translator.lib
 
-import generator.translator.TranslatorContext
 import generator.instructions.Instruction
+import generator.translator.TranslatorContext
 
 interface LibraryFunction {
     val label: String

@@ -1,14 +1,14 @@
 package generator.translator.lib.errors
 
-import generator.instructions.branch.BLInstr
 import generator.instructions.Instruction
+import generator.instructions.branch.BLInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.TranslatorContext
-import generator.translator.lib.print.PrintStr
 import generator.translator.lib.LibraryFunction
+import generator.translator.lib.print.PrintStr
 
 object RuntimeError : LibraryFunction {
     override val label = "p_throw_runtime_error"

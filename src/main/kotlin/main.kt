@@ -1,4 +1,3 @@
-import datastructures.nodes.ASTNode
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import java.io.File
@@ -13,7 +12,7 @@ fun main(args: Array<String>) {
 
     val sourceFile = Path.of(args[0])
     val input: CharStream = CharStreams.fromPath(sourceFile)
-    val pNode: ASTNode = runAnalyserCatchError(input)
+    val pNode = runAnalyserCatchError(input)
     val output = runGenerator(pNode)
     writeResult(sourceFile.fileName.toString(), output)
 }
