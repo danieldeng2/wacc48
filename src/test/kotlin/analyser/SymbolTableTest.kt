@@ -1,6 +1,7 @@
 package analyser
 
-import analyser.nodes.expr.BoolLiteral
+import datastructures.SymbolTable
+import datastructures.nodes.expr.BoolLiteral
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

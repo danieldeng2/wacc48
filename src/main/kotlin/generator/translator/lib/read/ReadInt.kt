@@ -11,6 +11,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
+import generator.translator.ArmConstants.NUM_BYTE_ADDRESS
 import generator.translator.TranslatorContext
 import generator.translator.lib.LibraryFunction
 
@@ -28,7 +29,7 @@ object ReadInt : LibraryFunction {
             add(PUSHInstr(Register.LR))
             add(MOVInstr(Register.R1, Register.R0))
             add(LDRInstr(Register.R0, LabelOp(msgIndex!!)))
-            add(ADDInstr(Register.R0, Register.R0, NumOp(4)))
+            add(ADDInstr(Register.R0, Register.R0, NumOp(NUM_BYTE_ADDRESS)))
             add(BLInstr("scanf"))
             add(POPInstr(Register.PC))
         }

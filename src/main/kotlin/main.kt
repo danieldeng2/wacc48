@@ -1,4 +1,4 @@
-import analyser.nodes.ASTNode
+import datastructures.nodes.ASTNode
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import java.io.File

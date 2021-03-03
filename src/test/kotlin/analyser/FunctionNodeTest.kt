@@ -1,19 +1,19 @@
 package analyser
 
-import analyser.nodes.ProgNode
-import analyser.nodes.expr.BoolLiteral
-import analyser.nodes.function.FuncNode
-import analyser.nodes.function.MainNode
-import analyser.nodes.function.ParamListNode
-import analyser.nodes.statement.IfNode
-import analyser.nodes.statement.ReturnNode
-import analyser.nodes.statement.SkipNode
-import analyser.nodes.statement.StatNode
-import analyser.nodes.type.BoolType
-import analyser.nodes.type.IntType
-import analyser.nodes.type.VoidType
+import datastructures.nodes.ProgNode
+import datastructures.nodes.expr.BoolLiteral
+import datastructures.nodes.function.FuncNode
+import datastructures.nodes.function.MainNode
+import datastructures.nodes.statement.IfNode
+import datastructures.nodes.statement.ReturnNode
+import datastructures.nodes.statement.SkipNode
+import datastructures.nodes.statement.StatNode
+import datastructures.type.BoolType
+import datastructures.type.IntType
+import datastructures.type.VoidType
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
+import datastructures.SymbolTable
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -37,10 +37,7 @@ class FunctionNodeTest {
     private fun validateProgramWithFunctionBody(body: StatNode) {
         val funcNode = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = BoolType,
             body = body,
             ctx = null
@@ -57,20 +54,14 @@ class FunctionNodeTest {
     fun functionsCannotBeReDeclared() {
         val funcNode = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = VoidType,
             body = SkipNode,
             ctx = null
         )
         val funcNodeDuplicate = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = VoidType,
             body = SkipNode,
             ctx = null
@@ -91,10 +82,7 @@ class FunctionNodeTest {
     fun incorrectReturnTypeThrowsSemanticError() {
         val funcNode = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = IntType,
             body = returnTrueNode,
             ctx = null
@@ -112,10 +100,7 @@ class FunctionNodeTest {
     fun correctReturnTypeValidates() {
         val funcNode = FuncNode(
             identifier = "func",
-            paramList = ParamListNode(
-                params = emptyList(),
-                ctx = null
-            ),
+            paramList = emptyList(),
             retType = BoolType,
             body = returnTrueNode,
             ctx = null

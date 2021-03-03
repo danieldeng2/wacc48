@@ -1,6 +1,6 @@
-import analyser.ASTGenerator
-import analyser.SymbolTable
-import analyser.nodes.ASTNode
+import analyser.ASTGeneratorVisitor
+import datastructures.SymbolTable
+import datastructures.nodes.ASTNode
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import analyser.exceptions.ThrowingErrorListener
@@ -23,7 +23,7 @@ fun runAnalyser(input: CharStream): ASTNode {
     parser.addErrorListener(ThrowingErrorListener())
 
     // Semantic Analysis
-    val programNode = ASTGenerator().visitProg(parser.prog())
+    val programNode = ASTGeneratorVisitor().visitProg(parser.prog())
     programNode.validate(
         st = SymbolTable(null),
         funTable = mutableMapOf()

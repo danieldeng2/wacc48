@@ -1,8 +1,8 @@
 package generator.translator.helpers
 
-import analyser.nodes.assignment.AccessMode
-import analyser.nodes.assignment.LHSNode
-import analyser.nodes.type.*
+import datastructures.nodes.assignment.AccessMode
+import datastructures.nodes.assignment.LHSNode
+import datastructures.type.*
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.load.LDRSBInstr
