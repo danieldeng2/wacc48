@@ -2,6 +2,7 @@ package analyser
 
 import WACCParser
 import WACCParserBaseVisitor
+import analyser.exceptions.SyntaxException
 import datastructures.nodes.ASTNode
 import datastructures.nodes.ProgNode
 import datastructures.nodes.assignment.*
@@ -13,7 +14,6 @@ import datastructures.nodes.expr.operators.UnaryOperator
 import datastructures.nodes.function.*
 import datastructures.nodes.statement.*
 import datastructures.type.*
-import analyser.exceptions.SyntaxException
 import org.apache.commons.text.StringEscapeUtils
 
 

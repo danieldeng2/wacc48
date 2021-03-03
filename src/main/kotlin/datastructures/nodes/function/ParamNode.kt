@@ -1,7 +1,7 @@
 package datastructures.nodes.function
 
-import datastructures.SymbolTable
 import analyser.exceptions.SemanticsException
+import datastructures.SymbolTable
 import datastructures.nodes.ASTNode
 import datastructures.type.Typable
 import datastructures.type.Type

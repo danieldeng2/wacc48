@@ -1,20 +1,11 @@
 package datastructures.nodes.statement
 
-import datastructures.SymbolTable
 import analyser.exceptions.SemanticsException
+import datastructures.SymbolTable
 import datastructures.nodes.expr.ExprNode
 import datastructures.nodes.function.FuncNode
 import datastructures.type.BoolType
-import generator.instructions.Instruction
-import generator.instructions.branch.BEQInstr
-import generator.instructions.branch.BInstr
-import generator.instructions.compare.CMPInstr
-import generator.instructions.directives.LabelInstr
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
-import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class WhileNode(

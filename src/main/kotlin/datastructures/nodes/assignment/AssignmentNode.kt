@@ -1,9 +1,9 @@
 package datastructures.nodes.assignment
 
+import analyser.exceptions.SemanticsException
 import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
 import datastructures.nodes.statement.StatNode
-import analyser.exceptions.SemanticsException
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
 

@@ -1,5 +1,6 @@
  package datastructures.nodes.expr.operators
 
+import analyser.exceptions.SemanticsException
 import datastructures.SymbolTable
 import datastructures.nodes.expr.ExprNode
 import datastructures.nodes.function.FuncNode
@@ -7,31 +8,10 @@ import datastructures.type.BoolType
 import datastructures.type.CharType
 import datastructures.type.IntType
 import datastructures.type.Type
-import analyser.exceptions.SemanticsException
-import generator.instructions.Instruction
-import generator.instructions.arithmetic.ADDSInstr
-import generator.instructions.arithmetic.SMULLInstr
-import generator.instructions.arithmetic.SUBSInstr
-import generator.instructions.branch.BEQInstr
-import generator.instructions.branch.BLInstr
-import generator.instructions.branch.BLNEInstr
-import generator.instructions.branch.BLVSInstr
-import generator.instructions.compare.CMPInstr
-import generator.instructions.directives.LabelInstr
-import generator.instructions.move.*
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
-import generator.instructions.operands.ShiftOp
-import generator.instructions.operands.ShiftType
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
-import generator.translator.lib.errors.DivideByZeroError
-import generator.translator.lib.errors.OverflowError
-import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
-import java.rmi.UnexpectedException
 
-data class BinOpNode(
+ data class BinOpNode(
     val operator: BinaryOperator,
     val firstExpr: ExprNode,
     val secondExpr: ExprNode,

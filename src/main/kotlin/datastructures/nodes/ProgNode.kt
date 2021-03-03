@@ -1,7 +1,7 @@
 package datastructures.nodes
 
-import datastructures.SymbolTable
 import analyser.exceptions.SyntaxException
+import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
 import datastructures.nodes.function.MainNode
 import datastructures.nodes.statement.*

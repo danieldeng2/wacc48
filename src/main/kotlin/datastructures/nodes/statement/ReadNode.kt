@@ -1,5 +1,6 @@
 package datastructures.nodes.statement
 
+import analyser.exceptions.SemanticsException
 import datastructures.SymbolTable
 import datastructures.nodes.assignment.AccessMode
 import datastructures.nodes.assignment.LHSNode
@@ -8,13 +9,7 @@ import datastructures.type.CharType
 import datastructures.type.IntType
 import datastructures.type.StringType
 import datastructures.type.Type
-import analyser.exceptions.SemanticsException
-import generator.instructions.Instruction
-import generator.instructions.branch.BLInstr
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
-import generator.translator.lib.read.ReadChar
-import generator.translator.lib.read.ReadInt
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ReadNode(

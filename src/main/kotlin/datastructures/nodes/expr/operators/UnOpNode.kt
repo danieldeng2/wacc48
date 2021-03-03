@@ -1,21 +1,11 @@
 package datastructures.nodes.expr.operators
 
+import analyser.exceptions.SyntaxException
 import datastructures.SymbolTable
 import datastructures.nodes.expr.ExprNode
 import datastructures.nodes.function.FuncNode
 import datastructures.type.*
-import analyser.exceptions.SyntaxException
-import generator.instructions.Instruction
-import generator.instructions.arithmetic.RSBSInstr
-import generator.instructions.branch.BLVSInstr
-import generator.instructions.load.LDRInstr
-import generator.instructions.logical.EORInstr
-import generator.instructions.operands.MemAddr
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
-import generator.translator.lib.errors.OverflowError
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class UnOpNode(

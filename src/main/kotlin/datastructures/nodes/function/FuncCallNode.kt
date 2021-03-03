@@ -1,7 +1,7 @@
 package datastructures.nodes.function
 
-import datastructures.SymbolTable
 import analyser.exceptions.SemanticsException
+import datastructures.SymbolTable
 import datastructures.nodes.assignment.RHSNode
 import datastructures.type.Type
 import datastructures.type.VoidType

@@ -1,19 +1,10 @@
 package datastructures.nodes.function
 
-import datastructures.SymbolTable
 import analyser.exceptions.SemanticsException
+import datastructures.SymbolTable
 import datastructures.nodes.ASTNode
 import datastructures.nodes.statement.*
-import generator.instructions.Instruction
-import generator.instructions.directives.LabelInstr
-import generator.instructions.move.MOVInstr
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
-import generator.instructions.stack.POPInstr
-import generator.instructions.stack.PUSHInstr
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
-import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
 
 class MainNode(

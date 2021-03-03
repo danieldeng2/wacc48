@@ -1,5 +1,6 @@
 package generator.translator
 
+import datastructures.nodes.ASTNode
 import datastructures.nodes.ProgNode
 import datastructures.nodes.assignment.AccessMode
 import datastructures.nodes.assignment.AssignmentNode
@@ -12,37 +13,43 @@ import datastructures.nodes.expr.operators.UnOpNode
 import datastructures.nodes.expr.operators.UnaryOperator
 import datastructures.nodes.function.*
 import datastructures.nodes.statement.*
-import datastructures.type.*
+import datastructures.type.ArrayType
+import datastructures.type.CharType
+import datastructures.type.IntType
+import datastructures.type.StringType
 import generator.instructions.Instruction
-import generator.instructions.arithmetic.*
-import generator.instructions.branch.*
+import generator.instructions.arithmetic.ADDInstr
+import generator.instructions.branch.BEQInstr
+import generator.instructions.branch.BInstr
+import generator.instructions.branch.BLInstr
 import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.Directive
 import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDRInstr
-import generator.instructions.logical.EORInstr
-import generator.instructions.move.*
+import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
 import generator.instructions.store.STRInstr
+import generator.translator.ArmConstants.NULL_ADDRESS
+import generator.translator.ArmConstants.NUM_BYTE_ADDRESS
 import generator.translator.helpers.*
 import generator.translator.lib.FreePair
-import generator.translator.lib.errors.CheckArrayBounds
 import generator.translator.lib.errors.CheckNullPointer
-import generator.translator.lib.errors.DivideByZeroError
-import generator.translator.lib.errors.OverflowError
-import generator.translator.lib.print.*
+import generator.translator.lib.print.PrintLn
 import generator.translator.lib.read.ReadChar
 import generator.translator.lib.read.ReadInt
-import java.rmi.UnexpectedException
 
-class CodeGeneratorVisitor(val program: ProgNode) {
-    private val ctx = TranslatorContext()
+class CodeGeneratorVisitor(val rootNode: ASTNode) {
+    val ctx = TranslatorContext()
 
     fun translate(): List<Instruction> {
-        translateProgram(program)
+        visitAndTranslate(rootNode)
         return ctx.assemble()
+    }
+
+    fun visitAndTranslate(node: ASTNode) {
+        node.acceptCodeGenVisitor(this)
     }
 
     fun translateProgram(node: ProgNode) {
@@ -59,7 +66,7 @@ class CodeGeneratorVisitor(val program: ProgNode) {
             add(PUSHInstr(Register.LR))
 
             newScope(node.st) {
-                node.body.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+                visitAndTranslate(node.body)
             }
             add(MOVInstr(Register.R0, NumOp(0)))
             add(POPInstr(Register.PC))
@@ -67,7 +74,7 @@ class CodeGeneratorVisitor(val program: ProgNode) {
     }
 
     fun translateExit(node: ExitNode) {
-        node.expr.acceptCodeGenVisitor(this)
+        visitAndTranslate(node.expr)
         ctx.text.add(BLInstr("exit"))
     }
 
@@ -84,15 +91,14 @@ class CodeGeneratorVisitor(val program: ProgNode) {
             add(PUSHInstr(Register.LR))
 
             startScope(node.bodyTable)
-
-            node.body.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+            visitAndTranslate(node.body)
 
             add(Directive(".ltorg"))
         }
     }
 
     fun translateFuncCall(node: FuncCallNode) {
-        node.argList.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+        visitAndTranslate(node.argList)
 
         ctx.text.apply {
             add(BLInstr("f_${node.name}"))
@@ -127,8 +133,8 @@ class CodeGeneratorVisitor(val program: ProgNode) {
     }
 
     fun translateDeclaration(node: DeclarationNode) {
-        node.value.acceptCodeGenVisitor(this)
-        node.name.acceptCodeGenVisitor(this)
+        visitAndTranslate(node.value)
+        visitAndTranslate(node.name)
     }
 
     fun translateArgList(node: ArgListNode) {
@@ -137,7 +143,7 @@ class CodeGeneratorVisitor(val program: ProgNode) {
             val stackPtrTemp = ctx.stackPtrOffset
 
             node.args.asReversed().forEach {
-                it.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+                visitAndTranslate(it)
                 add(
                     storeLocalVar(
                         varType = it.type,
@@ -153,8 +159,8 @@ class CodeGeneratorVisitor(val program: ProgNode) {
     }
 
     fun translateAssignment(node: AssignmentNode) {
-        node.value.acceptCodeGenVisitor(this)
-        node.name.acceptCodeGenVisitor(this)
+        visitAndTranslate(node.value)
+        visitAndTranslate(node.name)
     }
 
     fun translateBinOp(node: BinOpNode) {
@@ -172,142 +178,17 @@ class CodeGeneratorVisitor(val program: ProgNode) {
         }
     }
 
-    private fun translateComparator(node: BinOpNode) {
-        ctx.text.apply {
-            loadOperandsIntoRegister(node)
-
-            add(CMPInstr(Register.R0, Register.R1))
-
-            when (node.operator) {
-                BinaryOperator.GT -> {
-                    add(MOVGTInstr(Register.R0, NumOp(1)))
-                    add(MOVLEInstr(Register.R0, NumOp(0)))
-                }
-
-                BinaryOperator.GE -> {
-                    add(MOVGEInstr(Register.R0, NumOp(1)))
-                    add(MOVLTInstr(Register.R0, NumOp(0)))
-                }
-
-                BinaryOperator.LT -> {
-                    add(MOVLTInstr(Register.R0, NumOp(1)))
-                    add(MOVGEInstr(Register.R0, NumOp(0)))
-                }
-
-                BinaryOperator.LE -> {
-                    add(MOVLEInstr(Register.R0, NumOp(1)))
-                    add(MOVGTInstr(Register.R0, NumOp(0)))
-                }
-
-                else -> throw UnexpectedException(
-                    "Unexpected fall through to 'else' branch in " +
-                            "${object {}.javaClass.enclosingMethod.name} with operator ${node.operator}"
-                )
-            }
-
-        }
-    }
-
-    private fun translateModulo(node: BinOpNode) {
-        ctx.text.apply {
-            ctx.addLibraryFunction(DivideByZeroError)
-
-            loadOperandsIntoRegister(node)
-            add(BLInstr(DivideByZeroError.label))
-            add(BLInstr("__aeabi_idivmod"))
-            add(MOVInstr(Register.R0, Register.R1))
-        }
-    }
-
-    private fun translateDivide(node: BinOpNode) {
-        ctx.text.apply {
-            ctx.addLibraryFunction(DivideByZeroError)
-
-            loadOperandsIntoRegister(node)
-
-            add(BLInstr(DivideByZeroError.label))
-            add(BLInstr("__aeabi_idiv"))
-        }
-    }
-
-    private fun translateMultiply(node: BinOpNode) {
-        ctx.text.apply {
-            ctx.addLibraryFunction(OverflowError)
-
-            loadOperandsIntoRegister(node)
-
-            add(SMULLInstr(Register.R0, Register.R1, Register.R0, Register.R1))
-            add(
-                CMPInstr(
-                    Register.R1,
-                    ShiftOp(Register.R0, ShiftType.ASR, NumOp(31))
-                )
-            )
-            add(BLNEInstr(OverflowError.label))
-        }
-    }
-
-    private fun translatePlusMinus(node: BinOpNode, isPlus: Boolean) {
-        ctx.text.apply {
-            ctx.addLibraryFunction(OverflowError)
-
-            loadOperandsIntoRegister(node)
-
-            if (isPlus)
-                add(ADDSInstr(Register.R0, Register.R0, Register.R1))
-            else
-                add(SUBSInstr(Register.R0, Register.R0, Register.R1))
-
-            add(BLVSInstr(OverflowError.label))
-        }
-    }
-
-    private fun translateLogical(node: BinOpNode, isAnd: Boolean) {
-        ctx.text.apply {
-            node.firstExpr.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-
-            if (isAnd)
-                add(CMPInstr(Register.R0, NumOp(0)))
-            else
-                add(CMPInstr(Register.R0, NumOp(1)))
-
-            val branchFirstOp = ctx.labelCounter
-            add(BEQInstr("L$branchFirstOp"))
-            node.secondExpr.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-
-            add(LabelInstr("L$branchFirstOp"))
-            if (isAnd)
-                add(CMPInstr(Register.R0, NumOp(0)))
-
-        }
-    }
-
     fun translateUnOp(node: UnOpNode) {
         when (node.operator) {
             UnaryOperator.NEGATE -> translateNegate(node)
-            UnaryOperator.CHR, UnaryOperator.ORD ->
-                node.expr.acceptCodeGenVisitor(this)
+            UnaryOperator.CHR, UnaryOperator.ORD -> visitAndTranslate(node.expr)
             UnaryOperator.MINUS -> translateMinus(node)
             UnaryOperator.LEN -> ctx.text.apply {
-                node.expr.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+                visitAndTranslate(node.expr)
                 add(LDRInstr(Register.R0, MemAddr(Register.R0)))
             }
         }
     }
-
-    private fun translateNegate(node: UnOpNode) =
-        ctx.text.apply {
-            node.expr.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-            add(EORInstr(Register.R0, Register.R0, NumOp(1)))
-        }
-
-    private fun translateMinus(node: UnOpNode) =
-        ctx.text.apply {
-            ctx.addLibraryFunction(OverflowError)
-            node.expr.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-            add(RSBSInstr(Register.R0, Register.R0, NumOp(0)))
-            add(BLVSInstr(OverflowError.label))
-        }
 
     fun translatePairElem(node: PairElemNode) {
         ctx.addLibraryFunction(CheckNullPointer)
@@ -327,110 +208,19 @@ class CodeGeneratorVisitor(val program: ProgNode) {
         }
     }
 
-    private fun translateArrayAssignment(elem: ArrayElement) {
-        ctx.text.apply {
-            ctx.addLibraryFunction(CheckArrayBounds)
-
-            add(pushAndIncrement(ctx, Register.R0, Register.R4))
-            add(
-                loadLocalVar(
-                    varType = ArrayType(elem.type, null),
-                    stackOffset = ctx.getOffsetOfVar(elem.name, elem.st),
-                    rd = Register.R4
-                )
-            )
-
-            elem.arrIndices.dropLast(1).forEach {
-                it.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-                checkArrayBounds(elem.type)
-                add(LDRInstr(Register.R4, MemAddr(Register.R4)))
-            }
-            elem.arrIndices.last()
-                .acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-            checkArrayBounds(elem.type)
-
-            add(MOVInstr(Register.R1, Register.R4))
-            add(popAndDecrement(ctx, Register.R0, Register.R4))
-            add(
-                readOrAssign(
-                    varType = elem.type,
-                    stackOffset = 0,
-                    mode = elem.mode,
-                    rn = Register.R0,
-                    rd = Register.R1
-                )
-            )
-        }
-    }
-
-    private fun translateArrayRead(elem: ArrayElement) {
-        ctx.text.apply {
-            ctx.addLibraryFunction(CheckArrayBounds)
-
-            val offset = ctx.getOffsetOfVar(elem.name, elem.st)
-            add(
-                LDRInstr(
-                    Register.R0,
-                    MemAddr(Register.SP, NumOp(offset))
-                )
-            )
-            add(pushAndIncrement(ctx, Register.R4))
-            add(MOVInstr(Register.R4, Register.R0))
-
-            // Load and check bounds for each dereference
-            elem.arrIndices.forEach {
-                it.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-                checkArrayBounds(elem.type)
-                add(
-                    loadLocalVar(
-                        varType = elem.type,
-                        stackOffset = 0,
-                        rn = Register.R4,
-                        rd = Register.R4
-                    )
-                )
-            }
-
-            add(MOVInstr(Register.R0, Register.R4))
-            add(popAndDecrement(ctx, Register.R4))
-        }
-    }
-
-    private fun checkArrayBounds(type: Type) {
-        ctx.text.apply {
-            add(BLInstr(CheckArrayBounds.label))
-            add(ADDInstr(Register.R4, Register.R4, NumOp(4)))
-
-            add(
-                when (type) {
-                    is CharType, is BoolType -> ADDInstr(
-                        Register.R4,
-                        Register.R4,
-                        Register.R0
-                    )
-                    else -> ADDInstr(
-                        Register.R4,
-                        Register.R4,
-                        ShiftOp(Register.R0, ShiftType.LSL, NumOp(2))
-                    )
-                }
-            )
-        }
-    }
-
     fun translateArrayLiteral(literal: ArrayLiteral) {
         ctx.text.apply {
             add(
                 MOVInstr(
                     Register.R0,
-                    NumOp(literal.values.size * literal.elemType.reserveStackSize + 4)
+                    NumOp(literal.values.size * literal.elemType.reserveStackSize + NUM_BYTE_ADDRESS)
                 )
             )
             add(BLInstr("malloc"))
             add(MOVInstr(Register.R3, Register.R0))
 
             literal.values.forEachIndexed { index, arrayElem ->
-                arrayElem.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+                visitAndTranslate(arrayElem)
                 add(
                     storeLocalVar(
                         literal.elemType,
@@ -461,21 +251,18 @@ class CodeGeneratorVisitor(val program: ProgNode) {
     }
 
     fun translateIdentifier(node: IdentifierNode) {
-        ctx.text.apply {
-            val offset = ctx.getOffsetOfVar(node.name, node.st)
-
-            add(
-                when (node.mode) {
-                    AccessMode.ASSIGN -> storeLocalVar(node.type, offset)
-                    AccessMode.READ -> loadLocalVar(node.type, offset)
-                    else -> ADDInstr(
-                        Register.R0,
-                        Register.SP,
-                        NumOp(offset)
-                    )
-                }
-            )
-        }
+        val offset = ctx.getOffsetOfVar(node.name, node.st)
+        ctx.text.add(
+            when (node.mode) {
+                AccessMode.ASSIGN -> storeLocalVar(node.type, offset)
+                AccessMode.READ -> loadLocalVar(node.type, offset)
+                else -> ADDInstr(
+                    Register.R0,
+                    Register.SP,
+                    NumOp(offset)
+                )
+            }
+        )
     }
 
     fun translateIntLiteral(literal: IntLiteral) {
@@ -488,7 +275,7 @@ class CodeGeneratorVisitor(val program: ProgNode) {
     }
 
     fun translatePairLiteral(literal: PairLiteral) {
-        ctx.text.add(MOVInstr(Register.R0, NumOp(0)))
+        ctx.text.add(MOVInstr(Register.R0, NumOp(NULL_ADDRESS)))
     }
 
     fun translateStringLiteral(literal: StringLiteral) {
@@ -500,140 +287,10 @@ class CodeGeneratorVisitor(val program: ProgNode) {
         )
     }
 
-    private fun storeElemInHeap(elem: ExprNode) {
-        ctx.text.apply {
-            elem.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-            add(pushAndIncrement(ctx, Register.R0))
-            add(MOVInstr(Register.R0, NumOp(elem.type.reserveStackSize)))
-            add(BLInstr("malloc"))
-            add(popAndDecrement(ctx, Register.R1))
-            add(
-                storeLocalVar(
-                    varType = elem.type,
-                    stackOffset = 0,
-                    rn = Register.R1,
-                    rd = Register.R0
-                )
-            )
-            add(pushAndIncrement(ctx, Register.R0))
-        }
-    }
-
-    private fun loadFromPosition(node: PairElemNode, memOffset: Int) {
-        ctx.text.apply {
-            node.expr.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-            add(BLInstr(CheckNullPointer.label))
-            add(
-                LDRInstr(
-                    Register.R0,
-                    MemAddr(Register.R0, NumOp(memOffset))
-                )
-            )
-            add(
-                loadLocalVar(
-                    varType = node.type,
-                    stackOffset = 0,
-                    rd = Register.R0,
-                    rn = Register.R0
-                )
-            )
-        }
-    }
-
-    private fun assignToPosition(node: PairElemNode, memOffset: Int) =
-        ctx.text.apply {
-            add(pushAndIncrement(ctx, Register.R0))
-
-            val stackOffset =
-                ctx.getOffsetOfVar(
-                    (node.expr as IdentifierNode).name,
-                    node.st
-                )
-            add(
-                LDRInstr(
-                    Register.R0,
-                    MemAddr(Register.SP, NumOp(stackOffset))
-                )
-            )
-
-            ctx.addLibraryFunction(CheckNullPointer)
-            add(BLInstr(CheckNullPointer.label))
-            add(ADDInstr(Register.R0, Register.R0, NumOp(memOffset)))
-
-            add(pushAndIncrement(ctx, Register.R0))
-            add(LDRInstr(Register.R0, MemAddr(Register.R0)))
-
-            //Free existing value
-            add(BLInstr("free"))
-
-            // Allocate new value
-            add(MOVInstr(Register.R0, NumOp(node.type.reserveStackSize)))
-            add(BLInstr("malloc"))
-            add(popAndDecrement(ctx, Register.R1))
-            add(STRInstr(Register.R0, MemAddr(Register.R1)))
-            add(MOVInstr(Register.R1, Register.R0))
-            add(popAndDecrement(ctx, Register.R0))
-            add(
-                readOrAssign(
-                    varType = node.type,
-                    stackOffset = 0,
-                    mode = node.mode,
-                    rn = Register.R0,
-                    rd = Register.R1
-                )
-            )
-        }
-
-    private fun readOrAssign(
-        varType: Type,
-        stackOffset: Int,
-        mode: AccessMode,
-        rn: Register,
-        rd: Register
-    ) =
-        if (mode == AccessMode.ASSIGN)
-            storeLocalVar(
-                varType = varType,
-                stackOffset = stackOffset,
-                rn = rn,
-                rd = rd
-            )
-        else
-            ADDInstr(rn, rd, NumOp(0))
-
-    private fun translateEquality(node: BinOpNode, isEqual: Boolean) {
-        ctx.text.apply {
-            loadOperandsIntoRegister(node)
-
-            add(CMPInstr(Register.R0, Register.R1))
-
-            if (isEqual) {
-                add(MOVEQInstr(Register.R0, NumOp(1)))
-                add(MOVNEInstr(Register.R0, NumOp(0)))
-            } else {
-                add(MOVNEInstr(Register.R0, NumOp(1)))
-                add(MOVEQInstr(Register.R0, NumOp(0)))
-            }
-        }
-    }
-
-    private fun loadOperandsIntoRegister(node: BinOpNode) {
-        ctx.text.apply {
-            ctx.addLibraryFunction(DivideByZeroError)
-
-            node.firstExpr.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-            add(pushAndIncrement(ctx, Register.R0))
-
-            node.secondExpr.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
-            add(MOVInstr(Register.R1, Register.R0))
-            add(popAndDecrement(ctx, Register.R0))
-        }
-    }
-
     fun translateBegin(node: BeginNode) {
         ctx.text.apply {
             newScope(node.currST) {
-                node.stat.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+                visitAndTranslate(node.stat)
             }
         }
     }
@@ -642,14 +299,14 @@ class CodeGeneratorVisitor(val program: ProgNode) {
         ctx.text.apply {
             ctx.addLibraryFunction(FreePair)
 
-            node.value.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+            visitAndTranslate(node.value)
             add(BLInstr(FreePair.label))
         }
     }
 
     fun translateIf(node: IfNode) {
         ctx.text.apply {
-            node.proposition.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+            visitAndTranslate(node.proposition)
             add(CMPInstr(Register.R0, NumOp(0)))
 
             val falseBranchIndex = ctx.labelCounter
@@ -657,13 +314,13 @@ class CodeGeneratorVisitor(val program: ProgNode) {
 
             add(BEQInstr("L$falseBranchIndex"))
             newScope(node.trueST) {
-                node.trueStat.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+                visitAndTranslate(node.trueStat)
             }
             add(BInstr("L$continueBranch"))
 
             add(LabelInstr("L$falseBranchIndex"))
             newScope(node.falseST) {
-                node.falseStat.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+                visitAndTranslate(node.falseStat)
             }
             add(LabelInstr("L$continueBranch"))
         }
@@ -671,27 +328,17 @@ class CodeGeneratorVisitor(val program: ProgNode) {
 
     fun translatePrint(node: PrintNode) {
         val value = node.value
+        visitAndTranslate(value)
+
         ctx.text.apply {
-            value.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
             if (value.type == CharType) {
                 add(BLInstr("putchar"))
             } else {
 
                 val printFunc = when {
-                    value.type == ArrayType(
-                        CharType,
-                        null
-                    ) -> getPrintOption(
+                    value.type == ArrayType(CharType, null) -> getPrintOption(
                         StringType
                     )
-                    value is ArrayElement -> {
-
-                        if (value.type is ArrayType && (value.type as ArrayType).elementType == CharType)
-                            getPrintOption(StringType)
-                        else
-                            getPrintOption(value.type)
-                    }
-
                     else -> getPrintOption(value.type)
                 }
 
@@ -706,20 +353,9 @@ class CodeGeneratorVisitor(val program: ProgNode) {
         }
     }
 
-    private fun getPrintOption(exprType: Type) =
-        when (exprType) {
-            IntType -> PrintInt
-            StringType -> PrintStr
-            BoolType -> PrintBool
-            is GenericPair, is ArrayType -> PrintReference
-            else -> throw UnexpectedException(
-                "Else branch should not be reached for operator $exprType"
-            )
-        }
-
     fun translateRead(node: ReadNode) {
         ctx.text.apply {
-            node.value.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+            visitAndTranslate(node.value)
 
             val readFunc = when (node.value.type) {
                 IntType -> ReadInt
@@ -735,17 +371,15 @@ class CodeGeneratorVisitor(val program: ProgNode) {
 
     fun translateReturn(node: ReturnNode) {
         ctx.text.apply {
-            node.value.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+            visitAndTranslate(node.value)
             endAllScopes(node.st)
             add(POPInstr(Register.PC))
         }
     }
 
     fun translateSeq(node: SeqNode) {
-        node.sequence.forEach { it.acceptCodeGenVisitor(this) }
+        node.sequence.forEach { visitAndTranslate(it) }
     }
-
-    fun translateSkip(node: SkipNode) {}
 
     fun translateWhile(node: WhileNode) {
         ctx.text.apply {
@@ -757,15 +391,14 @@ class CodeGeneratorVisitor(val program: ProgNode) {
             add(LabelInstr("L$bodyIndex"))
 
             newScope(node.bodyST) {
-                node.body.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+                visitAndTranslate(node.body)
             }
 
             add(LabelInstr("L$propositionIndex"))
-            node.proposition.acceptCodeGenVisitor(this@CodeGeneratorVisitor)
+            visitAndTranslate(node.proposition)
             add(CMPInstr(Register.R0, NumOp(1)))
             add(BEQInstr("L$bodyIndex"))
         }
     }
 
 }
-

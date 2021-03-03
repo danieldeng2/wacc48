@@ -16,7 +16,5 @@ object SkipNode : StatNode {
         return "Skip"
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateSkip(this)
-    }
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {}
 }

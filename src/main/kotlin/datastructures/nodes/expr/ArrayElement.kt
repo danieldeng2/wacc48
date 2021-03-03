@@ -1,25 +1,13 @@
 package datastructures.nodes.expr
 
+import analyser.exceptions.SemanticsException
 import datastructures.SymbolTable
 import datastructures.nodes.assignment.AccessMode
 import datastructures.nodes.assignment.LHSNode
-
 import datastructures.nodes.function.FuncNode
 import datastructures.type.ArrayType
-import datastructures.type.BoolType
-import datastructures.type.CharType
 import datastructures.type.Type
-import analyser.exceptions.SemanticsException
-import generator.instructions.Instruction
-import generator.instructions.arithmetic.ADDInstr
-import generator.instructions.branch.BLInstr
-import generator.instructions.load.LDRInstr
-import generator.instructions.move.MOVInstr
-import generator.instructions.operands.*
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
-import generator.translator.lib.errors.CheckArrayBounds
-import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ArrayElement(

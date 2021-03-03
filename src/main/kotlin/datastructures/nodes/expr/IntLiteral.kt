@@ -1,10 +1,10 @@
 package datastructures.nodes.expr
 
+import analyser.exceptions.SemanticsException
 import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
 import datastructures.type.IntType
 import datastructures.type.Type
-import analyser.exceptions.SemanticsException
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
 

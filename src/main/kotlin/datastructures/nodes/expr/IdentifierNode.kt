@@ -1,7 +1,7 @@
 package datastructures.nodes.expr
 
-import datastructures.SymbolTable
 import analyser.exceptions.SemanticsException
+import datastructures.SymbolTable
 import datastructures.nodes.assignment.AccessMode
 import datastructures.nodes.assignment.LHSNode
 import datastructures.nodes.function.FuncNode
