@@ -5,9 +5,7 @@ import analyser.exceptions.SyntaxException
 import datastructures.nodes.function.FuncNode
 import datastructures.nodes.function.MainNode
 import datastructures.nodes.statement.*
-import generator.instructions.Instruction
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ProgNode(
@@ -41,19 +39,6 @@ data class ProgNode(
             is ExitNode -> true
             else -> false
         }
-
-    override fun translate(ctx: TranslatorContext): List<Instruction> {
-        ctx.text.apply {
-            addAll(
-                functions.flatMap {
-                    it.translate(ctx)
-                }
-            )
-            addAll(main.translate(ctx))
-        }
-
-        return ctx.assemble()
-    }
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateProgram(this)

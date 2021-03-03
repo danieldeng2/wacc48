@@ -40,34 +40,11 @@ data class UnOpNode(
             )
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        when (operator) {
-            UnaryOperator.NEGATE -> translateNegate(ctx)
-            UnaryOperator.CHR, UnaryOperator.ORD -> expr.translate(ctx)
-            UnaryOperator.MINUS -> translateMinus(ctx)
-            UnaryOperator.LEN -> mutableListOf<Instruction>().apply {
-                addAll(expr.translate(ctx))
-                add(LDRInstr(Register.R0, MemAddr(Register.R0)))
-            }
-        }
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateUnOp(this)
     }
 
-    private fun translateNegate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            addAll(expr.translate(ctx))
-            add(EORInstr(Register.R0, Register.R0, NumOp(1)))
-        }
-
-    private fun translateMinus(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            ctx.addLibraryFunction(OverflowError)
-            addAll(expr.translate(ctx))
-            add(RSBSInstr(Register.R0, Register.R0, NumOp(0)))
-            add(BLVSInstr(OverflowError.label))
-        }
 }
 
 enum class UnaryOperator(

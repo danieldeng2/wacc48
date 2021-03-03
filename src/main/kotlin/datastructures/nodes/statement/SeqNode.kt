@@ -54,12 +54,6 @@ data class SeqNode(
     override fun subList(fromIndex: Int, toIndex: Int): List<StatNode> =
         sequence.subList(fromIndex, toIndex)
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
-        sequence.forEach { instructions.addAll(it.translate(ctx)) }
-        return instructions
-    }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateSeq(this)
     }

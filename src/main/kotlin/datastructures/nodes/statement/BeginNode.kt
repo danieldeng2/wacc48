@@ -22,13 +22,6 @@ data class BeginNode(
         stat.validate(currST, funTable)
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            newScope(currST) {
-                addAll(stat.translate(ctx))
-            }
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateBegin(this)
     }

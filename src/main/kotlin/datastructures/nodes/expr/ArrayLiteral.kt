@@ -48,34 +48,6 @@ data class ArrayLiteral(
         }
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            add(
-                MOVInstr(
-                    Register.R0,
-                    NumOp(values.size * elemType.reserveStackSize + 4)
-                )
-            )
-            add(BLInstr("malloc"))
-            add(MOVInstr(Register.R3, Register.R0))
-
-            values.forEachIndexed { index, arrayElem ->
-                addAll(arrayElem.translate(ctx))
-                add(
-                    storeLocalVar(
-                        elemType,
-                        index * elemType.reserveStackSize + 4,
-                        rd = Register.R3,
-                        rn = Register.R0
-                    )
-                )
-            }
-
-            add(MOVInstr(Register.R0, NumOp(values.size)))
-            add(STRInstr(Register.R0, MemAddr(Register.R3)))
-            add(MOVInstr(Register.R0, Register.R3))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateArrayLiteral(this)
     }

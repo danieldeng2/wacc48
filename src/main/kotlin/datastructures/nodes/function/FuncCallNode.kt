@@ -5,13 +5,7 @@ import analyser.exceptions.SemanticsException
 import datastructures.nodes.assignment.RHSNode
 import datastructures.type.Type
 import datastructures.type.VoidType
-import generator.instructions.Instruction
-import generator.instructions.arithmetic.ADDInstr
-import generator.instructions.branch.BLInstr
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncCallNode(
@@ -49,16 +43,6 @@ data class FuncCallNode(
         argListSize = argList.args.sumBy {
             it.type.reserveStackSize
         }
-    }
-
-    override fun translate(ctx: TranslatorContext) = mutableListOf<Instruction>().apply {
-
-        addAll(argList.translate(ctx))
-        add(BLInstr("f_$name"))
-
-        if (argListSize != 0)
-            add(ADDInstr(Register.SP, Register.SP, NumOp(argListSize)))
-
     }
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {

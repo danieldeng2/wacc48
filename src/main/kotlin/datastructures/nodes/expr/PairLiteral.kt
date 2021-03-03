@@ -4,11 +4,7 @@ import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
 import datastructures.type.EmptyPair
 import datastructures.type.Type
-import generator.instructions.move.MOVInstr
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
 
 object PairLiteral : ExprNode {
     override var type: Type = EmptyPair
@@ -22,9 +18,6 @@ object PairLiteral : ExprNode {
     override fun toString(): String {
         return "Null"
     }
-
-    override fun translate(ctx: TranslatorContext) =
-        listOf(MOVInstr(Register.R0, NumOp(0)))
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translatePairLiteral(this)

@@ -7,14 +7,7 @@ import datastructures.nodes.assignment.LHSNode
 import datastructures.nodes.function.FuncNode
 import datastructures.type.Type
 import datastructures.type.VoidType
-import generator.instructions.Instruction
-import generator.instructions.arithmetic.ADDInstr
-import generator.instructions.operands.NumOp
-import generator.instructions.operands.Register
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
-import generator.translator.helpers.loadLocalVar
-import generator.translator.helpers.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class IdentifierNode(
@@ -35,19 +28,6 @@ data class IdentifierNode(
 
         type = st[name]!!
     }
-
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            val offset = ctx.getOffsetOfVar(name, st)
-
-            add(
-                when (mode) {
-                    AccessMode.ASSIGN -> storeLocalVar(type, offset)
-                    AccessMode.READ -> loadLocalVar(type, offset)
-                    else -> ADDInstr(Register.R0, Register.SP, NumOp(offset))
-                }
-            )
-        }
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateIdentifier(this)

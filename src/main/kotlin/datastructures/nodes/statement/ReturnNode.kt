@@ -25,13 +25,6 @@ data class ReturnNode(
         value.validate(st, funTable)
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            addAll(value.translate(ctx))
-            endAllScopes(st)
-            add(POPInstr(Register.PC))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateReturn(this)
     }

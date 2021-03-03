@@ -4,9 +4,7 @@ import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
 import datastructures.nodes.statement.StatNode
 import analyser.exceptions.SemanticsException
-import generator.instructions.Instruction
 import generator.translator.CodeGeneratorVisitor
-import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class AssignmentNode(
@@ -29,12 +27,6 @@ data class AssignmentNode(
                 ctx
             )
     }
-
-    override fun translate(ctx: TranslatorContext): List<Instruction> =
-        mutableListOf<Instruction>().apply {
-            addAll(value.translate(ctx))
-            addAll(name.translate(ctx))
-        }
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateAssignment(this)

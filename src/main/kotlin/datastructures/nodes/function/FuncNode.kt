@@ -69,24 +69,6 @@ data class FuncNode(
     }
 
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            paramList.forEach {
-                paramListTable.declareVariable(it.text)
-            }
-
-            ctx.stackPtrOffset = 0
-
-            add(LabelInstr("f_$identifier"))
-            add(PUSHInstr(Register.LR))
-
-            startScope(bodyTable)
-
-            addAll(body.translate(ctx))
-
-            add(Directive(".ltorg"))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateFunction(this)
     }

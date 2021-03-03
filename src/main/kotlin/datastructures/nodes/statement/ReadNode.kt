@@ -35,21 +35,6 @@ data class ReadNode(
             throw SemanticsException("Cannot read from type ${value.type}", ctx)
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            addAll(value.translate(ctx))
-
-            val readFunc = when (value.type) {
-                IntType -> ReadInt
-                CharType -> ReadChar
-                else -> throw NotImplementedError(
-                    "Implement read for ${value.type}"
-                )
-            }
-            ctx.addLibraryFunction(readFunc)
-            add(BLInstr(readFunc.label))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateRead(this)
     }

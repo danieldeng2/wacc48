@@ -30,21 +30,6 @@ class MainNode(
             throw SemanticsException("Cannot return in global context", ctx)
     }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> =
-        mutableListOf<Instruction>().apply {
-            ctx.stackPtrOffset = 0
-
-            add(LabelInstr("main"))
-            add(PUSHInstr(Register.LR))
-
-            newScope(st) {
-                addAll(body.translate(ctx))
-            }
-            add(MOVInstr(Register.R0, NumOp(0)))
-
-            add(POPInstr(Register.PC))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateMain(this)
     }

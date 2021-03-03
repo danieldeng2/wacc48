@@ -44,27 +44,6 @@ data class IfNode(
         falseStat.validate(falseST, funTable)
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            addAll(proposition.translate(ctx))
-            add(CMPInstr(Register.R0, NumOp(0)))
-
-            val falseBranchIndex = ctx.labelCounter
-            val continueBranch = ctx.labelCounter
-
-            add(BEQInstr("L$falseBranchIndex"))
-            newScope(trueST) {
-                addAll(trueStat.translate(ctx))
-            }
-            add(BInstr("L$continueBranch"))
-
-            add(LabelInstr("L$falseBranchIndex"))
-            newScope(falseST) {
-                addAll(falseStat.translate(ctx))
-            }
-            add(LabelInstr("L$continueBranch"))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateIf(this)
     }

@@ -37,25 +37,6 @@ data class WhileNode(
         body.validate(bodyST, funTable)
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            val bodyIndex = ctx.labelCounter
-            val propositionIndex = ctx.labelCounter
-
-            add(BInstr("L$propositionIndex"))
-
-            add(LabelInstr("L$bodyIndex"))
-
-            newScope(bodyST) {
-                addAll(body.translate(ctx))
-            }
-
-            add(LabelInstr("L$propositionIndex"))
-            addAll(proposition.translate(ctx))
-            add(CMPInstr(Register.R0, NumOp(1)))
-            add(BEQInstr("L$bodyIndex"))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateWhile(this)
     }

@@ -27,12 +27,6 @@ data class DeclarationNode(
             throw SemanticsException("Type mismatch in declaration $name", ctx)
     }
 
-    override fun translate(ctx: TranslatorContext): List<Instruction> =
-        mutableListOf<Instruction>().apply {
-            addAll(value.translate(ctx))
-            addAll(name.translate(ctx))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateDeclaration(this)
     }

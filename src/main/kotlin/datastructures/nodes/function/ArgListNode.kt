@@ -24,25 +24,6 @@ data class ArgListNode(
         }
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            val stackPtrTemp = ctx.stackPtrOffset
-
-            args.asReversed().forEach {
-                addAll(it.translate(ctx))
-                add(
-                    storeLocalVar(
-                        varType = it.type,
-                        stackOffset = -it.type.reserveStackSize,
-                        isArgLoad = true
-                    )
-                )
-                ctx.stackPtrOffset += it.type.reserveStackSize
-            }
-
-            ctx.stackPtrOffset = stackPtrTemp
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateArgList(this)
     }

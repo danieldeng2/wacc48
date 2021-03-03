@@ -29,12 +29,6 @@ data class ExitNode(
             )
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            addAll(expr.translate(ctx))
-            add(BLInstr("exit"))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateExit(this)
     }

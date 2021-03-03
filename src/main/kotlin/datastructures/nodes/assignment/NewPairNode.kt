@@ -37,41 +37,8 @@ data class NewPairNode(
         type = PairType(firstElem.type, secondElem.type, ctx)
     }
 
-    override fun translate(ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            // Mallocs for 2 elements of pair
-            addAll(storeElemInHeap(firstElem, ctx))
-            addAll(storeElemInHeap(secondElem, ctx))
-
-            // Malloc for the pair itself
-            add(MOVInstr(Register.R0, NumOp(8)))
-            add(BLInstr("malloc"))
-            add(popAndDecrement(ctx, Register.R1, Register.R2))
-
-            add(STRInstr(Register.R2, MemAddr(Register.R0)))
-            add(STRInstr(Register.R1, MemAddr(Register.R0, NumOp(4))))
-        }
-
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateNewPair(this)
     }
-
-    private fun storeElemInHeap(elem: ExprNode, ctx: TranslatorContext) =
-        mutableListOf<Instruction>().apply {
-            addAll(elem.translate(ctx))
-            add(pushAndIncrement(ctx, Register.R0))
-            add(MOVInstr(Register.R0, NumOp(elem.type.reserveStackSize)))
-            add(BLInstr("malloc"))
-            add(popAndDecrement(ctx, Register.R1))
-            add(
-                storeLocalVar(
-                    varType = elem.type,
-                    stackOffset = 0,
-                    rn = Register.R1,
-                    rd = Register.R0
-                )
-            )
-            add(pushAndIncrement(ctx, Register.R0))
-        }
 
 }
