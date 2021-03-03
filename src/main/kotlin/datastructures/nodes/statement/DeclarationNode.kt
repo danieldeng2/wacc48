@@ -1,12 +1,13 @@
 package datastructures.nodes.statement
 
+import analyser.exceptions.SemanticsException
 import datastructures.SymbolTable
 import datastructures.nodes.assignment.RHSNode
 import datastructures.nodes.function.FuncNode
 import datastructures.nodes.function.ParamNode
-import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.translator.TranslatorContext
+import generator.translator.helpers.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class DeclarationNode(
@@ -14,11 +15,13 @@ data class DeclarationNode(
     val value: RHSNode,
     val ctx: ParserRuleContext?
 ) : StatNode {
+    private lateinit var st: SymbolTable
 
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
+        this.st = st
         name.validate(st, funTable)
         value.validate(st, funTable)
 
@@ -30,6 +33,9 @@ data class DeclarationNode(
         mutableListOf<Instruction>().apply {
             addAll(value.translate(ctx))
             addAll(name.translate(ctx))
+
+            val offset = ctx.getOffsetOfVar(name.text, st)
+            add(storeLocalVar(name.type, offset))
         }
 
 }
