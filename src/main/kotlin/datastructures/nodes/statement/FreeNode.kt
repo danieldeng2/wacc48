@@ -7,6 +7,7 @@ import datastructures.type.GenericPair
 import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.lib.FreePair
 import org.antlr.v4.runtime.ParserRuleContext
@@ -33,4 +34,8 @@ data class FreeNode(
             addAll(value.translate(ctx))
             add(BLInstr(FreePair.label))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateFree(this)
+    }
 }

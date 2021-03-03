@@ -13,6 +13,7 @@ import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
@@ -50,6 +51,10 @@ data class NewPairNode(
             add(STRInstr(Register.R2, MemAddr(Register.R0)))
             add(STRInstr(Register.R1, MemAddr(Register.R0, NumOp(4))))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateNewPair(this)
+    }
 
     private fun storeElemInHeap(elem: ExprNode, ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {

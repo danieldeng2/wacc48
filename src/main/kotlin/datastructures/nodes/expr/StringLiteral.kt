@@ -7,6 +7,7 @@ import datastructures.type.Type
 import generator.instructions.load.LDRInstr
 import generator.instructions.operands.LabelOp
 import generator.instructions.operands.Register
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -31,4 +32,8 @@ data class StringLiteral(
             LabelOp(ctx.addMessage(value))
         )
     )
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateStringLiteral(this)
+    }
 }

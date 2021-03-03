@@ -12,6 +12,7 @@ import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
@@ -63,4 +64,8 @@ data class IfNode(
             }
             add(LabelInstr("L$continueBranch"))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateIf(this)
+    }
 }

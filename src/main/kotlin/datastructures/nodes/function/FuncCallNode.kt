@@ -10,6 +10,7 @@ import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -58,6 +59,10 @@ data class FuncCallNode(
         if (argListSize != 0)
             add(ADDInstr(Register.SP, Register.SP, NumOp(argListSize)))
 
+    }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateFuncCall(this)
     }
 
 }

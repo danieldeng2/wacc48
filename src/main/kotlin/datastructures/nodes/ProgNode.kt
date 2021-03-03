@@ -6,6 +6,7 @@ import datastructures.nodes.function.FuncNode
 import datastructures.nodes.function.MainNode
 import datastructures.nodes.statement.*
 import generator.instructions.Instruction
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -52,6 +53,10 @@ data class ProgNode(
         }
 
         return ctx.assemble()
+    }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateProgram(this)
     }
 
 }

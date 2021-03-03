@@ -101,7 +101,7 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
 
     override fun visitExitStat(ctx: WACCParser.ExitStatContext): ASTNode =
         ExitNode(
-            value = visit(ctx.expr()) as ExprNode,
+            expr = visit(ctx.expr()) as ExprNode,
             ctx = ctx
         )
 

@@ -7,6 +7,7 @@ import datastructures.type.Type
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -27,4 +28,8 @@ data class BoolLiteral(
             true -> listOf(MOVInstr(Register.R0, NumOp(1)))
             false -> listOf(MOVInstr(Register.R0, NumOp(0)))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateBoolLiteral(this)
+    }
 }

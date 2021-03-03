@@ -13,6 +13,7 @@ import generator.instructions.logical.EORInstr
 import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.lib.errors.OverflowError
 import org.antlr.v4.runtime.ParserRuleContext
@@ -49,6 +50,10 @@ data class UnOpNode(
                 add(LDRInstr(Register.R0, MemAddr(Register.R0)))
             }
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateUnOp(this)
+    }
 
     private fun translateNegate(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {

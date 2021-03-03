@@ -3,6 +3,7 @@ package datastructures.nodes.statement
 import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
 import generator.instructions.Instruction
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
@@ -11,7 +12,7 @@ data class BeginNode(
     val stat: StatNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
-    private lateinit var currST: SymbolTable
+    lateinit var currST: SymbolTable
 
     override fun validate(
         st: SymbolTable,
@@ -27,4 +28,8 @@ data class BeginNode(
                 addAll(stat.translate(ctx))
             }
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateBegin(this)
+    }
 }

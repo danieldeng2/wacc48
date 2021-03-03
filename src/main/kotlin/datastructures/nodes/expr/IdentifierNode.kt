@@ -11,6 +11,7 @@ import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.loadLocalVar
 import generator.translator.helpers.storeLocalVar
@@ -21,7 +22,7 @@ data class IdentifierNode(
     val ctx: ParserRuleContext?,
 ) : LHSNode, ExprNode {
     override var type: Type = VoidType
-    private lateinit var st: SymbolTable
+    lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
 
     override fun validate(
@@ -47,5 +48,9 @@ data class IdentifierNode(
                 }
             )
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateIdentifier(this)
+    }
 
 }

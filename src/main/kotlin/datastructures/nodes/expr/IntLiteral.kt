@@ -9,6 +9,7 @@ import generator.instructions.Instruction
 import generator.instructions.load.LDRInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -30,4 +31,8 @@ data class IntLiteral(
 
     override fun translate(ctx: TranslatorContext): List<Instruction> =
         listOf(LDRInstr(Register.R0, NumOp(value, isLoad = true)))
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateIntLiteral(this)
+    }
 }

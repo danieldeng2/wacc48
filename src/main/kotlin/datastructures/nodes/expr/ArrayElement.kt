@@ -16,6 +16,7 @@ import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.lib.errors.CheckArrayBounds
 import generator.translator.helpers.*
@@ -26,7 +27,7 @@ data class ArrayElement(
     val arrIndices: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : ExprNode, LHSNode {
-    private lateinit var st: SymbolTable
+    lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
     override lateinit var type: Type
 
@@ -61,6 +62,10 @@ data class ArrayElement(
             AccessMode.READ -> translateRead(ctx)
             else -> translateAssignment(ctx)
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateArrayElement(this)
+    }
 
 
     private fun translateAssignment(ctx: TranslatorContext) =

@@ -23,6 +23,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.operands.ShiftOp
 import generator.instructions.operands.ShiftType
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.lib.errors.DivideByZeroError
 import generator.translator.lib.errors.OverflowError
@@ -90,6 +91,10 @@ data class BinOpNode(
             BinaryOperator.MODULUS -> translateModulo(ctx)
             else -> translateComparator(ctx)
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateBinOp(this)
+    }
 
     private fun translateDivide(ctx: TranslatorContext) =
         mutableListOf<Instruction>().apply {

@@ -12,6 +12,7 @@ import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
@@ -21,7 +22,7 @@ data class WhileNode(
     val body: StatNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
-    private lateinit var bodyST: SymbolTable
+    lateinit var bodyST: SymbolTable
 
     override fun validate(
         st: SymbolTable,
@@ -54,5 +55,9 @@ data class WhileNode(
             add(CMPInstr(Register.R0, NumOp(1)))
             add(BEQInstr("L$bodyIndex"))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateWhile(this)
+    }
 }
 

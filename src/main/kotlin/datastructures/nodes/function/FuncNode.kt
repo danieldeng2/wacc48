@@ -10,6 +10,7 @@ import generator.instructions.directives.Directive
 import generator.instructions.directives.LabelInstr
 import generator.instructions.operands.Register
 import generator.instructions.stack.PUSHInstr
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.startScope
 import org.antlr.v4.runtime.ParserRuleContext
@@ -85,5 +86,9 @@ data class FuncNode(
 
             add(Directive(".ltorg"))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateFunction(this)
+    }
 
 }

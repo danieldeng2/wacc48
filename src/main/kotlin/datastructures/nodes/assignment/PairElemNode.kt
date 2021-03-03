@@ -17,14 +17,15 @@ import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.lib.errors.CheckNullPointer
 import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class PairElemNode(
-    private val expr: ExprNode,
-    private val isFirst: Boolean,
+    val expr: ExprNode,
+    val isFirst: Boolean,
     val ctx: ParserRuleContext?
 ) : LHSNode, RHSNode {
     override var type: Type = VoidType
@@ -62,6 +63,10 @@ data class PairElemNode(
                 addAll(assignToPosition(ctx, memOffset))
 
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translatePairElem(this)
+    }
 
     private fun loadFromPosition(ctx: TranslatorContext, memOffset: Int) =
         mutableListOf<Instruction>().apply {

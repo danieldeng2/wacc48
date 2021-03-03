@@ -6,6 +6,7 @@ import datastructures.nodes.function.FuncNode
 import datastructures.nodes.function.ParamNode
 import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import org.antlr.v4.runtime.ParserRuleContext
 
@@ -31,6 +32,10 @@ data class DeclarationNode(
             addAll(value.translate(ctx))
             addAll(name.translate(ctx))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateDeclaration(this)
+    }
 
 }
 

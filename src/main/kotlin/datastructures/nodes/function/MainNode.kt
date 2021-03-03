@@ -11,6 +11,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
 import generator.instructions.stack.PUSHInstr
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.newScope
 import org.antlr.v4.runtime.ParserRuleContext
@@ -19,7 +20,7 @@ class MainNode(
     val body: StatNode,
     val ctx: ParserRuleContext?
 ) : ASTNode {
-    private lateinit var st: SymbolTable
+    lateinit var st: SymbolTable
 
     override fun validate(st: SymbolTable, funTable: MutableMap<String, FuncNode>) {
         this.st = st
@@ -43,6 +44,10 @@ class MainNode(
 
             add(POPInstr(Register.PC))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateMain(this)
+    }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =
         when (body) {

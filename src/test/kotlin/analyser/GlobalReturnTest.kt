@@ -46,7 +46,7 @@ class GlobalReturnTest {
     @Test
     fun globalExitValidates() {
         val exitNode = ExitNode(
-            value = trueBooleanNode,
+            expr = trueBooleanNode,
             ctx = null
         )
         assertFalse(globalReturnSemanticErrorThrown(exitNode))

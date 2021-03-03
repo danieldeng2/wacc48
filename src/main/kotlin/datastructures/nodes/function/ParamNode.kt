@@ -6,6 +6,7 @@ import datastructures.nodes.ASTNode
 import datastructures.type.Typable
 import datastructures.type.Type
 import generator.instructions.Instruction
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
@@ -15,7 +16,7 @@ data class ParamNode(
     val text: String,
     val ctx: ParserRuleContext?
 ) : ASTNode, Typable {
-    private lateinit var st: SymbolTable
+    lateinit var st: SymbolTable
 
     override fun validate(
         st: SymbolTable,
@@ -34,6 +35,10 @@ data class ParamNode(
         st.declareVariable(text)
         val offset = ctx.getOffsetOfVar(text, st)
         return listOf(storeLocalVar(type, offset))
+    }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateParam(this)
     }
 
 }

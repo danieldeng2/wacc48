@@ -11,13 +11,14 @@ import datastructures.type.Type
 import analyser.exceptions.SemanticsException
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.lib.read.ReadChar
 import generator.translator.lib.read.ReadInt
 import org.antlr.v4.runtime.ParserRuleContext
 
 data class ReadNode(
-    private val value: LHSNode,
+    val value: LHSNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
@@ -48,4 +49,8 @@ data class ReadNode(
             ctx.addLibraryFunction(readFunc)
             add(BLInstr(readFunc.label))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateRead(this)
+    }
 }

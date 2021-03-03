@@ -6,6 +6,7 @@ import datastructures.nodes.function.FuncNode
 import generator.instructions.Instruction
 import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.endAllScopes
 import org.antlr.v4.runtime.ParserRuleContext
@@ -30,4 +31,8 @@ data class ReturnNode(
             endAllScopes(st)
             add(POPInstr(Register.PC))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateReturn(this)
+    }
 }

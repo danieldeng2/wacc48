@@ -7,6 +7,7 @@ import datastructures.nodes.function.FuncNode
 import datastructures.type.*
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.lib.print.*
 import org.antlr.v4.runtime.ParserRuleContext
@@ -56,6 +57,10 @@ data class PrintNode(
                 add(BLInstr(PrintLn.label))
             }
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translatePrint(this)
+    }
 
     private fun getPrintOption(exprType: Type) =
         when (exprType) {

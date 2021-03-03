@@ -13,6 +13,7 @@ import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.*
 import org.antlr.v4.runtime.ParserRuleContext
@@ -74,4 +75,8 @@ data class ArrayLiteral(
             add(STRInstr(Register.R0, MemAddr(Register.R3)))
             add(MOVInstr(Register.R0, Register.R3))
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateArrayLiteral(this)
+    }
 }

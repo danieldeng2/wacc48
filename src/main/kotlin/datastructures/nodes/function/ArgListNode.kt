@@ -4,6 +4,7 @@ import datastructures.SymbolTable
 import datastructures.nodes.ASTNode
 import datastructures.nodes.expr.ExprNode
 import generator.instructions.Instruction
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 import generator.translator.helpers.storeLocalVar
 import org.antlr.v4.runtime.ParserRuleContext
@@ -41,4 +42,8 @@ data class ArgListNode(
 
             ctx.stackPtrOffset = stackPtrTemp
         }
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateArgList(this)
+    }
 }

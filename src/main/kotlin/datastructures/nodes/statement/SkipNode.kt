@@ -3,6 +3,7 @@ package datastructures.nodes.statement
 import datastructures.SymbolTable
 import datastructures.nodes.function.FuncNode
 import generator.instructions.Instruction
+import generator.translator.CodeGeneratorVisitor
 import generator.translator.TranslatorContext
 
 object SkipNode : StatNode {
@@ -19,4 +20,8 @@ object SkipNode : StatNode {
 
     override fun translate(ctx: TranslatorContext): List<Instruction> =
         emptyList()
+
+    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
+        visitor.translateSkip(this)
+    }
 }
