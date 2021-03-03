@@ -3,18 +3,18 @@ package analyser
 import WACCParser
 import WACCParserBaseVisitor
 import analyser.exceptions.SyntaxException
-import datastructures.nodes.ASTNode
-import datastructures.nodes.ProgNode
-import datastructures.nodes.assignment.*
-import datastructures.nodes.expr.*
-import datastructures.nodes.expr.operators.BinOpNode
-import datastructures.nodes.expr.operators.BinaryOperator
-import datastructures.nodes.expr.operators.UnOpNode
-import datastructures.nodes.expr.operators.UnaryOperator
-import datastructures.nodes.function.*
-import datastructures.nodes.statement.*
-import datastructures.type.*
 import org.apache.commons.text.StringEscapeUtils
+import tree.nodes.ASTNode
+import tree.nodes.ProgNode
+import tree.nodes.assignment.*
+import tree.nodes.expr.*
+import tree.nodes.expr.operators.BinOpNode
+import tree.nodes.expr.operators.BinaryOperator
+import tree.nodes.expr.operators.UnOpNode
+import tree.nodes.expr.operators.UnaryOperator
+import tree.nodes.function.*
+import tree.nodes.statement.*
+import tree.type.*
 
 
 class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {

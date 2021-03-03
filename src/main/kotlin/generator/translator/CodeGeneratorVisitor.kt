@@ -1,22 +1,5 @@
 package generator.translator
 
-import datastructures.nodes.ASTNode
-import datastructures.nodes.ProgNode
-import datastructures.nodes.assignment.AccessMode
-import datastructures.nodes.assignment.AssignmentNode
-import datastructures.nodes.assignment.NewPairNode
-import datastructures.nodes.assignment.PairElemNode
-import datastructures.nodes.expr.*
-import datastructures.nodes.expr.operators.BinOpNode
-import datastructures.nodes.expr.operators.BinaryOperator
-import datastructures.nodes.expr.operators.UnOpNode
-import datastructures.nodes.expr.operators.UnaryOperator
-import datastructures.nodes.function.*
-import datastructures.nodes.statement.*
-import datastructures.type.ArrayType
-import datastructures.type.CharType
-import datastructures.type.IntType
-import datastructures.type.StringType
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BEQInstr
@@ -39,8 +22,25 @@ import generator.translator.lib.errors.CheckNullPointer
 import generator.translator.lib.print.PrintLn
 import generator.translator.lib.read.ReadChar
 import generator.translator.lib.read.ReadInt
+import tree.nodes.ASTNode
+import tree.nodes.ProgNode
+import tree.nodes.assignment.AccessMode
+import tree.nodes.assignment.AssignmentNode
+import tree.nodes.assignment.NewPairNode
+import tree.nodes.assignment.PairElemNode
+import tree.nodes.expr.*
+import tree.nodes.expr.operators.BinOpNode
+import tree.nodes.expr.operators.BinaryOperator
+import tree.nodes.expr.operators.UnOpNode
+import tree.nodes.expr.operators.UnaryOperator
+import tree.nodes.function.*
+import tree.nodes.statement.*
+import tree.type.ArrayType
+import tree.type.CharType
+import tree.type.IntType
+import tree.type.StringType
 
-class CodeGeneratorVisitor(val rootNode: ASTNode) {
+class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     val ctx = TranslatorContext()
 
     fun translate(): List<Instruction> {
@@ -111,9 +111,6 @@ class CodeGeneratorVisitor(val rootNode: ASTNode) {
     fun translateParam(node: ParamNode) {
         val symbolTable = node.st
         symbolTable.declareVariable(node.text)
-        val offset = ctx.getOffsetOfVar(node.text, symbolTable)
-
-        ctx.text.add(storeLocalVar(node.type, offset))
     }
 
     fun translateNewPair(node: NewPairNode) {
@@ -135,6 +132,9 @@ class CodeGeneratorVisitor(val rootNode: ASTNode) {
     fun translateDeclaration(node: DeclarationNode) {
         visitAndTranslate(node.value)
         visitAndTranslate(node.name)
+
+        val offset = ctx.getOffsetOfVar(node.name.text, node.st)
+        ctx.text.add(storeLocalVar(node.name.type, offset))
     }
 
     fun translateArgList(node: ArgListNode) {

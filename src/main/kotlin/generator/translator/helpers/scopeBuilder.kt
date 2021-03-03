@@ -1,6 +1,6 @@
 package generator.translator.helpers
 
-import datastructures.SymbolTable
+import tree.SymbolTable
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.arithmetic.SUBInstr

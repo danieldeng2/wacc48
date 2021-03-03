@@ -1,6 +1,6 @@
 package generator.translator.helpers
 
-import datastructures.type.*
+import tree.type.*
 import generator.translator.lib.print.PrintBool
 import generator.translator.lib.print.PrintInt
 import generator.translator.lib.print.PrintReference

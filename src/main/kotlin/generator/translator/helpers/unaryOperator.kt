@@ -1,6 +1,6 @@
 package generator.translator.helpers
 
-import datastructures.nodes.expr.operators.UnOpNode
+import tree.nodes.expr.operators.UnOpNode
 import generator.instructions.arithmetic.RSBSInstr
 import generator.instructions.branch.BLVSInstr
 import generator.instructions.logical.EORInstr

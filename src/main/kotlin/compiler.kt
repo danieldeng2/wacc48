@@ -2,9 +2,8 @@ import analyser.ASTGeneratorVisitor
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import analyser.exceptions.ThrowingErrorListener
-import datastructures.SymbolTable
-import datastructures.nodes.ASTNode
-import datastructures.nodes.ProgNode
+import tree.SymbolTable
+import tree.nodes.ASTNode
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream

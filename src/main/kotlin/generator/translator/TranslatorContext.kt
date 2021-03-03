@@ -1,6 +1,6 @@
 package generator.translator
 
-import datastructures.SymbolTable
+import tree.SymbolTable
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.instructions.directives.Ascii

@@ -1,10 +1,10 @@
 package generator.translator.helpers
 
-import datastructures.nodes.assignment.AccessMode
-import datastructures.nodes.assignment.PairElemNode
-import datastructures.nodes.expr.ExprNode
-import datastructures.nodes.expr.IdentifierNode
-import datastructures.type.Type
+import tree.nodes.assignment.AccessMode
+import tree.nodes.assignment.PairElemNode
+import tree.nodes.expr.ExprNode
+import tree.nodes.expr.IdentifierNode
+import tree.type.Type
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr

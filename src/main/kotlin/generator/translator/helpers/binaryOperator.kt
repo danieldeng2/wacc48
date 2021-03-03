@@ -1,7 +1,7 @@
 package generator.translator.helpers
 
-import datastructures.nodes.expr.operators.BinOpNode
-import datastructures.nodes.expr.operators.BinaryOperator
+import tree.nodes.expr.operators.BinOpNode
+import tree.nodes.expr.operators.BinaryOperator
 import generator.instructions.arithmetic.ADDSInstr
 import generator.instructions.arithmetic.SMULLInstr
 import generator.instructions.arithmetic.SUBSInstr

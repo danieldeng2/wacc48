@@ -1,6 +1,6 @@
 package generator.translator.helpers
 
-import datastructures.nodes.expr.operators.BinOpNode
+import tree.nodes.expr.operators.BinOpNode
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.Register
 import generator.instructions.stack.POPInstr

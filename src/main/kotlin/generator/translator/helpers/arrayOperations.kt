@@ -1,10 +1,10 @@
 package generator.translator.helpers
 
-import datastructures.nodes.expr.ArrayElement
-import datastructures.type.ArrayType
-import datastructures.type.BoolType
-import datastructures.type.CharType
-import datastructures.type.Type
+import tree.nodes.expr.ArrayElement
+import tree.type.ArrayType
+import tree.type.BoolType
+import tree.type.CharType
+import tree.type.Type
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
