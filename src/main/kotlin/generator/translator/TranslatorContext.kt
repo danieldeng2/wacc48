@@ -1,29 +1,45 @@
 package generator.translator
 
-import tree.SymbolTable
 import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.instructions.directives.Ascii
 import generator.instructions.directives.LabelInstr
 import generator.instructions.directives.Word
 import generator.translator.lib.LibraryFunction
+import tree.SymbolTable
 
 class TranslatorContext {
+
+    /** Counter for the number of messages assigned to the '.data' section
+     * of the assembly file. This corresponds to the index when we have
+     * '=msg_x' operands. */
     private var msgCounter = 0
 
+    /** Counter for the number of labels assigned. This is used for example
+     * as shown: 'L0' 'L1'.*/
     var labelCounter = 0
         get() = field++
 
+    /** Tracks the current offset of the stack pointer relative to its
+     * position at the start of the current function in context. */
     var stackPtrOffset = 0
 
+    /** A map which tracks a string in the '.data' section to its corresponding
+     * value of [msgCounter]. This ensures that no field in '.data' contains
+     * the same string to save memory. */
     private var stringMap: MutableMap<String, Int> = mutableMapOf()
 
+    /** The list of built-in functions that have been called, for example
+     * [PrintInt] or [CheckArrayBounds] to make sure they are only printed
+     * once to the assembly file. */
     private val usedLibraryFunctions = mutableListOf<LibraryFunction>()
 
+    /** List of instructions in the '.data' section in the assembly file. */
     private val data = mutableListOf<Instruction>().apply {
         add(LabelInstr("data", isSection = true))
     }
 
+    /** List of instructions in the '.tedt' section in the assembly file. */
     val text = mutableListOf<Instruction>().apply {
         add(LabelInstr("text", isSection = true))
         add(LabelInstr("global main", isGlobalHeader = true))
@@ -68,6 +84,8 @@ class TranslatorContext {
             addAll(text)
         }
 
+    /** Calculate the offset of variable with identifier [id], relative
+     * to the current position of the stack pointer. */
     fun getOffsetOfVar(id: String, st: SymbolTable) =
             st.getVariablePosition(id) + stackPtrOffset
 }

@@ -14,6 +14,19 @@ import generator.translator.ArmConstants.NUM_BYTE_ADDRESS
 import generator.translator.CodeGeneratorVisitor
 import generator.translator.lib.errors.CheckArrayBounds
 
+/** An example of a line of code that calls this:
+ *  ```
+ *   int[][][] a = ...;
+ *   a[2][3][1] = 1;
+ *  ```
+ *
+ *  Pre-condition: the value to assign is already in register R0
+ *  (i.e. value 1 in this case).
+ *
+ *  Iterate through the list of indices, at each step load the corresponding
+ *  array into memory after checking for invalid array access.
+ *
+ */
 fun CodeGeneratorVisitor.translateArrayAssignment(elem: ArrayElement) {
     ctx.addLibraryFunction(CheckArrayBounds)
 
@@ -50,6 +63,21 @@ fun CodeGeneratorVisitor.translateArrayAssignment(elem: ArrayElement) {
     }
 }
 
+/** This function is called when we are trying to read the value of an
+ * element in an array.
+ *
+ * First, we load the address of the array into register R0, then R4.
+ * An example of a statement that invoke this function is:
+ * ```
+ *  int[][][] a = ...;
+ *  int b = a[2][3][1];
+ * ```
+ *
+ * Then we iterate through the list of indices, in this case [2, 3, 1],
+ * checking array bounds and loading the correct address of the child array
+ * into memory up to the last one, and load the value (i.e 5) into the correct
+ * address.
+ * */
 fun CodeGeneratorVisitor.translateArrayRead(elem: ArrayElement) {
     ctx.addLibraryFunction(CheckArrayBounds)
 
@@ -84,6 +112,13 @@ fun CodeGeneratorVisitor.translateArrayRead(elem: ArrayElement) {
     }
 }
 
+/** Precondition: register R4 contains the address of the array in context
+ *
+ * The first element at the address of the array is the size of the array
+ * itself. Therefore, invoking [CheckArrayBounds] will do the bounds checking.
+ * Then, if valid, move the address in Register R4 to actually point at the first
+ * element in the array.
+ */
 fun CodeGeneratorVisitor.checkArrayBounds(type: Type) {
     ctx.text.addAll(
         listOf(

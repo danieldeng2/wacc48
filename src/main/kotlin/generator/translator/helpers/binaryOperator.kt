@@ -1,7 +1,5 @@
 package generator.translator.helpers
 
-import tree.nodes.expr.operators.BinOpNode
-import tree.nodes.expr.operators.BinaryOperator
 import generator.instructions.arithmetic.ADDSInstr
 import generator.instructions.arithmetic.SMULLInstr
 import generator.instructions.arithmetic.SUBSInstr
@@ -19,6 +17,8 @@ import generator.instructions.operands.ShiftType
 import generator.translator.CodeGeneratorVisitor
 import generator.translator.lib.errors.DivideByZeroError
 import generator.translator.lib.errors.OverflowError
+import tree.nodes.expr.operators.BinOpNode
+import tree.nodes.expr.operators.BinaryOperator
 import java.rmi.UnexpectedException
 
 
@@ -146,5 +146,20 @@ fun CodeGeneratorVisitor.translateComparator(node: BinOpNode) {
             )
         }
 
+    }
+}
+
+/** Loads the first and second operands in a binary operator into R0 and R1
+ * registers. */
+fun CodeGeneratorVisitor.loadOperandsIntoRegister(node: BinOpNode) {
+    ctx.addLibraryFunction(DivideByZeroError)
+    node.firstExpr.acceptCodeGenVisitor(this)
+
+    ctx.text.add(pushAndIncrement(ctx, Register.R0))
+    node.secondExpr.acceptCodeGenVisitor(this)
+
+    ctx.text.apply {
+        add(MOVInstr(Register.R1, Register.R0))
+        add(popAndDecrement(ctx, Register.R0))
     }
 }
