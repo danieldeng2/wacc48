@@ -16,6 +16,9 @@ import generator.instructions.store.STRInstr
 import generator.translator.CodeGeneratorVisitor
 import generator.translator.lib.errors.CheckNullPointer
 
+/** Evaluates the expression [elem], allocate memory for the result and store
+ * the result of the evaluation into allocated memory.
+ */
 fun CodeGeneratorVisitor.storeElemInHeap(elem: ExprNode) {
     visitAndTranslate(elem)
 
@@ -36,6 +39,10 @@ fun CodeGeneratorVisitor.storeElemInHeap(elem: ExprNode) {
     )
 }
 
+/** Loads an element in a pair [node] into register R0 from memory location
+ * calculated by adding the value inside register [Register.R0] and [memOffset].
+ *
+ * Pre-condition: the memory address of the pair is already in register R0. */
 fun CodeGeneratorVisitor.loadFromPosition(node: PairElemNode, memOffset: Int) {
     visitAndTranslate(node.expr)
 
@@ -56,7 +63,14 @@ fun CodeGeneratorVisitor.loadFromPosition(node: PairElemNode, memOffset: Int) {
     )
 }
 
-
+/** Assigns a new value to a pair element [node] (i.e. either the 1st or 2nd
+ * element in a pair).
+ *
+ *  First check if the address of the pair is [ArmConstants.NULL_ADDRESS].
+ *  If false, then we free the old pair element.
+ *
+ *  Pre-condition: the value to be stored already in R0
+ */
 fun CodeGeneratorVisitor.assignToPosition(node: PairElemNode, memOffset: Int) {
     ctx.addLibraryFunction(CheckNullPointer)
     ctx.text.add(pushAndIncrement(ctx, Register.R0))
@@ -69,26 +83,31 @@ fun CodeGeneratorVisitor.assignToPosition(node: PairElemNode, memOffset: Int) {
 
     ctx.text.addAll(
         listOf(
+
+            // Loads address of pair into R0 and check for NULL
             LDRInstr(
                 Register.R0,
                 MemAddr(Register.SP, NumOp(stackOffset))
             ),
-
             BLInstr(CheckNullPointer.label),
-            ADDInstr(Register.R0, Register.R0, NumOp(memOffset)),
 
+            // Loads address of the element in context into R0 and saves it
+            ADDInstr(Register.R0, Register.R0, NumOp(memOffset)),
             pushAndIncrement(ctx, Register.R0),
+
             LDRInstr(Register.R0, MemAddr(Register.R0)),
 
             //Free existing value
             BLInstr("free"),
 
-            // Allocate new value
+            // Allocate memory for new value
             MOVInstr(
                 Register.R0,
                 NumOp(node.type.reserveStackSize)
             ),
             BLInstr("malloc"),
+
+            // Stores the new value into the memory address of the pair element
             popAndDecrement(ctx, Register.R1),
             STRInstr(Register.R0, MemAddr(Register.R1)),
             MOVInstr(Register.R1, Register.R0),
