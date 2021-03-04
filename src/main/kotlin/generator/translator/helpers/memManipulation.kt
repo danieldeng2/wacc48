@@ -1,9 +1,5 @@
 package generator.translator.helpers
 
-import tree.nodes.assignment.AccessMode
-import tree.nodes.assignment.LHSNode
-import tree.type.*
-import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.load.LDRSBInstr
 import generator.instructions.operands.MemAddr
@@ -11,7 +7,13 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRBInstr
 import generator.instructions.store.STRInstr
+import tree.type.*
 
+/** Selects the correct 'store' instruction based on the size of [varType].
+ *
+ * Stores the value in [rn] into the memory location calculated by
+ * adding the value inside [rd] with [stackOffset].
+ */
 fun storeLocalVar(
     varType: Type,
     stackOffset: Int,
@@ -29,6 +31,11 @@ fun storeLocalVar(
         else -> throw UnknownError("Cannot store $varType")
     }
 
+/** Selects the correct 'load' instruction based on the size of [varType].
+ *
+ * Loads the value at memory location calculated by
+ * adding the value inside [rn] with [stackOffset] into register [rd].
+ */
 fun loadLocalVar(
     varType: Type,
     stackOffset: Int,
@@ -44,19 +51,3 @@ fun loadLocalVar(
 
         else -> throw UnknownError("Cannot load $varType")
     }
-
-fun LHSNode.readOrAssign(
-    varType: Type,
-    stackOffset: Int,
-    rn: Register,
-    rd: Register
-) =
-    if (mode == AccessMode.ASSIGN)
-        storeLocalVar(
-            varType = varType,
-            stackOffset = stackOffset,
-            rn = rn,
-            rd = rd
-        )
-    else
-        ADDInstr(rn, rd, NumOp(0))
