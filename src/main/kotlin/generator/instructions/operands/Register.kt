@@ -1,6 +1,6 @@
 package generator.instructions.operands
 
-enum class Register(val repr: String) : LoadableOp, WritableOp {
+enum class Register(val repr: String) : LoadableOp {
     PC("pc"),
     LR("lr"),
     SP("sp"),
