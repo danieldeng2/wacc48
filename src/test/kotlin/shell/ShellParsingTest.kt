@@ -20,7 +20,7 @@ class ShellParsingTest {
 
     @Test
     fun shellSyntaxErrorsShouldThrowSyntaxException() {
-        WalkDirectory("invalid/shellSyntaxErr").run {
+        WalkDirectory("shell/shellSyntaxErr").run {
             try {
                 runFileInShell(it)
                 error("This program contains syntax error")
@@ -32,7 +32,7 @@ class ShellParsingTest {
 
     @Test
     fun shellSemanticErrorsShouldThrowSemanticsException() {
-        WalkDirectory("invalid/shellSemanticErr").run {
+        WalkDirectory("shell/shellSemanticErr").run {
             try {
                 runFileInShell(it)
                 error("This program contains semantic error")
@@ -45,11 +45,36 @@ class ShellParsingTest {
     @Test
     fun validProgramsShouldParseAsProgramFiles() {
         WalkDirectory("valid").run {
-            try {
-                runFileInShellRemoveProgRule(it)
-            } catch (e: SemanticsException) {
-                //Test fails only when syntax exception thrown
-            }
+            runStringInShellWithProgramFile("", it.toPath())
+        }
+    }
+
+    @Test
+    fun functionsFromImportedProgramFileCanBeCalled() {
+        runStringInShellWithProgramFile(
+            "int test = call inc(0)",
+            File(javaClass.getResource("/shell/simpleFuncImport.wacc").file).toPath()
+        )
+    }
+
+    @Test
+    fun variableFromImportedProgramFileCanBeUsed() {
+        runStringInShellWithProgramFile(
+            "test = 1",
+            File(javaClass.getResource("/shell/varImport.wacc").file).toPath()
+        )
+    }
+
+    @Test
+    fun variableFromImportedProgramFileCanNotBeRedeclared() {
+        try {
+            runStringInShellWithProgramFile(
+                "char test = 'a'",
+                File(javaClass.getResource("/shell/varImport.wacc").file).toPath()
+            )
+            error("This program contains semantic error")
+        } catch (e: SemanticsException) {
+            //Test passes
         }
     }
 }

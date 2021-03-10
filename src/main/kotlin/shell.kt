@@ -29,7 +29,9 @@ class WACCShell(
         val st: SymbolTable = SymbolTable(null)
         //TODO(reading functions from file)
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
-        var memory: MutableMap<String, Nothing>
+        var memory: MutableMap<String, Nothing> = mutableMapOf()
+
+        parseAndRunProgramFile(st, ft, memory)
 
         printIntro()
 
@@ -155,8 +157,13 @@ class WACCShell(
         ft: MutableMap<String, FuncNode>,
         memory: MutableMap<String, Nothing>
     ) {
-        if (programPath == null || !programPath.toFile().exists())
+        if (programPath == null) {
             return
+        }
+        if (!programPath.toFile().exists()) {
+            println("Error: wacc file $programPath does not exist")
+            return
+        }
 
         runAnalyserPrintError(CharStreams.fromPath(programPath), st, ft)
 

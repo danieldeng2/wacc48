@@ -6,8 +6,17 @@ import java.nio.file.Path
 
 fun main(args: Array<String>) {
     if (args[0] == "-i") {
-        //TODO("implement file reading in interpreter")
-        val shell = WACCShell()
+        val shell: WACCShell
+        if (args.size == 3) {
+            if (args[1] == "-p")
+                shell = WACCShell(programPath = Path.of(args[2]))
+            else {
+                println("Interpreter usage: ./interpret -p <WACC File>")
+                return
+            }
+        } else {
+            shell = WACCShell()
+        }
         shell.runInteractiveShell()
         return
     }
