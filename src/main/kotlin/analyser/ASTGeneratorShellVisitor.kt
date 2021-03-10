@@ -50,7 +50,7 @@ class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
             name = ctx.IDENT().text,
             argList = visitArgList(ctx.argList()) as ArgListNode,
             ctx = ctx,
-            inFuncNodeCtx = inFuncNodeCtx
+            inShellAndFuncNodeCtx = inFuncNodeCtx
         )
 
     override fun visitParam(ctx: WACCShellParser.ParamContext): ASTNode =

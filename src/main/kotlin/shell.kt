@@ -12,27 +12,31 @@ import tree.nodes.ASTNode
 import tree.nodes.checkFunctionTerminates
 import tree.nodes.function.FuncNode
 import java.io.BufferedReader
+import java.nio.file.Path
 
 //TODO(maybe printing in colours)
+//TODO(import command maybe)
 
 class WACCShell(
     private val input: BufferedReader = System.`in`.bufferedReader(),
     private val prompt: String = ">>> ",
     private val multiLinePrompt: String = "... ",
-    private val testMode: Boolean = false
+    private val testMode: Boolean = false,
+    private val programPath: Path? = null
 ) {
 
     fun runInteractiveShell(debugFlag: Boolean = false) {
         val st: SymbolTable = SymbolTable(null)
         //TODO(reading functions from file)
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
-        var memory: MutableMap<String, FuncNode>
+        var memory: MutableMap<String, Nothing>
 
         printIntro()
 
         var currLine: String? = readNewLine()
 
         //TODO(clean this while condition)
+        //TODO(check that quit is never used as an identifier)
         //TODO(make sure return/exit work only when called in global scope)
         //TODO(make calling exit in normal scope be validated first, print code, then exit)
         while (currLine != null && currLine.trim() != "quit" && currLine.trim() != "return") {
@@ -146,7 +150,20 @@ class WACCShell(
         } while (true)
     }
 
-    fun printIntro() {
+    fun parseAndRunProgramFile(
+        st: SymbolTable,
+        ft: MutableMap<String, FuncNode>,
+        memory: MutableMap<String, Nothing>
+    ) {
+        if (programPath == null || !programPath.toFile().exists())
+            return
+
+        runAnalyserPrintError(CharStreams.fromPath(programPath), st, ft)
+
+        //TODO(evaluate program body and change memory)
+    }
+
+    private fun printIntro() {
         //TODO(help page maybe)
         println(">>> WACC Interactive Shell <<<")
         println("Instructions: ")
@@ -156,16 +173,12 @@ class WACCShell(
         println("\t'...' is the prompt to continue the current command (multiple lines)")
     }
 
-    fun printPrompt() = print(prompt)
-
-    fun printMultipleLinePrompt() = print(multiLinePrompt)
-
-    fun readNewLine(): String? = getLine(prompt)
+    private fun readNewLine(): String? = getLine(prompt)
 
     /** Read for when a rule spans multiple lines in stdin */
-    fun readNextLine(): String? = getLine(multiLinePrompt)
+    private fun readNextLine(): String? = getLine(multiLinePrompt)
 
-    fun getLine(promptToPrint: String): String? {
+    private fun getLine(promptToPrint: String): String? {
         print(promptToPrint)
         return input.readLine()
     }

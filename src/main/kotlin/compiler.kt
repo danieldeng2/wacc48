@@ -7,9 +7,14 @@ import tree.nodes.ASTNode
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
+import tree.nodes.function.FuncNode
 import kotlin.system.exitProcess
 
-fun runAnalyser(input: CharStream): ASTNode {
+fun runAnalyser(
+    input: CharStream,
+    st: SymbolTable = SymbolTable(null),
+    funTable: MutableMap<String, FuncNode> = mutableMapOf()
+): ASTNode {
     // Lexical Analysis
     val lexer = WACCLexer(input)
     lexer.removeErrorListeners()
@@ -25,8 +30,8 @@ fun runAnalyser(input: CharStream): ASTNode {
     // Semantic Analysis
     val programNode = ASTGeneratorVisitor().visitProg(parser.prog())
     programNode.validate(
-        st = SymbolTable(null),
-        funTable = mutableMapOf()
+        st = st,
+        funTable = funTable
     )
 
     return programNode
@@ -37,9 +42,13 @@ fun runGenerator(pNode: ASTNode): List<String> {
     return codeGen.translate().map { it.toString() }
 }
 
-fun runAnalyserCatchError(input: CharStream): ASTNode =
+fun runAnalyserCatchError(
+    input: CharStream,
+    st: SymbolTable = SymbolTable(null),
+    funTable: MutableMap<String, FuncNode> = mutableMapOf()
+): ASTNode =
     try {
-        runAnalyser(input)
+        runAnalyser(input, st, funTable)
     } catch (e: SyntaxException) {
         println("Syntax Error: ${e.message}")
         exitProcess(100)
@@ -48,3 +57,17 @@ fun runAnalyserCatchError(input: CharStream): ASTNode =
         exitProcess(200)
     }
 
+fun runAnalyserPrintError(
+    input: CharStream,
+    st: SymbolTable = SymbolTable(null),
+    funTable: MutableMap<String, FuncNode> = mutableMapOf()
+): ASTNode? =
+    try {
+        runAnalyser(input, st, funTable)
+    } catch (e: SyntaxException) {
+        println("Syntax Error: ${e.message}")
+        null
+    } catch (e: SemanticsException) {
+        println("Semantics Error: ${e.message}")
+        null
+    }

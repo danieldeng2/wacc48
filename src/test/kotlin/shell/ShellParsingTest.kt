@@ -6,16 +6,15 @@ import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import org.junit.Test
 import java.io.File
+import java.nio.file.Path
 
 class ShellParsingTest {
+    //TODO(Make the testing not print the shell stuff to system out)
+
     @Test
     fun validProgramsShouldNotFailToParse() {
         WalkDirectory("valid").run {
-            try {
-                runFileInShellRemoveProgRule(it)
-            } catch (e: SemanticsException) {
-                //Test fails only when syntax exception thrown
-            }
+            runFileInShellRemoveProgRule(it)
         }
     }
 
@@ -42,6 +41,17 @@ class ShellParsingTest {
             }
         }
     }
+
+    @Test
+    fun validProgramsShouldParseAsProgramFiles() {
+        WalkDirectory("valid").run {
+            try {
+                runFileInShellRemoveProgRule(it)
+            } catch (e: SemanticsException) {
+                //Test fails only when syntax exception thrown
+            }
+        }
+    }
 }
 
 fun runFileInShell(test: File) = runStringInShell(test.readText())
@@ -64,10 +74,15 @@ fun runFileInShellRemoveProgRule(file: File) {
 }
 
 fun runStringInShell(testString: String) {
-    //println("=============================")
-    //println("formattedTestString:")
-    //println(formattedTestString)
-    //println("=============================")
     val testShell = WACCShell(testString.byteInputStream().bufferedReader(), testMode = true)
+    testShell.runInteractiveShell()
+}
+
+fun runStringInShellWithProgramFile(testString: String, path: Path) {
+    val testShell = WACCShell(
+        testString.byteInputStream().bufferedReader(),
+        testMode = true,
+        programPath = path
+    )
     testShell.runInteractiveShell()
 }

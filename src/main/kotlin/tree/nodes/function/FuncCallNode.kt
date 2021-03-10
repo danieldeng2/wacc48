@@ -12,7 +12,7 @@ data class FuncCallNode(
     val name: String,
     val argList: ArgListNode,
     val ctx: ParserRuleContext?,
-    val inFuncNodeCtx: Boolean = false,
+    val inShellAndFuncNodeCtx: Boolean = false,
 ) : RHSNode {
     override var type: Type = VoidType
     lateinit var functionNode: FuncNode
@@ -22,13 +22,20 @@ data class FuncCallNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-        if (!inFuncNodeCtx) {
-            if (name !in funTable)
+        var functionIsDeclared = !inShellAndFuncNodeCtx
+        if (name !in funTable) {
+            if (!inShellAndFuncNodeCtx)
                 throw SemanticsException("Cannot find function $name", ctx)
+            else
+                functionIsDeclared = false
+        }
+        if (functionIsDeclared) {
             this.functionNode = funTable[name]!!
+        }
 
-            argList.validate(st, funTable)
+        argList.validate(st, funTable)
 
+        if (functionIsDeclared) {
             val args = argList.args
             val params = functionNode.paramList
 
@@ -41,9 +48,10 @@ data class FuncCallNode(
             }
 
             type = functionNode.retType
-            argListSize = argList.args.sumBy {
-                it.type.reserveStackSize
-            }
+        }
+
+        argListSize = argList.args.sumBy {
+            it.type.reserveStackSize
         }
     }
 
