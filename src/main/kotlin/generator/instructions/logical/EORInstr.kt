@@ -6,8 +6,8 @@ import generator.instructions.operands.Register
 
 class EORInstr(val rd: Register, val rn: Register, val imm: NumOp?) :
     Instruction {
-    override fun toString() = when (imm) {
-        null -> "\tEOR $rd, $rn"
-        else -> "\tEOR $rd, $rn, $imm"
+    override fun toArm() = when (imm) {
+        null -> "\tEOR ${rd.toArm()}, ${rn.toArm()}"
+        else -> "\tEOR ${rd.toArm()}, ${rn.toArm()}, ${imm.toArm()}"
     }
 }

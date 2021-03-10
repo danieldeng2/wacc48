@@ -13,11 +13,11 @@ fun main(args: Array<String>) {
     val sourceFile = Path.of(args[0])
     val input: CharStream = CharStreams.fromPath(sourceFile)
     val pNode = runAnalyserCatchError(input)
-    val output = runGenerator(pNode)
+    val output = runGenerator(pNode, armAssembly = false)
     writeResult(sourceFile.fileName.toString(), output)
 }
 
-private fun writeResult(inputName: String, output: List<String>) {
+fun writeResult(inputName: String, output: List<String>) {
     val outName = inputName.replace(".wacc", ".s")
     val writer = FileWriter(outName)
     output.forEach { writer.appendLine(it) }

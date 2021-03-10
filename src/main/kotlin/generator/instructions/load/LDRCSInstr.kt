@@ -6,5 +6,5 @@ import generator.instructions.operands.Register
 
 class LDRCSInstr(val rd: Register, val op: LoadableOp) :
     Instruction {
-    override fun toString() = "\tLDRCS $rd, $op"
+    override fun toArm() = "\tLDRCS ${rd.toArm()}, ${op.toArm()}"
 }

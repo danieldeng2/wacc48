@@ -32,9 +32,12 @@ fun runAnalyser(input: CharStream): ASTNode {
     return programNode
 }
 
-fun runGenerator(pNode: ASTNode): List<String> {
+fun runGenerator(pNode: ASTNode, armAssembly: Boolean): List<String> {
     val codeGen = CodeGeneratorVisitor(pNode)
-    return codeGen.translate().map { it.toString() }
+    return when (armAssembly) {
+        true -> codeGen.translate().map { it.toArm() }
+        false -> codeGen.translate().map { it.tox86() }.flatten()
+    }
 }
 
 fun runAnalyserCatchError(input: CharStream): ASTNode =

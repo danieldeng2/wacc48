@@ -10,5 +10,5 @@ class SMULLInstr(
     val rm: Register
 ) : Instruction {
 
-    override fun toString() = "\tSMULL $rdLow, $rdHigh, $rn, $rm"
+    override fun toArm() = "\tSMULL ${rdLow.toArm()}, ${rdHigh.toArm()}, ${rn.toArm()}, ${rm.toArm()}"
 }

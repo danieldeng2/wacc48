@@ -7,5 +7,5 @@ import generator.instructions.operands.Register
 class ADDSInstr(val rd: Register, val rn: Register, val imm: LoadableOp) :
     Instruction {
 
-    override fun toString() = "\tADDS $rd, $rn, $imm"
+    override fun toArm() = "\tADDS ${rd.toArm()}, ${rn.toArm()}, ${imm.toArm()}"
 }

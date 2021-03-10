@@ -9,5 +9,5 @@ class LDRSBInstr(
     private val op: LoadableOp
 ) : Instruction {
 
-    override fun toString() = "\tLDRSB $reg, $op"
+    override fun toArm() = "\tLDRSB ${reg.toArm()}, ${op.toArm()}"
 }

@@ -7,8 +7,8 @@ import generator.instructions.operands.Register
 class SUBInstr(val rd: Register, val rn: Register, val imm: NumOp) :
     Instruction {
 
-    override fun toString() = when (imm.value) {
-        0 -> "\tSUB ${rd.repr}, ${rn.repr}"
-        else -> "\tSUB ${rd.repr}, ${rn.repr}, $imm"
+    override fun toArm() = when (imm.value) {
+        0 -> "\tSUB ${rd.toArm()}, ${rn.toArm()}"
+        else -> "\tSUB ${rd.toArm()}, ${rn.toArm()}, ${imm.toArm()}"
     }
 }

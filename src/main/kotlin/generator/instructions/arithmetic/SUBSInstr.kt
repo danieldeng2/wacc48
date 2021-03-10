@@ -6,5 +6,5 @@ import generator.instructions.operands.Register
 
 class SUBSInstr(val rd: Register, val rn: Register, val imm: LoadableOp) :
     Instruction {
-    override fun toString() = "\tSUBS $rd, $rn, $imm"
+    override fun toArm() = "\tSUBS ${rd.toArm()}, ${rn.toArm()}, ${imm.toArm()}"
 }

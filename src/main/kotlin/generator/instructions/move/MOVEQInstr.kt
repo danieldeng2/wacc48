@@ -7,5 +7,5 @@ import generator.instructions.operands.Register
 class MOVEQInstr(val rd: Register, val op: ImmOp) :
     Instruction {
 
-    override fun toString() = "\tMOVEQ $rd, $op"
+    override fun toArm() = "\tMOVEQ ${rd.toArm()}, ${op.toArm()}"
 }

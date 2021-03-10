@@ -7,5 +7,5 @@ import generator.instructions.operands.Register
 class RSBSInstr(val rd: Register, val rn: Register, val imm: NumOp) :
     Instruction {
 
-    override fun toString() = "\tRSBS $rd, $rn, $imm"
+    override fun toArm() = "\tRSBS ${rd.toArm()}, ${rn.toArm()}, ${imm.toArm()}"
 }

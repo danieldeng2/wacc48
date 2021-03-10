@@ -5,10 +5,11 @@ class MemAddr(
     val offset: NumOp = NumOp(0),
     val updateBaseReg: Boolean = false
 ) : LoadableOp {
-    override fun toString(): String {
+
+    override fun toArm(): String {
         val str = when (offset.value) {
-            0 -> "[${reg.repr}]"
-            else -> "[${reg.repr}, $offset]"
+            0 -> "[${reg.toArm()}]"
+            else -> "[${reg.toArm()}, ${offset.toArm()}]"
         }
 
         return str + if (updateBaseReg) "!" else ""

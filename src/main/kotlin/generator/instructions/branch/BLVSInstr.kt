@@ -4,5 +4,5 @@ import generator.instructions.Instruction
 
 class BLVSInstr(val label: String) : Instruction {
 
-    override fun toString() = "\tBLVS $label"
+    override fun toArm() = "\tBLVS $label"
 }

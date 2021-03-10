@@ -6,5 +6,5 @@ import generator.instructions.operands.Register
 
 class MOVGTInstr(val rd: Register, val imm: LoadableOp) :
     Instruction {
-    override fun toString() = "\tMOVGT $rd, $imm"
+    override fun toArm() = "\tMOVGT ${rd.toArm()}, ${imm.toArm()}"
 }

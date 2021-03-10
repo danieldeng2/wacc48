@@ -8,5 +8,5 @@ class LDRNEInstr(
     private val reg: Register,
     private val op: LoadableOp
 ) : Instruction {
-    override fun toString() = "\tLDRNE ${reg.repr}, $op"
+    override fun toArm() = "\tLDRNE ${reg.toArm()}, ${op.toArm()}"
 }
