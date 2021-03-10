@@ -1,0 +1,15 @@
+# tries to assign to a function
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+  int f() is
+    return 3
+  end
+  
+  f = 2

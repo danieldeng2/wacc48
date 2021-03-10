@@ -30,6 +30,18 @@ class ShellParsingTest {
             }
         }
     }
+
+    @Test
+    fun shellSemanticErrorsShouldThrowSemanticsException() {
+        WalkDirectory("invalid/shellSemanticErr").run {
+            try {
+                runFileInShell(it)
+                error("This program contains semantic error")
+            } catch (e: SemanticsException) {
+                //Test passes
+            }
+        }
+    }
 }
 
 fun runFileInShell(test: File) = runStringInShell(test.readText())
