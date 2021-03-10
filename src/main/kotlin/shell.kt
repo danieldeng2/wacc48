@@ -121,14 +121,13 @@ class WACCShell(
                 //Attempt to match any rule using current built up input from stdin
                 return parser.command()
             } catch (e: SyntaxException) {
-                output.println("Syntax Error: ${e.message}")
+                output.println("${e.message}")
                 if (testMode) {
                     input.close()
                     throw e
                 }
                 return null
             } catch (e: IncompleteRuleException) {
-                output.println("incomplete rule error: ${e.message}")
             }
             /*If the parse is incomplete, there is still a chance it will be
                 * later on*/
