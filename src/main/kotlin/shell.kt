@@ -27,9 +27,8 @@ class WACCShell(
     private val programPath: Path? = null
 ) {
 
-    fun runInteractiveShell(debugFlag: Boolean = false) {
+    fun runInteractiveShell() {
         val st: SymbolTable = SymbolTable(null)
-        //TODO(reading functions from file)
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
         var memory: MutableMap<String, Nothing> = mutableMapOf()
 
@@ -49,13 +48,11 @@ class WACCShell(
                 continue
             }
 
-            val parserContext: ParserRuleContext? = parseStdinRule(currLine, debugFlag)
+            val parserContext: ParserRuleContext? = parseStdinRule(currLine)
             if (parserContext == null) {
                 currLine = readNewLine()
                 continue
             }
-            if (debugFlag)
-                output.println("[successfully parsed rule]")
 
             //Semantic Analysis
             val node: ASTNode = parserContext.accept(ASTGeneratorShellVisitor())
@@ -65,28 +62,23 @@ class WACCShell(
                     node.validatePrototype(ft)
                 }
                 node.validate(st, ft)
-                //TODO(reduce duplication in the catch statements)
             } catch (e: SyntaxException) {
                 output.println("Syntax Error: ${e.message}")
-                currLine = readNewLine()
                 if (testMode) {
                     input.close()
                     throw e
                 }
+                currLine = readNewLine()
                 continue
             } catch (e: SemanticsException) {
                 output.println("Semantics Error: ${e.message}")
-                currLine = readNewLine()
                 if (testMode) {
                     input.close()
                     throw e
                 }
+                currLine = readNewLine()
                 continue
             }
-            if (debugFlag)
-                output.println("[successfully semantically analysed rule]")
-
-            //TODO(adding to symbol table or function table if necessary (or is that already done?))
 
             /* TODO(evaluation visitor - evaluate node updating memory, print the result literal
             *  Unimplemented printing list:
@@ -108,7 +100,7 @@ class WACCShell(
 
     /** Parse lines from stdin until a valid rule is found, or return null if
      * no viable rules can be extracted from what has been entered in stdin. */
-    fun parseStdinRule(currLine: String, debugFlag: Boolean = false): ParserRuleContext? {
+    fun parseStdinRule(currLine: String): ParserRuleContext? {
         var stdinBuffer = currLine
 
         do {
@@ -130,22 +122,17 @@ class WACCShell(
                 return parser.command()
             } catch (e: SyntaxException) {
                 output.println("Syntax Error: ${e.message}")
-                if (debugFlag)
-                    output.println("stdinBuffer: $stdinBuffer")
                 if (testMode) {
                     input.close()
                     throw e
                 }
                 return null
             } catch (e: IncompleteRuleException) {
-                if (debugFlag) {
-                    output.println("stdinBuffer: $stdinBuffer")
-                    output.println("incomplete rule error: ${e.message}")
-                }
-                /*If the parse is incomplete, there is still a chance it will be
-                * later on*/
-                stdinBuffer += "\n" + readNextLine()
+                output.println("incomplete rule error: ${e.message}")
             }
+            /*If the parse is incomplete, there is still a chance it will be
+                * later on*/
+            stdinBuffer += "\n" + readNextLine()
         } while (true)
     }
 

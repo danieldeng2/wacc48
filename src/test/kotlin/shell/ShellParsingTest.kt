@@ -9,8 +9,6 @@ import java.io.File
 import java.nio.file.Path
 
 class ShellParsingTest {
-    //TODO(Make the testing not print the shell stuff to system out)
-
     @Test
     fun validProgramsShouldNotFailToParse() {
         WalkDirectory("valid").run {
