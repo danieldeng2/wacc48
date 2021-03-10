@@ -12,6 +12,7 @@ data class FuncCallNode(
     val name: String,
     val argList: ArgListNode,
     val ctx: ParserRuleContext?,
+    val inFuncNodeCtx: Boolean = false,
 ) : RHSNode {
     override var type: Type = VoidType
     lateinit var functionNode: FuncNode
@@ -21,34 +22,34 @@ data class FuncCallNode(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
+        if (!inFuncNodeCtx) {
+            if (name !in funTable)
+                throw SemanticsException("Cannot find function $name", ctx)
+            this.functionNode = funTable[name]!!
 
-        if (name !in funTable)
-            throw SemanticsException("Cannot find function $name", ctx)
-        this.functionNode = funTable[name]!!
+            argList.validate(st, funTable)
 
-        argList.validate(st, funTable)
+            val args = argList.args
+            val params = functionNode.paramList
 
-        val args = argList.args
-        val params = functionNode.paramList
+            if (args.size != params.size)
+                throw SemanticsException("Number of arguments do not match parameter: $name", ctx)
 
-        if (args.size != params.size)
-            throw SemanticsException("Number of arguments do not match parameter: $name", ctx)
+            for (i in args.indices) {
+                if (args[i].type != params[i].type)
+                    throw SemanticsException("argument ${i + 1} of $name has wrong type", ctx)
+            }
 
-        for (i in args.indices) {
-            if (args[i].type != params[i].type)
-                throw SemanticsException("argument ${i + 1} of $name has wrong type", ctx)
-        }
-
-        type = functionNode.retType
-        argListSize = argList.args.sumBy {
-            it.type.reserveStackSize
+            type = functionNode.retType
+            argListSize = argList.args.sumBy {
+                it.type.reserveStackSize
+            }
         }
     }
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateFuncCall(this)
     }
-
 }
 
 

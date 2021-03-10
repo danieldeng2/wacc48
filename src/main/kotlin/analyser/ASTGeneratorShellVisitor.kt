@@ -18,6 +18,7 @@ import tree.nodes.statement.*
 import tree.type.*
 
 class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
+    var inFuncNodeCtx = false
     //TODO(Get rid of the duplication between ASTGeneratorVisitor and ASTGeneratorShellVisitor)
 
     override fun visitCommand(ctx: WACCShellParser.CommandContext): ASTNode =
@@ -27,14 +28,29 @@ class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
             else -> visit(ctx.expr()) as ExprNode
         }
 
-    override fun visitFunc(ctx: WACCShellParser.FuncContext): ASTNode =
-        FuncNode(
+    override fun visitFunc(ctx: WACCShellParser.FuncContext): ASTNode {
+        inFuncNodeCtx = true
+
+        val func = FuncNode(
             identifier = ctx.IDENT().text,
             paramList = ctx.paramList()?.param()?.map { visit(it) as ParamNode }
                 ?: emptyList(),
             retType = findType(ctx.type()),
             body = visit(ctx.stat()) as StatNode,
             ctx = ctx
+        )
+
+        inFuncNodeCtx = false
+
+        return func
+    }
+
+    override fun visitFuncCall(ctx: WACCShellParser.FuncCallContext): ASTNode =
+        FuncCallNode(
+            name = ctx.IDENT().text,
+            argList = visitArgList(ctx.argList()) as ArgListNode,
+            ctx = ctx,
+            inFuncNodeCtx = inFuncNodeCtx
         )
 
     override fun visitParam(ctx: WACCShellParser.ParamContext): ASTNode =
@@ -258,12 +274,6 @@ class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
             ctx = ctx
         )
 
-    override fun visitFuncCall(ctx: WACCShellParser.FuncCallContext): ASTNode =
-        FuncCallNode(
-            name = ctx.IDENT().text,
-            argList = visitArgList(ctx.argList()) as ArgListNode,
-            ctx = ctx
-        )
 
     override fun visitNewPair(ctx: WACCShellParser.NewPairContext): ASTNode =
         NewPairNode(

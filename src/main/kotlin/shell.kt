@@ -9,9 +9,9 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
 import tree.SymbolTable
 import tree.nodes.ASTNode
+import tree.nodes.checkFunctionTerminates
 import tree.nodes.function.FuncNode
 import java.io.BufferedReader
-import java.io.InputStream
 
 //TODO(maybe printing in colours)
 
@@ -23,9 +23,9 @@ class WACCShell(
 ) {
 
     fun runInteractiveShell(debugFlag: Boolean = false) {
-        var st: SymbolTable = SymbolTable(null)
+        val st: SymbolTable = SymbolTable(null)
         //TODO(reading functions from file)
-        var ft: MutableMap<String, FuncNode> = mutableMapOf()
+        val ft: MutableMap<String, FuncNode> = mutableMapOf()
         var memory: MutableMap<String, FuncNode>
 
         printIntro()
@@ -51,7 +51,12 @@ class WACCShell(
             //Semantic Analysis
             val node: ASTNode = parserContext.accept(ASTGeneratorShellVisitor())
             try {
+                if (node is FuncNode) {
+                    checkFunctionTerminates(node)
+                    node.validatePrototype(ft)
+                }
                 node.validate(st, ft)
+                //TODO(reduce duplication in the catch statements)
             } catch (e: SyntaxException) {
                 println("Syntax Error: ${e.message}")
                 currLine = readNewLine()
@@ -62,6 +67,14 @@ class WACCShell(
                 continue
             } catch (e: SemanticsException) {
                 println("Semantics Error: ${e.message}")
+                currLine = readNewLine()
+                if (testMode) {
+                    input.close()
+                    throw e
+                }
+                continue
+            } catch (e: SyntaxException) {
+                println("Syntax Error: ${e.message}")
                 currLine = readNewLine()
                 if (testMode) {
                     input.close()
@@ -130,7 +143,6 @@ class WACCShell(
                 * later on*/
                 stdinBuffer += "\n" + readNextLine()
             }
-            continue
         } while (true)
     }
 

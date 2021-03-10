@@ -12,27 +12,29 @@ class ShellParsingTest {
     fun validProgramsShouldNotFailToParse() {
         WalkDirectory("valid").run {
             try {
-                runFileTestInShell(it)
+                runFileInShellRemoveProgRule(it)
             } catch (e: SemanticsException) {
                 //Test fails only when syntax exception thrown
             }
         }
     }
 
-    //@Test
-    //fun syntaxErrorsShouldThrowSyntaxException() {
-    //    WalkDirectory("invalid/syntaxErr").run {
-    //        try {
-    //            runFileTestInShell(it)
-    //            error("This program contains syntax error")
-    //        } catch (e: SyntaxException) {
-    //            //Test passes
-    //        }
-    //    }
-    //}
+    @Test
+    fun shellSyntaxErrorsShouldThrowSyntaxException() {
+        WalkDirectory("invalid/shellSyntaxErr").run {
+            try {
+                runFileInShell(it)
+                error("This program contains syntax error")
+            } catch (e: SyntaxException) {
+                //Test passes
+            }
+        }
+    }
 }
 
-fun runFileTestInShell(file: File) {
+fun runFileInShell(test: File) = runStringInShell(test.readText())
+
+fun runFileInShellRemoveProgRule(file: File) {
     /* Format the file so that the prog rule is not there
     *  (so only command rules are present)
     *  Assumes: that the file is in the style of the wacc_examples repository */
@@ -42,19 +44,18 @@ fun runFileTestInShell(file: File) {
     }.dropLastWhile { it.trim() == "" } //cut blank lines at end
 
     //Drop enclosing begin and end lines if there to avoid prog rule
-    val formattedTestString =
-        if (program[0].startsWith("begin") && program.last().endsWith("end")) {
-            program.drop(1).dropLast(1).joinToString("\n")
-        } else {
-            program.joinToString("\n")
-        }
+    if (program[0].startsWith("begin") && program.last().endsWith("end")) {
+        runStringInShell(program.drop(1).dropLast(1).joinToString("\n"))
+    } else {
+        runStringInShell(program.joinToString("\n"))
+    }
+}
 
+fun runStringInShell(testString: String) {
     //println("=============================")
     //println("formattedTestString:")
     //println(formattedTestString)
     //println("=============================")
-
-    val testShell = WACCShell(formattedTestString.byteInputStream().bufferedReader(), testMode = true)
-
+    val testShell = WACCShell(testString.byteInputStream().bufferedReader(), testMode = true)
     testShell.runInteractiveShell()
 }
