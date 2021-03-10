@@ -5,8 +5,15 @@ import java.io.FileWriter
 import java.nio.file.Path
 
 fun main(args: Array<String>) {
+    if (args[0] == "-i") {
+        //TODO("implement file reading in interpreter")
+        val shell = WACCShell()
+        shell.runInteractiveShell()
+        return
+    }
+
     if (args.isEmpty() || !File(args[0]).exists()) {
-        println("Usage: compile <WACC Source>")
+        println("Usage: ./compile <WACC Source>")
         return
     }
 
@@ -23,6 +30,3 @@ private fun writeResult(inputName: String, output: List<String>) {
     output.forEach { writer.appendLine(it) }
     writer.close()
 }
-
-
-

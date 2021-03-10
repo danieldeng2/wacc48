@@ -47,3 +47,4 @@ fun runAnalyserCatchError(input: CharStream): ASTNode =
         println("Semantics Error: ${e.message}")
         exitProcess(200)
     }
+

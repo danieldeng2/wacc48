@@ -1,37 +1,33 @@
 package analyser
 
-import WACCParser
-import WACCParserBaseVisitor
+import WACCShellParserBaseVisitor
 import analyser.exceptions.SyntaxException
 import org.apache.commons.text.StringEscapeUtils
 import tree.nodes.ASTNode
-import tree.nodes.ProgNode
 import tree.nodes.assignment.*
 import tree.nodes.expr.*
 import tree.nodes.expr.operators.BinOpNode
 import tree.nodes.expr.operators.BinaryOperator
 import tree.nodes.expr.operators.UnOpNode
 import tree.nodes.expr.operators.UnaryOperator
-import tree.nodes.function.*
+import tree.nodes.function.ArgListNode
+import tree.nodes.function.FuncCallNode
+import tree.nodes.function.FuncNode
+import tree.nodes.function.ParamNode
 import tree.nodes.statement.*
 import tree.type.*
 
+class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
+    //TODO(Get rid of the duplication between ASTGeneratorVisitor and ASTGeneratorShellVisitor)
 
-class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
-    override fun visitProg(ctx: WACCParser.ProgContext): ASTNode {
-        val functions = ctx.func().map { visit(it) as FuncNode }.toMutableList()
+    override fun visitCommand(ctx: WACCShellParser.CommandContext): ASTNode =
+        when {
+            ctx.func() != null -> visit(ctx.func()) as FuncNode
+            ctx.stat() != null -> visit(ctx.stat()) as StatNode
+            else -> visit(ctx.expr()) as ExprNode
+        }
 
-        return ProgNode(
-            functions = functions,
-            main = MainNode(
-                body = visit(ctx.stat()) as StatNode,
-                ctx = ctx
-            ),
-            ctx = ctx
-        )
-    }
-
-    override fun visitFunc(ctx: WACCParser.FuncContext): ASTNode =
+    override fun visitFunc(ctx: WACCShellParser.FuncContext): ASTNode =
         FuncNode(
             identifier = ctx.IDENT().text,
             paramList = ctx.paramList()?.param()?.map { visit(it) as ParamNode }
@@ -41,14 +37,14 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
             ctx = ctx
         )
 
-    override fun visitParam(ctx: WACCParser.ParamContext): ASTNode =
+    override fun visitParam(ctx: WACCShellParser.ParamContext): ASTNode =
         ParamNode(
             type = findType(ctx.type()),
             text = ctx.IDENT().text,
             ctx = ctx
         )
 
-    override fun visitIfStat(ctx: WACCParser.IfStatContext): ASTNode =
+    override fun visitIfStat(ctx: WACCShellParser.IfStatContext): ASTNode =
         IfNode(
             proposition = visit(ctx.expr()) as ExprNode,
             trueStat = visit(ctx.stat(0)) as StatNode,
@@ -56,25 +52,25 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
             ctx = ctx
         )
 
-    override fun visitReadStat(ctx: WACCParser.ReadStatContext): ASTNode =
+    override fun visitReadStat(ctx: WACCShellParser.ReadStatContext): ASTNode =
         ReadNode(
             value = visit(ctx.assignLhs()) as LHSNode,
             ctx = ctx
         )
 
-    override fun visitPrintStat(ctx: WACCParser.PrintStatContext): ASTNode =
+    override fun visitPrintStat(ctx: WACCShellParser.PrintStatContext): ASTNode =
         PrintNode(
             value = visit(ctx.expr()) as ExprNode,
             ctx = ctx
         )
 
-    override fun visitSeqCompositionStat(ctx: WACCParser.SeqCompositionStatContext): ASTNode =
+    override fun visitSeqCompositionStat(ctx: WACCShellParser.SeqCompositionStatContext): ASTNode =
         SeqNode(
             sequence =
             mutableListOf<StatNode>()
                 .apply {
-                    var next = ctx as WACCParser.StatContext
-                    while (next is WACCParser.SeqCompositionStatContext) {
+                    var next = ctx as WACCShellParser.StatContext
+                    while (next is WACCShellParser.SeqCompositionStatContext) {
                         add(visit(next.stat(0)) as StatNode)
                         next = next.stat(1)
                     }
@@ -84,62 +80,62 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
         )
 
 
-    override fun visitAssignmentStat(ctx: WACCParser.AssignmentStatContext): ASTNode =
+    override fun visitAssignmentStat(ctx: WACCShellParser.AssignmentStatContext): ASTNode =
         AssignmentNode(
             name = visit(ctx.assignLhs()) as LHSNode,
             value = visit(ctx.assignRhs()) as RHSNode,
             ctx = ctx
         )
 
-    override fun visitPrintlnStat(ctx: WACCParser.PrintlnStatContext): ASTNode =
+    override fun visitPrintlnStat(ctx: WACCShellParser.PrintlnStatContext): ASTNode =
         PrintNode(
             value = visit(ctx.expr()) as ExprNode,
             returnAfterPrint = true,
             ctx = ctx
         )
 
-    override fun visitExitStat(ctx: WACCParser.ExitStatContext): ASTNode =
+    override fun visitExitStat(ctx: WACCShellParser.ExitStatContext): ASTNode =
         ExitNode(
             expr = visit(ctx.expr()) as ExprNode,
             ctx = ctx
         )
 
-    override fun visitFreeStat(ctx: WACCParser.FreeStatContext): ASTNode =
+    override fun visitFreeStat(ctx: WACCShellParser.FreeStatContext): ASTNode =
         FreeNode(
             value = visit(ctx.expr()) as ExprNode,
             ctx = ctx
         )
 
-    override fun visitBeginStat(ctx: WACCParser.BeginStatContext): ASTNode =
+    override fun visitBeginStat(ctx: WACCShellParser.BeginStatContext): ASTNode =
         BeginNode(
             stat = visit(ctx.stat()) as StatNode,
             ctx = ctx
         )
 
-    override fun visitSkipStat(ctx: WACCParser.SkipStatContext): ASTNode =
+    override fun visitSkipStat(ctx: WACCShellParser.SkipStatContext): ASTNode =
         SkipNode
 
-    override fun visitReturnStat(ctx: WACCParser.ReturnStatContext): ASTNode =
+    override fun visitReturnStat(ctx: WACCShellParser.ReturnStatContext): ASTNode =
         ReturnNode(
             value = visit(ctx.expr()) as ExprNode,
             ctx = ctx
         )
 
-    override fun visitDeclarationStat(ctx: WACCParser.DeclarationStatContext): ASTNode =
+    override fun visitDeclarationStat(ctx: WACCShellParser.DeclarationStatContext): ASTNode =
         DeclarationNode(
             name = visit(ctx.param()) as ParamNode,
             value = visit(ctx.assignRhs()) as RHSNode,
             ctx = ctx
         )
 
-    override fun visitWhileStat(ctx: WACCParser.WhileStatContext): ASTNode =
+    override fun visitWhileStat(ctx: WACCShellParser.WhileStatContext): ASTNode =
         WhileNode(
             proposition = visit(ctx.expr()) as ExprNode,
             body = visit(ctx.stat()) as StatNode,
             ctx = ctx
         )
 
-    override fun visitAssignLhs(ctx: WACCParser.AssignLhsContext): ASTNode =
+    override fun visitAssignLhs(ctx: WACCShellParser.AssignLhsContext): ASTNode =
         when {
             ctx.arrayElem() != null -> visit(ctx.arrayElem())
             ctx.pairElem() != null -> visit(ctx.pairElem())
@@ -150,7 +146,7 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
         }
 
 
-    override fun visitAssignRhs(ctx: WACCParser.AssignRhsContext): ASTNode =
+    override fun visitAssignRhs(ctx: WACCShellParser.AssignRhsContext): ASTNode =
         when {
             ctx.expr() != null -> visit(ctx.expr())
             ctx.arrayLiter() != null -> visit(ctx.arrayLiter())
@@ -159,14 +155,14 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
             else -> visit(ctx.funcCall())
         }
 
-    override fun visitArgList(ctx: WACCParser.ArgListContext?): ASTNode =
+    override fun visitArgList(ctx: WACCShellParser.ArgListContext?): ASTNode =
         ArgListNode(
             args = ctx?.expr()?.map { visit(it) as ExprNode }
                 ?: emptyList(),
             ctx = ctx
         )
 
-    override fun visitStrLiteral(ctx: WACCParser.StrLiteralContext): ASTNode =
+    override fun visitStrLiteral(ctx: WACCShellParser.StrLiteralContext): ASTNode =
         StringLiteral(
             value = ctx.STR_LITER().text.substring(
                 1,
@@ -175,28 +171,28 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
             ctx = ctx
         )
 
-    override fun visitIdentifier(ctx: WACCParser.IdentifierContext): ASTNode =
+    override fun visitIdentifier(ctx: WACCShellParser.IdentifierContext): ASTNode =
         IdentifierNode(
             name = ctx.text,
             ctx = ctx
         )
 
-    override fun visitUnaryOpExpr(ctx: WACCParser.UnaryOpExprContext): ASTNode =
+    override fun visitUnaryOpExpr(ctx: WACCShellParser.UnaryOpExprContext): ASTNode =
         visit(ctx.unaryOperator()) as UnOpNode
 
-    override fun visitUnaryOperator(ctx: WACCParser.UnaryOperatorContext): ASTNode =
+    override fun visitUnaryOperator(ctx: WACCShellParser.UnaryOperatorContext): ASTNode =
         UnOpNode(
             operator = UnaryOperator.lookupRepresentation(
                 ctx.getChild(0).text
             )!!,
             expr = visit(
                 (ctx.getParent()
-                    .ruleContext as WACCParser.UnaryOpExprContext).expr()
+                    .ruleContext as WACCShellParser.UnaryOpExprContext).expr()
             ) as ExprNode,
             ctx = ctx
         )
 
-    override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode =
+    override fun visitBinOpExpr(ctx: WACCShellParser.BinOpExprContext): ASTNode =
         BinOpNode(
             operator = BinaryOperator.lookupRepresentation(
                 ctx.op.text
@@ -207,11 +203,11 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
         )
 
 
-    override fun visitPairLiteral(ctx: WACCParser.PairLiteralContext): ASTNode =
+    override fun visitPairLiteral(ctx: WACCShellParser.PairLiteralContext): ASTNode =
         PairLiteral
 
 
-    override fun visitIntLiteral(ctx: WACCParser.IntLiteralContext): ASTNode =
+    override fun visitIntLiteral(ctx: WACCShellParser.IntLiteralContext): ASTNode =
         IntLiteral(
             value = try {
                 ctx.text.toInt()
@@ -221,7 +217,7 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
             ctx = ctx
         )
 
-    override fun visitCharLiteral(ctx: WACCParser.CharLiteralContext): ASTNode =
+    override fun visitCharLiteral(ctx: WACCShellParser.CharLiteralContext): ASTNode =
         CharLiteral(
             value = when (ctx.text.substring(1, ctx.text.length - 1)) {
                 "\\0" -> '\u0000'
@@ -230,53 +226,53 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
             ctx = ctx
         )
 
-    override fun visitArrayElemExpr(ctx: WACCParser.ArrayElemExprContext): ASTNode =
+    override fun visitArrayElemExpr(ctx: WACCShellParser.ArrayElemExprContext): ASTNode =
         visit(ctx.arrayElem())
 
-    override fun visitBoolLiteral(ctx: WACCParser.BoolLiteralContext): ASTNode =
+    override fun visitBoolLiteral(ctx: WACCShellParser.BoolLiteralContext): ASTNode =
         BoolLiteral(
             value = ctx.text == "true",
             ctx = ctx
         )
 
-    override fun visitBracketedExpr(ctx: WACCParser.BracketedExprContext): ASTNode =
+    override fun visitBracketedExpr(ctx: WACCShellParser.BracketedExprContext): ASTNode =
         visit(ctx.expr())
 
-    override fun visitPairElem(ctx: WACCParser.PairElemContext): ASTNode =
+    override fun visitPairElem(ctx: WACCShellParser.PairElemContext): ASTNode =
         PairElemNode(
             expr = visit(ctx.expr()) as ExprNode,
             isFirst = ctx.FST() != null,
             ctx = ctx
         )
 
-    override fun visitArrayLiter(ctx: WACCParser.ArrayLiterContext): ASTNode =
+    override fun visitArrayLiter(ctx: WACCShellParser.ArrayLiterContext): ASTNode =
         ArrayLiteral(
             values = ctx.expr().map { visit(it) as ExprNode },
             ctx = ctx
         )
 
-    override fun visitArrayElem(ctx: WACCParser.ArrayElemContext): ASTNode =
+    override fun visitArrayElem(ctx: WACCShellParser.ArrayElemContext): ASTNode =
         ArrayElement(
             name = ctx.IDENT().text,
             arrIndices = ctx.expr().map { visit(it) as ExprNode },
             ctx = ctx
         )
 
-    override fun visitFuncCall(ctx: WACCParser.FuncCallContext): ASTNode =
+    override fun visitFuncCall(ctx: WACCShellParser.FuncCallContext): ASTNode =
         FuncCallNode(
             name = ctx.IDENT().text,
             argList = visitArgList(ctx.argList()) as ArgListNode,
             ctx = ctx
         )
 
-    override fun visitNewPair(ctx: WACCParser.NewPairContext): ASTNode =
+    override fun visitNewPair(ctx: WACCShellParser.NewPairContext): ASTNode =
         NewPairNode(
             firstElem = visit(ctx.expr(0)) as ExprNode,
             secondElem = visit(ctx.expr(1)) as ExprNode,
             ctx = ctx
         )
 
-    private fun findType(ctx: WACCParser.TypeContext): Type =
+    private fun findType(ctx: WACCShellParser.TypeContext): Type =
         when {
             ctx.type() != null -> ArrayType(
                 elementType = findType(ctx.type()),
@@ -290,7 +286,7 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
             )
         }
 
-    private fun findBaseType(ctx: WACCParser.BaseTypeContext): Type =
+    private fun findBaseType(ctx: WACCShellParser.BaseTypeContext): Type =
         when {
             ctx.BOOL() != null -> BoolType
             ctx.CHAR() != null -> CharType
@@ -298,7 +294,7 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
             else -> IntType
         }
 
-    private fun findPairElemType(ctx: WACCParser.PairElemTypeContext): Type =
+    private fun findPairElemType(ctx: WACCShellParser.PairElemTypeContext): Type =
         when {
             ctx.type() != null -> ArrayType(
                 elementType = findType(ctx.type()),
@@ -307,4 +303,5 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
             ctx.baseType() != null -> findBaseType(ctx.baseType())
             else -> EmptyPair
         }
+
 }

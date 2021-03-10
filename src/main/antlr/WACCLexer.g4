@@ -2,7 +2,7 @@ lexer grammar WACCLexer;
 
 //skip white spaces and comments
 WS: [ \n\t\r]+ -> skip ;
-COMMENT: '#' ~[\r\n]* '\r'? '\n' -> skip ;
+COMMENT: '#' ~[\r\n]* ( '\r' | '\n' | EOF ) -> skip ;
 
 //reserved keywords
 BEGIN: 'begin';
