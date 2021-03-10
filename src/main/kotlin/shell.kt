@@ -12,6 +12,7 @@ import tree.nodes.ASTNode
 import tree.nodes.checkFunctionTerminates
 import tree.nodes.function.FuncNode
 import java.io.BufferedReader
+import java.io.PrintStream
 import java.nio.file.Path
 
 //TODO(maybe printing in colours)
@@ -19,6 +20,7 @@ import java.nio.file.Path
 
 class WACCShell(
     private val input: BufferedReader = System.`in`.bufferedReader(),
+    private val output: PrintStream = System.`out`,
     private val prompt: String = ">>> ",
     private val multiLinePrompt: String = "... ",
     private val testMode: Boolean = false,
@@ -52,7 +54,8 @@ class WACCShell(
                 currLine = readNewLine()
                 continue
             }
-            if (debugFlag) println("[successfully parsed rule]")
+            if (debugFlag)
+                output.println("[successfully parsed rule]")
 
             //Semantic Analysis
             val node: ASTNode = parserContext.accept(ASTGeneratorShellVisitor())
@@ -64,7 +67,7 @@ class WACCShell(
                 node.validate(st, ft)
                 //TODO(reduce duplication in the catch statements)
             } catch (e: SyntaxException) {
-                println("Syntax Error: ${e.message}")
+                output.println("Syntax Error: ${e.message}")
                 currLine = readNewLine()
                 if (testMode) {
                     input.close()
@@ -72,15 +75,7 @@ class WACCShell(
                 }
                 continue
             } catch (e: SemanticsException) {
-                println("Semantics Error: ${e.message}")
-                currLine = readNewLine()
-                if (testMode) {
-                    input.close()
-                    throw e
-                }
-                continue
-            } catch (e: SyntaxException) {
-                println("Syntax Error: ${e.message}")
+                output.println("Semantics Error: ${e.message}")
                 currLine = readNewLine()
                 if (testMode) {
                     input.close()
@@ -88,7 +83,8 @@ class WACCShell(
                 }
                 continue
             }
-            if (debugFlag) println("[successfully semantically analysed rule]")
+            if (debugFlag)
+                output.println("[successfully semantically analysed rule]")
 
             //TODO(adding to symbol table or function table if necessary (or is that already done?))
 
@@ -133,8 +129,9 @@ class WACCShell(
                 //Attempt to match any rule using current built up input from stdin
                 return parser.command()
             } catch (e: SyntaxException) {
-                println("Syntax Error: ${e.message}")
-                if (debugFlag) println("stdinBuffer: $stdinBuffer")
+                output.println("Syntax Error: ${e.message}")
+                if (debugFlag)
+                    output.println("stdinBuffer: $stdinBuffer")
                 if (testMode) {
                     input.close()
                     throw e
@@ -142,8 +139,8 @@ class WACCShell(
                 return null
             } catch (e: IncompleteRuleException) {
                 if (debugFlag) {
-                    println("stdinBuffer: $stdinBuffer")
-                    println("incomplete rule error: ${e.message}")
+                    output.println("stdinBuffer: $stdinBuffer")
+                    output.println("incomplete rule error: ${e.message}")
                 }
                 /*If the parse is incomplete, there is still a chance it will be
                 * later on*/
@@ -161,7 +158,7 @@ class WACCShell(
             return
         }
         if (!programPath.toFile().exists()) {
-            println("Error: wacc file $programPath does not exist")
+            output.println("Error: wacc file $programPath does not exist")
             return
         }
 
@@ -172,12 +169,15 @@ class WACCShell(
 
     private fun printIntro() {
         //TODO(help page maybe)
-        println(">>> WACC Interactive Shell <<<")
-        println("Instructions: ")
-        println("\tExit shell: use Ctrl-d (EOF) or 'quit' in normal scope")
-        println("\tCancel multiline command: use Ctrl-d")
-        println("\t'>>>' is the prompt for a new command")
-        println("\t'...' is the prompt to continue the current command (multiple lines)")
+        if (!testMode) {
+            output.println(">>> WACC Interactive Shell <<<")
+            output.println("Instructions: ")
+            output.println("\tExit shell: use Ctrl-d (EOF) or 'quit' in normal scope")
+            output.println("\tCancel multiline command: use Ctrl-d")
+            output.println("\t'>>>' is the prompt for a new command")
+            output.println("\t'...' is the prompt to continue the current command (multiple lines)")
+            output.println("\tUse ./interpret -p <PATH TO .wacc FILE> to import functions and program body")
+        }
     }
 
     private fun readNewLine(): String? = getLine(prompt)
@@ -186,7 +186,8 @@ class WACCShell(
     private fun readNextLine(): String? = getLine(multiLinePrompt)
 
     private fun getLine(promptToPrint: String): String? {
-        print(promptToPrint)
+        if (!testMode)
+            output.print(promptToPrint)
         return input.readLine()
     }
 }
