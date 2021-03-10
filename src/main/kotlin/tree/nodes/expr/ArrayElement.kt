@@ -9,6 +9,7 @@ import tree.type.ArrayType
 import tree.type.Type
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.MemoryTable
 
 data class ArrayElement(
     val name: String,
@@ -19,6 +20,13 @@ data class ArrayElement(
     override var mode: AccessMode = AccessMode.READ
     override lateinit var type: Type
 
+    override fun reduceToLiteral(mt: MemoryTable?): Literal {
+        var array: ArrayLiteral = mt?.getLiteral(name) as ArrayLiteral
+        for (i in arrIndices.subList(0, arrIndices.size - 1)) {
+            array = array.values[(i.reduceToLiteral() as IntLiteral).value].reduceToLiteral() as ArrayLiteral
+        }
+        return array.values[(arrIndices.last().reduceToLiteral() as IntLiteral).value].reduceToLiteral()
+    }
 
     override fun validate(
         st: SymbolTable,

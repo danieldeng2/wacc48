@@ -6,12 +6,15 @@ import tree.type.BoolType
 import tree.type.Type
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.MemoryTable
 
 data class BoolLiteral(
     val value: Boolean,
     val ctx: ParserRuleContext?
-) : ExprNode {
+) : Literal {
     override var type: Type = BoolType
+
+    override fun literalToString(mt: MemoryTable?): String = value.toString()
 
     override fun validate(
         st: SymbolTable,

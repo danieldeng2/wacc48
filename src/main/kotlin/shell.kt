@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.MemoryTable
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.checkFunctionTerminates
@@ -30,9 +31,9 @@ class WACCShell(
     fun runInteractiveShell() {
         val st: SymbolTable = SymbolTable(null)
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
-        var memory: MutableMap<String, Nothing> = mutableMapOf()
+        var mt: MemoryTable = MemoryTable(null)
 
-        parseAndRunProgramFile(st, ft, memory)
+        parseAndRunProgramFile(st, ft, mt)
 
         printIntro()
 
@@ -138,7 +139,7 @@ class WACCShell(
     fun parseAndRunProgramFile(
         st: SymbolTable,
         ft: MutableMap<String, FuncNode>,
-        memory: MutableMap<String, Nothing>
+        memory: MemoryTable
     ) {
         if (programPath == null) {
             return

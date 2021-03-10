@@ -6,10 +6,12 @@ import tree.type.CharType
 import tree.type.Type
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.MemoryTable
 
-data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) :
-    ExprNode {
+data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) : Literal {
     override var type: Type = CharType
+
+    override fun literalToString(mt: MemoryTable?): String = value.toString()
 
     override fun validate(
         st: SymbolTable,

@@ -8,14 +8,22 @@ import tree.type.Type
 import tree.type.VoidType
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.MemoryTable
 
 
 data class ArrayLiteral(
     val values: List<ExprNode>,
     val ctx: ParserRuleContext?
-) : ExprNode {
+) : Literal {
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, ctx)
+
+    override fun literalToString(mt: MemoryTable?): String {
+        return "[" + values.joinToString(", ") { it.reduceToLiteral(mt).literalToString() } + "]"
+    }
+
+    override fun reduceToLiteral(mt: MemoryTable?): Literal =
+        this
 
 
     override fun validate(

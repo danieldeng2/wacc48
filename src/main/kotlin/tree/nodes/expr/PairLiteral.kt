@@ -5,9 +5,12 @@ import tree.nodes.function.FuncNode
 import tree.type.EmptyPair
 import tree.type.Type
 import generator.translator.CodeGeneratorVisitor
+import shell.MemoryTable
 
-object PairLiteral : ExprNode {
+object PairLiteral : Literal {
     override var type: Type = EmptyPair
+
+    override fun literalToString(mt: MemoryTable?): String = "null"
 
     override fun validate(
         st: SymbolTable,
