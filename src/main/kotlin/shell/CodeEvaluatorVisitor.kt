@@ -132,13 +132,27 @@ class CodeEvaluatorVisitor(
     fun translateAssignment(node: AssignmentNode): Literal? {
         when (node.name) {
             is IdentifierNode -> {
-                mt[node.name.name] = visitAndTranslate(node.value)!!
+//                if (node.value.type is PairType) {
+//                    if ((node.value as PairElemNode).isFirst) {
+//                        mt[node.name.name] = visitAndTranslate(node.value)!!
+//                    } else {
+//
+//                    }
+//                } else {
+                    mt[node.name.name] = visitAndTranslate(node.value)!!
+//                }
             }
             is ArrayElement -> {
                 TODO("figure out what to do here")
             }
-            else -> { //node is a PairElem
-                TODO("figure out what to do here")
+            is PairElemNode -> { //node is a PairElem
+                if (node.name.isFirst) {
+                    (mt.getLiteral((node.name.expr as IdentifierNode).name) as PairMemoryLiteral).firstLiteral =
+                        visitAndTranslate(node.value)!!
+                } else {
+                    (mt.getLiteral((node.name.expr as IdentifierNode).name) as PairMemoryLiteral).secondLiteral =
+                        visitAndTranslate(node.value)!!
+                }
             }
         }
         return null
@@ -155,12 +169,14 @@ class CodeEvaluatorVisitor(
     /** Choose what operation to carry out based on [AccessMode]. */
     fun translatePairElem(node: PairElemNode): Literal? {
         if (node.mode == AccessMode.READ) {
-            if (node.isFirst) {
-                return (mt.getLiteral((node.expr as IdentifierNode).name) as PairMemoryLiteral).firstLiteral
+            return when (val literal = mt.getLiteral((node.expr as IdentifierNode).name)) {
+                is PairLiteral -> literal
+                is PairMemoryLiteral -> if (node.isFirst) literal.firstLiteral else literal.secondLiteral
+                else -> null
             }
-            return (mt.getLiteral((node.expr as IdentifierNode).name) as PairMemoryLiteral).secondLiteral
         } else {
-            TODO("figure out how to handle when writing to pair")
+            //TODO("figure out how to handle when writing to pair")
+            return null
         }
     }
 
@@ -253,20 +269,45 @@ class CodeEvaluatorVisitor(
     fun translateRead(node: ReadNode): Literal? {
         visitAndTranslate(node.value)
 
+        //TODO(Clean this mess up)
+        //TODO(Fix the declaring a variable even tho it semantic errors bug)
         when (node.value.type) {
             IntType -> {
-                var readInt = input.readLine()?.toInt() ?: null
+                var readInt = input.readLine()?.toInt()
                 while (readInt == null) {
-                    readInt = readLine()?.toInt() ?: null
+                    readInt = readLine()?.toInt()
                 }
-                mt[(node.value as IdentifierNode).name] = IntLiteral(readInt, null)
+                when (node.value) {
+                    is IdentifierNode -> mt[node.value.name] = IntLiteral(readInt, null)
+                    is PairElemNode -> {
+                        if (node.value.isFirst)
+                            (mt.getLiteral((node.value.expr as IdentifierNode).name) as PairMemoryLiteral).firstLiteral =
+                                IntLiteral(readInt, null)
+                        else
+                            (mt.getLiteral((node.value.expr as IdentifierNode).name) as PairMemoryLiteral).secondLiteral =
+                                IntLiteral(readInt, null)
+                    }
+                    else -> {
+                        TODO()
+                    }
+                }
             }
             CharType -> {
-                var readChar = input.read().toChar()
-                while (readChar == null) {
-                    readChar = input.read().toChar()
+                var readChar = input.readLine().trim()[0]
+                when (node.value) {
+                    is IdentifierNode -> mt[node.value.name] = CharLiteral(readChar, null)
+                    is PairElemNode -> {
+                        if (node.value.isFirst)
+                            (mt.getLiteral((node.value.expr as IdentifierNode).name) as PairMemoryLiteral).firstLiteral =
+                                CharLiteral(readChar, null)
+                        else
+                            (mt.getLiteral((node.value.expr as IdentifierNode).name) as PairMemoryLiteral).secondLiteral =
+                                CharLiteral(readChar, null)
+                    }
+                    else -> {
+                        TODO()
+                    }
                 }
-                mt[(node.value as IdentifierNode).name] = CharLiteral(readChar, null)
             }
             else -> throw NotImplementedError(
                 "Implement read for ${node.value.type}"

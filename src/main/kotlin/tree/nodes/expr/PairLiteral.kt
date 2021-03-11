@@ -11,7 +11,7 @@ import shell.MemoryTable
 object PairLiteral : Literal {
     override var type: Type = EmptyPair
 
-    override fun literalToString(mt: MemoryTable?): String = "null"
+    override fun literalToString(mt: MemoryTable?): String = "(nil)"
 
     override fun validate(
         st: SymbolTable,
@@ -32,7 +32,8 @@ object PairLiteral : Literal {
     }
 }
 
-class PairMemoryLiteral(val firstLiteral: Literal, val secondLiteral: Literal, override var type: Type) : Literal {
+class PairMemoryLiteral(var firstLiteral: Literal, var secondLiteral: Literal, override var type: Type) : Literal {
+    //Spec says to print the hex address but kotlin doesn't allow you to
     override fun literalToString(mt: MemoryTable?): String =
         "<$firstLiteral,$secondLiteral>"
 

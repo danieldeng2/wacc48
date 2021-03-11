@@ -33,10 +33,10 @@ class ShellEvaluationTest {
     //    checkAllMatches("valid/IO")
     //}
 
-    //@Test
-    //fun pairsShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/pairs")
-    //}
+    @Test
+    fun pairsShouldMatchReferenceOutput() {
+        checkAllMatches("shell/valid/pairs")
+    }
 
     //@Test
     //fun runtimeErrShouldMatchReferenceOutput() {

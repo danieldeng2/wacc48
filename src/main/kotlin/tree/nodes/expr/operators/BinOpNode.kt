@@ -36,11 +36,15 @@ data class BinOpNode(
         if (firstExpr is ArrayLiteral) {
             return when (operator) {
                 BinaryOperator.EQ ->
-                    BoolLiteral(firstExpr.literalToString() == (secondExpr as ArrayLiteral).literalToString(),
-                        null)
+                    BoolLiteral(
+                        firstExpr.literalToString() == (secondExpr as ArrayLiteral).literalToString(),
+                        null
+                    )
                 else ->
-                    BoolLiteral(firstExpr.literalToString() != (secondExpr as ArrayLiteral).literalToString(),
-                        null)
+                    BoolLiteral(
+                        firstExpr.literalToString() != (secondExpr as ArrayLiteral).literalToString(),
+                        null
+                    )
             }
         }
 
@@ -83,13 +87,30 @@ data class BinOpNode(
                 return BinOpNode(operator, firstArrExpr, secondArrExpr, null).reduceToLiteral()
             }
             else -> { //Pair type
+                val firstPair =
+                    if (firstExpr is IdentifierNode) mt?.getLiteral(firstExpr.name) else PairLiteral
+                val secondPair =
+                    if (secondExpr is IdentifierNode) mt?.getLiteral(secondExpr.name) else PairLiteral
+                //TODO(Clean this up maybe)
                 return when (operator) {
-                    BinaryOperator.EQ ->
-                        BoolLiteral((firstExpr as IdentifierNode).name == (secondExpr as IdentifierNode).name,
-                            null)
-                    else ->
-                        BoolLiteral((firstExpr as IdentifierNode).name != (secondExpr as IdentifierNode).name,
-                            null)
+                    BinaryOperator.EQ -> {
+                        if (firstPair is PairMemoryLiteral && secondPair is PairMemoryLiteral)
+                            BoolLiteral(
+                                firstPair == secondPair,
+                                null
+                            )
+                        else
+                            BoolLiteral((firstPair is PairLiteral && secondPair is PairLiteral), null)
+                    }
+                    else -> {
+                        if (firstPair is PairMemoryLiteral && secondPair is PairMemoryLiteral)
+                            BoolLiteral(
+                                firstPair != secondPair,
+                                null
+                            )
+                        else
+                            BoolLiteral(!(firstPair is PairLiteral && secondPair is PairLiteral), null)
+                    }
                 }
 
             }
