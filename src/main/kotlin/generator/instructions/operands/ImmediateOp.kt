@@ -21,7 +21,7 @@ class CharOp(val value: Char) : ImmOp {
 
     override fun tox86() = when (value) {
         '\u0000' -> "0"
-        else -> "\'${value.toInt()}\'"
+        else -> "${value.toInt()}"
     }
 }
 
