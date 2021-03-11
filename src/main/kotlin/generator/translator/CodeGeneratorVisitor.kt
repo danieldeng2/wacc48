@@ -1,6 +1,9 @@
 package generator.translator
 
+import generator.instructions.FunctionEnd
+import generator.instructions.FunctionStart
 import generator.instructions.Instruction
+import generator.instructions.Syscall
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BEQInstr
 import generator.instructions.branch.BInstr
@@ -11,8 +14,6 @@ import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
-import generator.instructions.stack.POPInstr
-import generator.instructions.stack.PUSHInstr
 import generator.instructions.store.STRInstr
 import generator.translator.ArmConstants.FALSE_VALUE
 import generator.translator.ArmConstants.NULL_ADDRESS
@@ -55,9 +56,14 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
      *
      *  @return List of intermediate ARM instructions
      */
-    fun translate(): List<Instruction> {
+    fun translateToArm(): List<String> {
         visitAndTranslate(rootNode)
-        return ctx.assemble()
+        return ctx.assembleArm().map { it.toArm() }
+    }
+
+    fun translateTox86(): List<String> {
+        visitAndTranslate(rootNode)
+        return ctx.assemblex86().map { it.tox86() }.flatten()
     }
 
     /** Wrapper method to tell [node] to invoke its corresponding
@@ -81,20 +87,20 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
         ctx.stackPtrOffset = 0
         ctx.text.apply {
             add(LabelInstr("main"))
-            add(PUSHInstr(Register.LR))
+            add(FunctionStart())
 
             newScope(node.st) {
                 visitAndTranslate(node.body)
             }
             add(MOVInstr(Register.R0, NumOp(0)))
-            add(POPInstr(Register.PC))
+            add(FunctionEnd())
         }
     }
 
     /** Evaluates expression to get exit code, then invoke syscall 'exit'. */
     fun translateExit(node: ExitNode) {
         visitAndTranslate(node.expr)
-        ctx.text.add(BLInstr("exit"))
+        ctx.text.add(Syscall("exit"))
     }
 
 
@@ -112,7 +118,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
 
         ctx.text.apply {
             add(LabelInstr("f_${node.identifier}"))
-            add(PUSHInstr(Register.LR))
+            add(FunctionStart())
 
             startScope(node.bodyTable)
             visitAndTranslate(node.body)
@@ -155,11 +161,16 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
 
             // Malloc for the pair itself
             add(MOVInstr(Register.R0, NumOp(2 * NUM_BYTE_ADDRESS)))
-            add(BLInstr("malloc"))
+            add(Syscall("malloc"))
             add(popAndDecrement(ctx, Register.R1, Register.R2))
 
             add(STRInstr(Register.R2, MemAddr(Register.R0)))
-            add(STRInstr(Register.R1, MemAddr(Register.R0, NumOp(NUM_BYTE_ADDRESS))))
+            add(
+                STRInstr(
+                    Register.R1,
+                    MemAddr(Register.R0, NumOp(NUM_BYTE_ADDRESS))
+                )
+            )
         }
     }
 
@@ -261,15 +272,10 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
      * the required memory to store the size of the array. */
     fun translateArrayLiteral(literal: ArrayLiteral) {
         ctx.text.apply {
-            add(
-                MOVInstr(
-                    Register.R0,
-                    NumOp(literal.values.size * literal.elemType.reserveStackSize
-                            + IntType.reserveStackSize
-                    )
-                )
-            )
-            add(BLInstr("malloc"))
+            val mallocSize =
+                literal.values.size * literal.elemType.reserveStackSize + IntType.reserveStackSize
+            add(MOVInstr(Register.R0, NumOp(mallocSize)))
+            add(Syscall("malloc"))
             add(MOVInstr(Register.R3, Register.R0))
 
             literal.values.forEachIndexed { index, arrayElem ->
@@ -403,7 +409,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
 
         ctx.text.apply {
             if (value.type == CharType) {
-                add(BLInstr("putchar"))
+                add(Syscall("putchar"))
             } else {
 
                 val printFunc = when (value.type) {
@@ -445,7 +451,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
         ctx.text.apply {
             visitAndTranslate(node.value)
             endAllScopes(node.st)
-            add(POPInstr(Register.PC))
+            add(FunctionEnd())
         }
     }
 

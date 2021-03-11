@@ -1,5 +1,6 @@
 package generator.translator.helpers
 
+import generator.instructions.Syscall
 import tree.nodes.assignment.AccessMode
 import tree.nodes.assignment.PairElemNode
 import tree.nodes.expr.ExprNode
@@ -26,7 +27,7 @@ fun CodeGeneratorVisitor.storeElemInHeap(elem: ExprNode) {
         listOf(
             pushAndIncrement(ctx, Register.R0),
             MOVInstr(Register.R0, NumOp(elem.type.reserveStackSize)),
-            BLInstr("malloc"),
+            Syscall("malloc"),
             popAndDecrement(ctx, Register.R1),
             storeLocalVar(
                 varType = elem.type,
@@ -105,7 +106,7 @@ fun CodeGeneratorVisitor.assignToPosition(node: PairElemNode, memOffset: Int) {
                 Register.R0,
                 NumOp(node.type.reserveStackSize)
             ),
-            BLInstr("malloc"),
+            Syscall("malloc"),
 
             // Stores the new value into the memory address of the pair element
             popAndDecrement(ctx, Register.R1),
