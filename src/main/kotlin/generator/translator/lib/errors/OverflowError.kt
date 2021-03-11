@@ -14,7 +14,7 @@ object OverflowError : LibraryFunction {
     override val label = "p_throw_overflow_error"
     private var msgIndex: Int? = null
 
-    override fun translate() = mutableListOf<Instruction>().apply {
+    override fun generateArm() = mutableListOf<Instruction>().apply {
         add(LabelInstr(label))
         add(LDRInstr(Register.R0, LabelOp(msgIndex!!)))
         add(BLInstr(RuntimeError.label))

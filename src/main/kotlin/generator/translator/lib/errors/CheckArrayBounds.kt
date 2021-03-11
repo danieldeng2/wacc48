@@ -1,5 +1,7 @@
 package generator.translator.lib.errors
 
+import generator.instructions.FunctionEnd
+import generator.instructions.FunctionStart
 import generator.instructions.branch.BLCSInstr
 import generator.instructions.branch.BLLTInstr
 import generator.instructions.compare.CMPInstr
@@ -11,8 +13,6 @@ import generator.instructions.operands.LabelOp
 import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
-import generator.instructions.stack.POPInstr
-import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
 import generator.translator.lib.LibraryFunction
 
@@ -22,9 +22,9 @@ object CheckArrayBounds : LibraryFunction {
     private var outOfBoundsMsgIndex: Int? = null
 
 
-    override fun translate() = listOf(
+    override fun generateArm() = listOf(
         LabelInstr(label),
-        PUSHInstr(Register.LR),
+        FunctionStart(),
         CMPInstr(Register.R0, NumOp(0)),
         LDRLTInstr(Register.R0, LabelOp(negMsgIndex!!)),
         BLLTInstr(RuntimeError.label),
@@ -32,7 +32,7 @@ object CheckArrayBounds : LibraryFunction {
         CMPInstr(Register.R0, Register.R1),
         LDRCSInstr(Register.R0, LabelOp(outOfBoundsMsgIndex!!)),
         BLCSInstr(RuntimeError.label),
-        POPInstr(Register.PC)
+        FunctionEnd()
     )
 
     override fun initIndex(ctx: TranslatorContext) {
