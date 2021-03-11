@@ -6,5 +6,7 @@ import generator.instructions.operands.Register
 
 class STRInstr(val rd: Register, val memAddr: MemAddr) : Instruction {
 
-    override fun toArm() = "\tSTR ${rd.repr}, ${memAddr.toArm()}"
+    override fun tox86() = listOf("\tmov ${memAddr.tox86()}, ${rd.tox86()}")
+
+    override fun toArm() = "\tSTR ${rd.toArm()}, ${memAddr.toArm()}"
 }

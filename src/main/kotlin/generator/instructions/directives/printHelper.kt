@@ -2,12 +2,17 @@ package generator.instructions.directives
 
 import generator.instructions.Instruction
 
-class Word(val numBytes: Int) : Instruction {
-    override fun toArm() = "\t.word $numBytes"
-}
-
 class Ascii(val msg: String) : Instruction {
-    override fun tox86() = listOf("\t.ascii \"$msg\"")
 
-    override fun toArm() = "\t.ascii \"$msg\""
+    private val msgLen = msg.length - msg.filter { it == '\\' }.count()
+
+    override fun tox86() = listOf(
+        if (msg.endsWith("\\0")) "\tdb ${msg.removeSuffix("\\0")}, 0"
+        else "\tdb $msg"
+    )
+
+    override fun toArm() = listOf(
+        "\t.word $msgLen",
+        "\t.ascii \"$msg\""
+    ).joinToString(separator = "\n")
 }

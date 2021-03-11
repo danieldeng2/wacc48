@@ -18,11 +18,16 @@ class CharOp(val value: Char) : ImmOp {
         '\u0000' -> "#0"
         else -> "#\'$value\'"
     }
+
+    override fun tox86() = when (value) {
+        '\u0000' -> "0"
+        else -> "\'${value.toInt()}\'"
+    }
 }
 
 class LabelOp(val index: Int) : ImmOp {
 
-    override fun tox86() = "\$msg_$index"
+    override fun tox86() = "msg_$index"
 
     override fun toArm() = "=msg_$index"
 
