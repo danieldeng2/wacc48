@@ -53,10 +53,10 @@ class ShellEvaluationTest {
         checkAllMatches("shell/valid/sequence")
     }
 
-    //@Test
-    //fun variablesShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/variables")
-    //}
+    @Test
+    fun variablesShouldMatchReferenceOutput() {
+        checkAllMatches("valid/variables")
+    }
 
     //@Test
     //fun whileLoopsShouldMatchReferenceOutput() {
