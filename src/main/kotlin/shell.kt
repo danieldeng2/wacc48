@@ -36,7 +36,7 @@ class WACCShell(
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
         var mt: MemoryTable = MemoryTable(null)
 
-        val evalVisitor = CodeEvaluatorVisitor(mt, output, testMode)
+        val evalVisitor = CodeEvaluatorVisitor(mt, input, output, testMode)
 
         parseAndRunProgramFile(st, ft, evalVisitor)
 

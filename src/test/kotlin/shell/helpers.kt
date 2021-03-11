@@ -63,22 +63,22 @@ fun checkAllMatches(label: String) {
         val stdin = if (inputFile.exists()) inputFile.readLines()[0] else ""
 
         val referenceResult = referencePipeline(f.path, refASM, stdin = stdin)
-        val compilerResult = shellPipeline(f.path, shellOutput, stdin = stdin)
+        val shellResult = shellPipeline(f.path, shellOutput, stdin = stdin.replace(" ", "\n"))
 
-        if (compilerResult.emulatorOut != referenceResult.emulatorOut)
+        if (shellResult.emulatorOut != referenceResult.emulatorOut)
             fail(
                 "====Expected Output====\n"
                         + referenceResult.emulatorOut
                         + "==== Actual Output ==== \n"
-                        + compilerResult.emulatorOut
+                        + shellResult.emulatorOut
             )
 
-        if (compilerResult.emulatorExit != referenceResult.emulatorExit)
+        if (shellResult.emulatorExit != referenceResult.emulatorExit)
             fail(
                 "====Expected Exit Code====\n"
                         + referenceResult.emulatorExit
                         + "\n==== Actual Exit Code ====\n"
-                        + compilerResult.emulatorExit
+                        + shellResult.emulatorExit
             )
     }
 }

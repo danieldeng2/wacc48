@@ -58,8 +58,8 @@ class ShellEvaluationTest {
         checkAllMatches("valid/variables")
     }
 
-    //@Test
-    //fun whileLoopsShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/while")
-    //}
+    @Test
+    fun whileLoopsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/while")
+    }
 }

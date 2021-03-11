@@ -14,6 +14,7 @@ import tree.nodes.expr.operators.UnOpNode
 import tree.nodes.function.*
 import tree.nodes.statement.*
 import tree.type.*
+import java.io.BufferedReader
 import java.io.PrintStream
 import java.util.*
 import kotlin.system.exitProcess
@@ -23,6 +24,7 @@ import kotlin.system.exitProcess
  * editing and adding to the memory when needed. */
 class CodeEvaluatorVisitor(
     var mt: MemoryTable,
+    private val input: BufferedReader = System.`in`.bufferedReader(),
     val output: PrintStream = System.`out`,
     val testMode: Boolean = false,
     var exitCode: Int? = null
@@ -221,29 +223,25 @@ class CodeEvaluatorVisitor(
     }
 
     fun translateIf(node: IfNode): Literal? {
-        if ((visitAndTranslate(node.proposition) as BoolLiteral).value) {
-            val prevMt = mt
-            mt = MemoryTable(mt)
-            var resultOfIf = visitAndTranslate(node.trueStat)
-            mt = prevMt
-            return resultOfIf
+        val prevMt = mt
+        mt = MemoryTable(mt)
+        var resultOfIf = if ((visitAndTranslate(node.proposition) as BoolLiteral).value) {
+            visitAndTranslate(node.trueStat)
         } else {
-            val prevMt = mt
-            mt = MemoryTable(mt)
-            var resultOfIf = visitAndTranslate(node.falseStat)
-            mt = prevMt
-            return resultOfIf
+            visitAndTranslate(node.falseStat)
         }
+        mt = prevMt
+        return resultOfIf
     }
 
     /** Literally print the evaluated value out */
     fun translatePrint(node: PrintNode): Literal? {
-        val value = visitAndTranslate(node.value)
+        val value = visitAndTranslate(node.value)?.literalToString()
 
         if (node.returnAfterPrint)
-            output.println(value?.reduceToLiteral(mt)?.literalToString())
+            output.println(value)
         else
-            output.print(value?.reduceToLiteral(mt)?.literalToString())
+            output.print(value)
 
         //If we are printing as the last print statement in a sequence, add new line
         if (!testMode && !inSeqCtx && !node.returnAfterPrint)
@@ -253,21 +251,29 @@ class CodeEvaluatorVisitor(
     }
 
     fun translateRead(node: ReadNode): Literal? {
-        TODO("make a read function or something that can handle bad inputs")
         visitAndTranslate(node.value)
 
-        //val readFunc = when (node.value.type) {
-        //    IntType -> {
-        //        //readLine()?.toInt()
-        //        TODO()
-        //    }
-        //    CharType -> {
-        //        TODO()
-        //    }
-        //    else -> throw NotImplementedError(
-        //        "Implement read for ${node.value.type}"
-        //    )
-        //}
+        when (node.value.type) {
+            IntType -> {
+                var readInt = input.readLine()?.toInt() ?: null
+                while (readInt == null) {
+                    readInt = readLine()?.toInt() ?: null
+                }
+                mt[(node.value as IdentifierNode).name] = IntLiteral(readInt, null)
+            }
+            CharType -> {
+                var readChar = input.read().toChar()
+                while (readChar == null) {
+                    readChar = input.read().toChar()
+                }
+                mt[(node.value as IdentifierNode).name] = CharLiteral(readChar, null)
+            }
+            else -> throw NotImplementedError(
+                "Implement read for ${node.value.type}"
+            )
+        }
+
+        return null
     }
 
     /** Evaluates return value and returns as literal */
