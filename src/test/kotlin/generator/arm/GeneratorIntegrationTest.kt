@@ -1,5 +1,6 @@
-package generator
+package generator.arm
 
+import generator.checkAllMatches
 import org.junit.Test
 
 
