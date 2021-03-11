@@ -25,7 +25,7 @@ class CodeEvaluatorVisitor(
     var mt: MemoryTable,
     val output: PrintStream = System.`out`,
     val testMode: Boolean = false,
-    var exitCode: Int
+    var exitCode: Int? = null
 ) {
     private var inSeqCtx: Boolean = false
     private val argListStack: Stack<Literal> = Stack()

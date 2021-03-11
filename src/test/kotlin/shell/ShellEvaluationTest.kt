@@ -13,10 +13,10 @@ class ShellEvaluationTest {
         checkAllMatches("valid/basic")
     }
 
-    //@Test
-    //fun expressionsShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/expressions")
-    //}
+    @Test
+    fun expressionsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/expressions")
+    }
 
     //@Test
     //fun functionShouldMatchReferenceOutput() {
@@ -48,10 +48,10 @@ class ShellEvaluationTest {
     //    checkAllMatches("valid/scope")
     //}
 
-    //@Test
-    //fun sequencesShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/sequence")
-    //}
+    @Test
+    fun sequencesShouldMatchReferenceOutput() {
+        checkAllMatches("shell/valid/sequence")
+    }
 
     //@Test
     //fun variablesShouldMatchReferenceOutput() {

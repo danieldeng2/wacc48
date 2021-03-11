@@ -36,7 +36,7 @@ class WACCShell(
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
         var mt: MemoryTable = MemoryTable(null)
 
-        val evalVisitor = CodeEvaluatorVisitor(mt, output, testMode, exitCode = 0)
+        val evalVisitor = CodeEvaluatorVisitor(mt, output, testMode)
 
         parseAndRunProgramFile(st, ft, evalVisitor)
 
@@ -92,13 +92,18 @@ class WACCShell(
                     output.println("$resultPrompt${resultLiteral.literalToString()}")
                 }
             }
+            if (evalVisitor.exitCode != null) {
+                input.close()
+                output.println("Exit code: ${evalVisitor.exitCode}")
+                return
+            }
 
             //TODO(make readnextline only used once in the while loop / consider cleaner way of reading)
             currLine = readNewLine()
         }
 
         input.close()
-        output.println("Exit code: ${evalVisitor.exitCode}")
+        output.println("Exit code: ${evalVisitor.exitCode ?: 0}")
         return
     }
 
