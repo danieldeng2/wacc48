@@ -6,6 +6,8 @@ import tree.nodes.ASTNode
 import tree.nodes.statement.*
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 
 class MainNode(
     val body: StatNode,
@@ -23,6 +25,10 @@ class MainNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateMain(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateMain(this)
     }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =

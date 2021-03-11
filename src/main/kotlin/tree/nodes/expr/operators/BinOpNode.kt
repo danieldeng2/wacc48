@@ -5,6 +5,7 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 import tree.nodes.expr.*
 import tree.type.*
@@ -16,6 +17,7 @@ data class BinOpNode(
     val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType
+    //TODO(Clean the reduce functions to be more concise/less duplication)
 
     override fun reduceToLiteral(mt: MemoryTable?): Literal =
         when (operator) {
@@ -166,6 +168,10 @@ data class BinOpNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateBinOp(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateBinOp(this)
     }
 }
 

@@ -7,6 +7,8 @@ import tree.nodes.function.FuncNode
 import tree.type.BoolType
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 
 data class WhileNode(
     val proposition: ExprNode,
@@ -30,6 +32,10 @@ data class WhileNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateWhile(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateWhile(this)
     }
 }
 

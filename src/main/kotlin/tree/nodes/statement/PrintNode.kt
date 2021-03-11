@@ -5,6 +5,8 @@ import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 
 data class PrintNode(
     val value: ExprNode,
@@ -23,6 +25,10 @@ data class PrintNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translatePrint(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translatePrint(this)
     }
 
 }

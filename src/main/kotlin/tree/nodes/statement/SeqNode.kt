@@ -4,6 +4,8 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 
 data class SeqNode(
     val sequence: List<StatNode>,
@@ -54,5 +56,9 @@ data class SeqNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateSeq(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateSeq(this)
     }
 }

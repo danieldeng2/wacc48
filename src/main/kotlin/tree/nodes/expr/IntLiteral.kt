@@ -7,6 +7,7 @@ import tree.type.IntType
 import tree.type.Type
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 
 data class IntLiteral(
@@ -28,5 +29,9 @@ data class IntLiteral(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateIntLiteral(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateIntLiteral(this)
     }
 }

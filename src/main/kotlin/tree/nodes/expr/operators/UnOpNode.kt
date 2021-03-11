@@ -6,6 +6,7 @@ import tree.nodes.function.FuncNode
 import tree.type.*
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 import tree.nodes.expr.*
 
@@ -71,6 +72,10 @@ data class UnOpNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateUnOp(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateUnOp(this)
     }
 
 }

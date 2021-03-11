@@ -6,6 +6,7 @@ import tree.type.BoolType
 import tree.type.Type
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 
 data class BoolLiteral(
@@ -24,5 +25,9 @@ data class BoolLiteral(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateBoolLiteral(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateBoolLiteral(this)
     }
 }

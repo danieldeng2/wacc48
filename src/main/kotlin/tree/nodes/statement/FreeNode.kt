@@ -7,6 +7,8 @@ import tree.nodes.function.FuncNode
 import tree.type.GenericPair
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 
 data class FreeNode(
     val value: ExprNode,
@@ -25,5 +27,9 @@ data class FreeNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateFree(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateFree(this)
     }
 }

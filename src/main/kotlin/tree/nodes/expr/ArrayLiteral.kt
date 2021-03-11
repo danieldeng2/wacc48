@@ -8,6 +8,7 @@ import tree.type.Type
 import tree.type.VoidType
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 
 
@@ -49,5 +50,9 @@ data class ArrayLiteral(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateArrayLiteral(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateArrayLiteral(this)
     }
 }

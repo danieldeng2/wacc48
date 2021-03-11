@@ -7,6 +7,8 @@ import tree.nodes.function.FuncNode
 import tree.type.IntType
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 
 data class ExitNode(
     val expr: ExprNode,
@@ -28,6 +30,10 @@ data class ExitNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateExit(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateExit(this)
     }
 
 }

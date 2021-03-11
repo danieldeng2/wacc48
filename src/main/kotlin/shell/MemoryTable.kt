@@ -35,6 +35,13 @@ class MemoryTable(private val parent: MemoryTable?) {
         return parent?.get(key)
     }
 
+    fun remove(key: String) {
+        if (key in map) {
+            map.remove(key)
+        }
+        parent?.remove(key)
+    }
+
     fun getType(key: String): Type? {
         if (key in map) {
             return map[key]?.first

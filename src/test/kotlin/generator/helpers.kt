@@ -63,7 +63,7 @@ private fun compilerPipeline(
     )
 }
 
-private fun referencePipeline(
+fun referencePipeline(
     path: String,
     outputName: String,
     stdin: String = ""
@@ -77,7 +77,7 @@ private fun referencePipeline(
     )
 }
 
-private fun executeAssembly(
+fun executeAssembly(
     assembly: List<String>,
     file: File,
     stdin: String
