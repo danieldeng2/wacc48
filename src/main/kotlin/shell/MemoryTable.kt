@@ -22,10 +22,14 @@ class MemoryTable(private val parent: MemoryTable?) {
     }
 
     operator fun set(id: String, literal: Literal) {
-        if (map[id]?.first != literal.type)
-            throw SemanticsException("Setting mismatching type and literal in memory table", null)
-        map[id] = Pair(literal.type, literal)
-        isDeclared.add(id)
+        if (id in map) {
+            if (map[id]?.first != literal.type)
+                throw SemanticsException("Setting mismatching type and literal in memory table", null)
+            map[id] = Pair(literal.type, literal)
+            isDeclared.add(id)
+            return
+        }
+        parent?.set(id, literal)
     }
 
     operator fun get(key: String): Pair<Type, Literal?>? {

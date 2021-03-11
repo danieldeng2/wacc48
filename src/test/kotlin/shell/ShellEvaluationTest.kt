@@ -23,10 +23,10 @@ class ShellEvaluationTest {
     //    checkAllMatches("valid/function")
     //}
 
-    //@Test
-    //fun ifStatementsShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/if")
-    //}
+    @Test
+    fun ifStatementsShouldMatchReferenceOutput() {
+        checkAllMatches("valid/if")
+    }
 
     //@Test
     //fun inputOutputShouldMatchReferenceOutput() {
