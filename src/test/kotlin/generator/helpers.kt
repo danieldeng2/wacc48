@@ -54,7 +54,7 @@ private fun compilerPipeline(
 ): EmulatorResult {
     val input = CharStreams.fromFileName(path)
     val pNode = runAnalyser(input)
-    val assembly = runGenerator(pNode)
+    val assembly = runGenerator(pNode, armAssembly = true)
 
     return executeAssembly(
         assembly = assembly,
