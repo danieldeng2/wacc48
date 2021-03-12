@@ -32,12 +32,12 @@ abstract class Register : LoadableOp {
 
     object R1 : Register() {
         override val armRepr = "r1"
-        override val x86ByteAddr = arrayOf("dil", "di", "edi")
+        override val x86ByteAddr = arrayOf("bl", "bx", "ebx")
     }
 
     object R2 : Register() {
         override val armRepr = "r2"
-        override val x86ByteAddr = arrayOf("sil", "si", "esi")
+        override val x86ByteAddr = arrayOf("cl", "cx", "ecx")
     }
 
     object R3 : Register() {

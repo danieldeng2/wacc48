@@ -17,7 +17,11 @@ object CheckNullPointer : LibraryFunction {
     private var msgIndex: Int? = null
     override val label = "p_check_null_pointer"
 
-    override fun generateArm() = listOf(
+    override fun generateArm() = generateInstruction()
+
+    override fun generatex86() = generateInstruction()
+
+    private fun generateInstruction() = listOf(
         LabelInstr(label),
         FunctionStart(),
         CMPInstr(Register.R0, NumOp(0)),
@@ -26,9 +30,6 @@ object CheckNullPointer : LibraryFunction {
         FunctionEnd()
     )
 
-    override fun generatex86(): List<Instruction> {
-        TODO("Not yet implemented")
-    }
 
     override fun initIndex(ctx: TranslatorContext) {
         ctx.addLibraryFunction(RuntimeError)
