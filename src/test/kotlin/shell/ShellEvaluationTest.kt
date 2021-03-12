@@ -28,10 +28,10 @@ class ShellEvaluationTest {
         checkAllMatches("valid/if")
     }
 
-    //@Test
-    //fun inputOutputShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/IO")
-    //}
+    @Test
+    fun inputOutputShouldMatchReferenceOutput() {
+        checkAllMatches("valid/IO")
+    }
 
     @Test
     fun pairsShouldMatchReferenceOutput() {

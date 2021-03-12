@@ -10,6 +10,7 @@ import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
 import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
+import tree.type.CharType
 
 
 data class ArrayLiteral(
@@ -19,9 +20,11 @@ data class ArrayLiteral(
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, ctx)
 
-    override fun literalToString(mt: MemoryTable?): String {
-        return "[" + values.joinToString(", ") { it.reduceToLiteral(mt).literalToString() } + "]"
-    }
+    override fun literalToString(mt: MemoryTable?): String =
+        if (elemType is CharType)
+            values.joinToString { (it as CharLiteral).literalToString() }
+        else
+            "[" + values.joinToString(", ") { it.reduceToLiteral(mt).literalToString() } + "]"
 
     override fun reduceToLiteral(mt: MemoryTable?): Literal =
         this
