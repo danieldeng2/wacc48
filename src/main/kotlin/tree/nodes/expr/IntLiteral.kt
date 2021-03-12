@@ -7,12 +7,16 @@ import tree.type.IntType
 import tree.type.Type
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import shell.MemoryTable
 
 data class IntLiteral(
     val value: Int,
     val ctx: ParserRuleContext?
-) : ExprNode {
+) : Literal {
     override var type: Type = IntType
+
+    override fun literalToString(mt: MemoryTable?): String = value.toString()
 
     override fun validate(
         st: SymbolTable,
@@ -25,5 +29,9 @@ data class IntLiteral(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateIntLiteral(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateIntLiteral(this)
     }
 }

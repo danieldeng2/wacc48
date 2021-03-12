@@ -6,6 +6,8 @@ import tree.nodes.function.FuncNode
 import tree.nodes.statement.StatNode
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 import tree.nodes.function.FuncCallNode
 
 data class AssignmentNode(
@@ -36,5 +38,9 @@ data class AssignmentNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateAssignment(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateAssignment(this)
     }
 }

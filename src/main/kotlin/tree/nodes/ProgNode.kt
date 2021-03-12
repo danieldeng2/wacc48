@@ -7,6 +7,8 @@ import tree.nodes.function.MainNode
 import tree.nodes.statement.*
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 
 data class ProgNode(
     val functions: List<FuncNode>,
@@ -30,6 +32,10 @@ data class ProgNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateProgram(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateProgram(this)
     }
 }
 

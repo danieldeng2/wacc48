@@ -11,13 +11,14 @@ import tree.type.StringType
 import tree.type.Type
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 
 data class ReadNode(
     val value: LHSNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
-
 
     override fun validate(
         st: SymbolTable,
@@ -32,5 +33,9 @@ data class ReadNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateRead(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateRead(this)
     }
 }

@@ -9,6 +9,8 @@ import tree.type.Type
 import tree.type.VoidType
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import shell.MemoryTable
 
 data class IdentifierNode(
     val name: String,
@@ -17,6 +19,10 @@ data class IdentifierNode(
     override var type: Type = VoidType
     lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
+
+    override fun reduceToLiteral(mt: MemoryTable?): Literal {
+        return mt?.getLiteral(name) ?: StringLiteral("<Undefined value>", null)
+    }
 
     override fun validate(
         st: SymbolTable,
@@ -31,6 +37,10 @@ data class IdentifierNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateIdentifier(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateIdentifier(this)
     }
 
 }

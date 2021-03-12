@@ -8,6 +8,8 @@ import tree.type.Type
 import tree.type.VoidType
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
+import tree.nodes.expr.Literal
 
 data class NewPairNode(
     val firstElem: ExprNode,
@@ -30,6 +32,10 @@ data class NewPairNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateNewPair(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateNewPair(this)
     }
 
 }

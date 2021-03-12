@@ -2,7 +2,9 @@ package tree.nodes.statement
 
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.CodeEvaluatorVisitor
 import tree.SymbolTable
+import tree.nodes.expr.Literal
 import tree.nodes.function.FuncNode
 
 data class BeginNode(
@@ -21,5 +23,9 @@ data class BeginNode(
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
         visitor.translateBegin(this)
+    }
+
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
+        return visitor.translateBegin(this)
     }
 }

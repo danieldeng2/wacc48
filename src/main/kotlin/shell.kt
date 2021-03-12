@@ -1,12 +1,11 @@
 import analyser.ASTGeneratorShellVisitor
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
-import shell.IncompleteRuleException
-import shell.ShellErrorListener
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.*
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.checkFunctionTerminates
@@ -22,17 +21,21 @@ class WACCShell(
     private val input: BufferedReader = System.`in`.bufferedReader(),
     private val output: PrintStream = System.`out`,
     private val prompt: String = ">>> ",
+    private val resultPrompt: String = "<<< ",
     private val multiLinePrompt: String = "... ",
     private val testMode: Boolean = false,
+    private val evaluateCode: Boolean = true,
     private val programPath: Path? = null
 ) {
 
     fun runInteractiveShell() {
         val st: SymbolTable = SymbolTable(null)
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
-        var memory: MutableMap<String, Nothing> = mutableMapOf()
+        var mt: MemoryTable = MemoryTable(null)
 
-        parseAndRunProgramFile(st, ft, memory)
+        val evalVisitor = CodeEvaluatorVisitor(mt, input, output, testMode)
+
+        parseAndRunProgramFile(st, ft, evalVisitor)
 
         printIntro()
 
@@ -80,21 +83,24 @@ class WACCShell(
                 continue
             }
 
-            /* TODO(evaluation visitor - evaluate node updating memory, print the result literal
-            *  Unimplemented printing list:
-            *       expressions using only literals
-            *       expressions using variables (requires memory handling)
-            *       print/println statement
-            *       prints within while statements
-            *       prints within if statements
-            *       prints within begin/end segments)
-            * */
+            if (evaluateCode) {
+                val resultLiteral = evalVisitor.visitAndTranslate(node)
+                if (resultLiteral != null) {
+                    output.println("$resultPrompt${resultLiteral.literalToString()}")
+                }
+            }
+            if (evalVisitor.exitCode != null) {
+                input.close()
+                output.println("Exit code: ${evalVisitor.exitCode}")
+                return
+            }
 
             //TODO(make readnextline only used once in the while loop / consider cleaner way of reading)
             currLine = readNewLine()
         }
 
         input.close()
+        output.println("Exit code: ${evalVisitor.exitCode ?: 0}")
         return
     }
 
@@ -138,7 +144,7 @@ class WACCShell(
     fun parseAndRunProgramFile(
         st: SymbolTable,
         ft: MutableMap<String, FuncNode>,
-        memory: MutableMap<String, Nothing>
+        evalVisitor: CodeEvaluatorVisitor
     ) {
         if (programPath == null) {
             return
@@ -148,9 +154,10 @@ class WACCShell(
             return
         }
 
-        runAnalyserPrintError(CharStreams.fromPath(programPath), st, ft)
-
-        //TODO(evaluate program body and change memory)
+        val node = runAnalyserPrintError(CharStreams.fromPath(programPath), st, ft)
+        if (evaluateCode) {
+            evalVisitor.visitAndTranslate(node!!)
+        }
     }
 
     private fun printIntro() {
