@@ -2,6 +2,7 @@ package generator.x86
 
 import WalkDirectory
 import generator.reference.EmulatorResult
+import generator.reference.RefCompiler
 import generator.reference.RefEmulator
 import org.antlr.v4.runtime.CharStreams
 import runAnalyser
@@ -21,7 +22,11 @@ fun runAllTests(subdir: String) {
         val x86Result = results.first
         val armResult = results.second
 
-        if (x86Result.emulatorOut != armResult.emulatorOut)
+        if (!compareOutputIgnoreAddress(
+                armResult.emulatorOut,
+                x86Result.emulatorOut
+            )
+        )
             fail(
                 "====Expected Output====\n"
                         + armResult.emulatorOut
@@ -58,7 +63,7 @@ private fun runTestFile(f: File): Pair<EmulatorResult, EmulatorResult> {
     val pNode = runAnalyser(input)
 
     val instructionsx86 = runGenerator(pNode, armAssembly = false)
-    val instructionsArm = runGenerator(pNode, armAssembly = true)
+    val instructionsArm = RefCompiler(f).run()
 
     writeResult(outx86, instructionsx86)
     writeResult(outArm, instructionsArm)
@@ -68,17 +73,24 @@ private fun runTestFile(f: File): Pair<EmulatorResult, EmulatorResult> {
     try {
         val x86Executable = outx86.removeSuffix(".s")
         val x86EmulationProc =
-            ProcessBuilder(x86Executable)
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .start()
+            if (inputFile.exists())
+                ProcessBuilder(x86Executable)
+                    .redirectInput(inputFile)
+                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                    .start()
+            else
+                ProcessBuilder(x86Executable)
+                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                    .start()
 
-        x86EmulationProc.waitFor(60, TimeUnit.SECONDS)
+        x86EmulationProc.waitFor(10, TimeUnit.SECONDS)
 
         val x86EmulatorResult = EmulatorResult(
             test = outx86,
             upload = "",
             emulatorExit = x86EmulationProc.exitValue(),
-            emulatorOut = x86EmulationProc.inputStream.bufferedReader().readText()
+            emulatorOut = x86EmulationProc.inputStream.bufferedReader()
+                .readText()
         )
 
         return Pair(
@@ -116,4 +128,18 @@ private fun assembleAndLinkx86(outputPathPrefix: String) {
         outputPathPrefix.replace(".s", ".o")
     ).start().waitFor(5, TimeUnit.SECONDS)
     println("Successfully linked. Initiating emulation...")
+}
+
+private fun compareOutputIgnoreAddress(
+    refOutput: String,
+    output: String
+): Boolean {
+    val refOutputSplit: List<String> = refOutput
+        .split(" ", "\\n")
+        .filterNot { it.contains("0x") }
+    val outputSplit: List<String> = output
+        .split(" ", "\\n")
+        .filterNot { it.contains("0x") }
+
+    return refOutputSplit.toTypedArray() contentEquals outputSplit.toTypedArray()
 }
