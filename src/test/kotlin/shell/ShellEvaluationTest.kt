@@ -3,10 +3,10 @@ package shell
 import org.junit.Test
 
 class ShellEvaluationTest {
-    //@Test
-    //fun arraysShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/array")
-    //}
+    @Test
+    fun arraysShouldMatchReferenceOutput() {
+        checkAllMatches("shell/valid/array")
+    }
 
     @Test
     fun basicProgramsShouldMatchReferenceOutput() {

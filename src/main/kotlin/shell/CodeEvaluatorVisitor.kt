@@ -135,7 +135,34 @@ class CodeEvaluatorVisitor(
                 mt[node.name.name] = visitAndTranslate(node.value)!!
             }
             is ArrayElement -> {
-                TODO("figure out what to do here")
+                //TODO(CLEAN THIS)
+                //TODO(evaluated literal stack member to remove returning literal)
+                if (node.name.arrIndices.size <= 1) {
+                    if (mt[node.name.name]?.second is ArrayLiteral) {
+                        val arrayCopy = (mt[node.name.name]?.second as ArrayLiteral).values.toMutableList()
+                        var index = (node.name.arrIndices[0].reduceToLiteral(mt) as IntLiteral).value
+                        var elem = visitAndTranslate(node.value)!!
+                        arrayCopy.removeAt(index)
+                        arrayCopy.add(index, elem)
+                        val newArr = ArrayLiteral(arrayCopy, null)
+                        newArr.type = (mt.getLiteral(node.name.name) as ArrayLiteral).type
+                        newArr.elemType = (mt.getLiteral(node.name.name) as ArrayLiteral).elemType
+                        mt[node.name.name] = newArr
+                    } else if (mt[node.name.name]?.second is DeepArrayLiteral) {
+                        TODO("Setting elements of multidimensional arrays (except for last) not supported yet")
+                    }
+                } else {
+                    val name = node.name.getArrayRef(mt)
+                    val arrayCopy = (mt[name]?.second as ArrayLiteral).values.toMutableList()
+                    var index = (node.name.arrIndices.last().reduceToLiteral(mt) as IntLiteral).value
+                    var elem = visitAndTranslate(node.value)!!
+                    arrayCopy.removeAt(index)
+                    arrayCopy.add(index, elem)
+                    val newArr = ArrayLiteral(arrayCopy, null)
+                    newArr.type = (mt.getLiteral(name) as ArrayLiteral).type
+                    newArr.elemType = (mt.getLiteral(name) as ArrayLiteral).elemType
+                    mt[name] = newArr
+                }
             }
             is PairElemNode -> { //node is a PairElem
                 if (node.name.isFirst) {
@@ -192,6 +219,9 @@ class CodeEvaluatorVisitor(
     }
 
     fun translateArrayLiteral(literal: ArrayLiteral): Literal? {
+        if (literal.elemType is ArrayType) { //multidimensional array
+            return DeepArrayLiteral(literal.values.map { (it as IdentifierNode).name}, literal.elemType)
+        }
         return literal
     }
 
@@ -350,5 +380,9 @@ class CodeEvaluatorVisitor(
 
     fun translatePairLiteral(literal: PairMemoryLiteral): Literal? {
         return literal
+    }
+
+    fun translateDeepArrayLiteral(deepArrayLiteral: DeepArrayLiteral): Literal? {
+        return deepArrayLiteral
     }
 }

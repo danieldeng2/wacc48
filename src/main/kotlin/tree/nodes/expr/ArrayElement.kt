@@ -22,11 +22,26 @@ data class ArrayElement(
     override lateinit var type: Type
 
     override fun reduceToLiteral(mt: MemoryTable?): Literal {
-        var array: ArrayLiteral = mt?.getLiteral(name) as ArrayLiteral
-        for (i in arrIndices.subList(0, arrIndices.size - 1)) {
-            array = array.values[(i.reduceToLiteral(mt) as IntLiteral).value].reduceToLiteral() as ArrayLiteral
+        //TODO(Clean this)
+        return if (arrIndices.size > 1) { //Deep array access
+            var array: DeepArrayLiteral = mt?.getLiteral(name) as DeepArrayLiteral
+            for (i in arrIndices.subList(0, arrIndices.size - 2)) {
+                array = mt.getLiteral(array.values[(i.reduceToLiteral(mt) as IntLiteral).value]) as DeepArrayLiteral
+            }
+            var lastArray = mt.getLiteral(array.values[(arrIndices[arrIndices.size - 2] as IntLiteral).value]) as ArrayLiteral
+            lastArray.values[(arrIndices.last().reduceToLiteral(mt) as IntLiteral).value].reduceToLiteral(mt)
+        } else {
+            val array: ArrayLiteral = mt?.getLiteral(name) as ArrayLiteral
+            array.values[(arrIndices.last().reduceToLiteral(mt) as IntLiteral).value].reduceToLiteral(mt)
         }
-        return array.values[(arrIndices.last().reduceToLiteral(mt) as IntLiteral).value].reduceToLiteral(mt)
+    }
+
+    fun getArrayRef(mt: MemoryTable): String {
+        var array: DeepArrayLiteral = mt.getLiteral(name) as DeepArrayLiteral
+        for (i in arrIndices.subList(0, arrIndices.size - 2)) {
+            array = mt.getLiteral(array.values[(i.reduceToLiteral(mt) as IntLiteral).value]) as DeepArrayLiteral
+        }
+        return array.values[(arrIndices[arrIndices.size - 2] as IntLiteral).value]
     }
 
     override fun validate(

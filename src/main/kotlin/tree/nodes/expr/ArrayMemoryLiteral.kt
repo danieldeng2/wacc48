@@ -1,8 +1,6 @@
 package tree.nodes.expr
 
-import analyser.exceptions.SemanticsException
 import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
 import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 import tree.SymbolTable
@@ -12,19 +10,17 @@ import tree.type.CharType
 import tree.type.Type
 import tree.type.VoidType
 
-
-data class ArrayLiteral(
-    val values: List<ExprNode>,
-    val ctx: ParserRuleContext?
-) : Literal {
+//To be used in the evaluator memory table to represent arrays of other arrays
+//Values is a list of the names of the subarrays being referenced in the memory table
+class DeepArrayLiteral(val values: List<String>, elemType: Type) : Literal {
     var elemType: Type = VoidType
-    override var type: Type = ArrayType(elemType, ctx)
+    override var type: Type = ArrayType(elemType, null)
 
     override fun literalToString(mt: MemoryTable?): String =
         if (elemType is CharType)
             values.map { (it as CharLiteral).literalToString() }.joinToString("")
         else
-            "[" + values.joinToString(", ") { it.reduceToLiteral(mt).literalToString() } + "]"
+            "[" + values.joinToString(", ") { mt?.getLiteral(it)?.reduceToLiteral(mt)?.literalToString()!! } + "]"
 
     override fun reduceToLiteral(mt: MemoryTable?): Literal =
         this
@@ -34,28 +30,13 @@ data class ArrayLiteral(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>
     ) {
-
-        if (values.isNotEmpty()) {
-            values[0].validate(st, funTable)
-            elemType = values[0].type
-            type = ArrayType(elemType, ctx)
-        }
-
-        values.forEach {
-            it.validate(st, funTable)
-            if (it.type != elemType)
-                throw SemanticsException(
-                    "Array elements are of different type: $this",
-                    ctx
-                )
-        }
     }
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateArrayLiteral(this)
+        visitor.translateDeepArrayLiteral(this)
     }
 
     override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateArrayLiteral(this)
+        return visitor.translateDeepArrayLiteral(this)
     }
 }

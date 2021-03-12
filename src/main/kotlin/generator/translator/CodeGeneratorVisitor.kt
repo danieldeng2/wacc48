@@ -481,4 +481,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
         }
     }
 
+    fun translateDeepArrayLiteral(deepArrayLiteral: DeepArrayLiteral) {
+    }
+
 }
