@@ -29,6 +29,7 @@ class CodeEvaluatorVisitor(
     val testMode: Boolean = false,
     var exitCode: Int? = null
 ) {
+    private var returnFromFuncCall: Boolean = false
     private var inSeqCtx: Boolean = false
     private val argListStack: Stack<Literal> = Stack()
 
@@ -86,12 +87,14 @@ class CodeEvaluatorVisitor(
         //push args' evaluated literals onto argListStack
         visitAndTranslate(node.argList)
 
-        //now put these evaluated args into the new memory table
-        for (i in 0..node.argListSize) {
-            mt[node.functionNode.paramList[i].text] = argListStack.pop()
+        //now put these evaluated args into the new memory table with correct names
+        node.functionNode.paramList.forEach {
+            val arg = argListStack.pop()
+            mt.set(it.text, arg.type, arg)
         }
 
         val result = visitAndTranslate(node.functionNode.body)
+        returnFromFuncCall = false
 
         mt = prevMt
 
@@ -254,6 +257,8 @@ class CodeEvaluatorVisitor(
 
     /** Opens new memory table scope. */
     fun translateBegin(node: BeginNode): Literal? {
+        if (returnFromFuncCall)
+            return null
         //TODO(maybe have a similar method to newScope for mt)
         val prevMt = mt
         mt = MemoryTable(mt)
@@ -272,6 +277,8 @@ class CodeEvaluatorVisitor(
     }
 
     fun translateIf(node: IfNode): Literal? {
+        if (returnFromFuncCall)
+            return null
         val prevMt = mt
         mt = MemoryTable(mt)
         var resultOfIf = if ((visitAndTranslate(node.proposition) as BoolLiteral).value) {
@@ -352,10 +359,14 @@ class CodeEvaluatorVisitor(
 
     /** Evaluates return value and returns as literal */
     fun translateReturn(node: ReturnNode): Literal? {
-        return visitAndTranslate(node.value)?.reduceToLiteral(mt)!!
+        val returnVal = visitAndTranslate(node.value)?.reduceToLiteral(mt)!!
+        returnFromFuncCall = true
+        return returnVal
     }
 
     fun translateSeq(node: SeqNode): Literal? {
+        if (returnFromFuncCall)
+            return null
         val wasAlreadyInSeqCtx = inSeqCtx
         inSeqCtx = true
         node.sequence.subList(0, node.sequence.size - 1).forEach { visitAndTranslate(it) }
@@ -365,6 +376,8 @@ class CodeEvaluatorVisitor(
     }
 
     fun translateWhile(node: WhileNode): Literal? {
+        if (returnFromFuncCall)
+            return null
         val prevMt = mt
         mt = MemoryTable(mt)
         var resultOfBody: Literal? = null

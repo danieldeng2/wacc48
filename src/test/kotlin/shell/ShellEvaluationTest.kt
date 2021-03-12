@@ -18,10 +18,10 @@ class ShellEvaluationTest {
         checkAllMatches("valid/expressions")
     }
 
-    //@Test
-    //fun functionShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/function")
-    //}
+    @Test
+    fun functionShouldMatchReferenceOutput() {
+        checkAllMatches("shell/valid/function")
+    }
 
     @Test
     fun ifStatementsShouldMatchReferenceOutput() {
