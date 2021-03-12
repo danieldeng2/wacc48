@@ -16,7 +16,6 @@ data class BinOpNode(
     val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType
-    //TODO(Clean the reduce functions to be more concise/less duplication)
 
     override fun reduceToLiteral(mt: MemoryTable?): Literal =
         when (operator) {
@@ -32,6 +31,9 @@ data class BinOpNode(
         }
 
     private fun reduceEqualityToLiteral(mt: MemoryTable?): Literal {
+        if (firstExpr.type != secondExpr.type)
+            throw ShellRunTimeException("Cannot compare type ${firstExpr.type} with type ${secondExpr.type}")
+
         if (firstExpr is ArrayLiteral) {
             return when (operator) {
                 BinaryOperator.EQ ->
@@ -90,9 +92,8 @@ data class BinOpNode(
                     if (firstExpr is IdentifierNode) mt?.getLiteral(firstExpr.name) else PairLiteral
                 val secondPair =
                     if (secondExpr is IdentifierNode) mt?.getLiteral(secondExpr.name) else PairLiteral
-                //TODO(Clean this up maybe)
                 return when (operator) {
-                    BinaryOperator.EQ -> {
+                    BinaryOperator.EQ ->
                         if (firstPair is PairMemoryLiteral && secondPair is PairMemoryLiteral)
                             BoolLiteral(
                                 firstPair == secondPair,
@@ -100,8 +101,7 @@ data class BinOpNode(
                             )
                         else
                             BoolLiteral((firstPair is PairLiteral && secondPair is PairLiteral), null)
-                    }
-                    else -> {
+                    else ->
                         if (firstPair is PairMemoryLiteral && secondPair is PairMemoryLiteral)
                             BoolLiteral(
                                 firstPair != secondPair,
@@ -109,7 +109,6 @@ data class BinOpNode(
                             )
                         else
                             BoolLiteral(!(firstPair is PairLiteral && secondPair is PairLiteral), null)
-                    }
                 }
 
             }
@@ -120,7 +119,9 @@ data class BinOpNode(
     private fun reduceArithmeticToLiteral(mt: MemoryTable?): Literal {
         val firstIntExpr = firstExpr.reduceToLiteral(mt) as IntLiteral
         val secondIntExpr = secondExpr.reduceToLiteral(mt) as IntLiteral
+
         detectIntegerOverflow(firstIntExpr.value, secondIntExpr.value, operator)
+
         return when (operator) {
             BinaryOperator.PLUS -> {
                 if (firstIntExpr.value + secondIntExpr.value > Int.MAX_VALUE)
@@ -145,9 +146,8 @@ data class BinOpNode(
     private fun reduceLogicalToLiteral(mt: MemoryTable?): Literal {
         val firstBoolExpr = firstExpr.reduceToLiteral(mt) as BoolLiteral
         val secondBoolExpr = secondExpr.reduceToLiteral(mt) as BoolLiteral
-        if (operator == BinaryOperator.AND) {
+        if (operator == BinaryOperator.AND)
             return BoolLiteral(firstBoolExpr.value && secondBoolExpr.value, null)
-        }
         return BoolLiteral(firstBoolExpr.value || secondBoolExpr.value, null)
     }
 

@@ -5,7 +5,7 @@ import tree.nodes.expr.Literal
 import tree.nodes.expr.PairLiteral
 import tree.type.Type
 
-class MemoryTable(private val parent: MemoryTable?) {
+class MemoryTable(val parent: MemoryTable?) {
     val map: MutableMap<String, Pair<Type, Literal?>> = HashMap()
     private val isDeclared: MutableSet<String> = HashSet()
 

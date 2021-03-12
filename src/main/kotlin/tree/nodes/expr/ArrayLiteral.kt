@@ -14,7 +14,7 @@ import tree.type.VoidType
 
 
 data class ArrayLiteral(
-    val values: List<ExprNode>,
+    var values: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : Literal {
     var elemType: Type = VoidType

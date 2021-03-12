@@ -17,6 +17,7 @@ import java.nio.file.Path
 //TODO(maybe printing in colours)
 //TODO(import command maybe)
 
+//TODO(Fix the declaring a variable even tho it semantic errors bug)
 class WACCShell(
     private val input: BufferedReader = System.`in`.bufferedReader(),
     private val output: PrintStream = System.`out`,
