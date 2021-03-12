@@ -1,14 +1,11 @@
 import analyser.ASTGeneratorShellVisitor
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
-import shell.IncompleteRuleException
-import shell.ShellErrorListener
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import shell.MemoryTable
+import shell.*
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.checkFunctionTerminates

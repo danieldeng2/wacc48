@@ -8,6 +8,7 @@ import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
 import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
+import shell.detectIntegerOverflow
 import tree.nodes.expr.*
 
 data class UnOpNode(
@@ -27,6 +28,7 @@ data class UnOpNode(
 
     private fun reduceMinusToLiteral(mt: MemoryTable?): Literal {
         val intExpr = expr.reduceToLiteral(mt) as IntLiteral
+        detectIntegerOverflow(0, intExpr.value, BinaryOperator.MINUS)
         return IntLiteral(-intExpr.value, null)
     }
 

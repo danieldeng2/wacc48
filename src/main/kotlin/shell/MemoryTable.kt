@@ -2,6 +2,7 @@ package shell
 
 import analyser.exceptions.SemanticsException
 import tree.nodes.expr.Literal
+import tree.nodes.expr.PairLiteral
 import tree.type.Type
 
 class MemoryTable(private val parent: MemoryTable?) {
@@ -25,10 +26,15 @@ class MemoryTable(private val parent: MemoryTable?) {
 
     operator fun set(id: String, literal: Literal) {
         if (id in map) {
-            if (map[id]?.first != literal.type)
+            if (map[id]?.first != literal.type) {
+                if (literal is PairLiteral) {
+                    throw ShellNullDereferenceError("cannot use null pair literal to assign to ${map[id]?.first}")
+                }
+                print(map[id]?.first)
                 throw SemanticsException(
                     "Setting mismatching type(${map[id]?.first}) and literal(${literal.type}) in memory table", null
                 )
+            }
             map[id] = Pair(literal.type, literal)
             isDeclared.add(id)
             return
@@ -45,6 +51,8 @@ class MemoryTable(private val parent: MemoryTable?) {
 
     fun remove(key: String) {
         if (key in map) {
+            if (getLiteral(key) is PairLiteral)
+                throw ShellNullDereferenceError("cannot free null pair literal")
             map.remove(key)
         }
         parent?.remove(key)

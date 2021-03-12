@@ -144,6 +144,7 @@ class CodeEvaluatorVisitor(
                     if (mt[node.name.name]?.second is ArrayLiteral) {
                         val arrayCopy = (mt[node.name.name]?.second as ArrayLiteral).values.toMutableList()
                         var index = (node.name.arrIndices[0].reduceToLiteral(mt) as IntLiteral).value
+                        checkIndexBounds(index, arrayCopy.size)
                         var elem = visitAndTranslate(node.value)!!
                         arrayCopy.removeAt(index)
                         arrayCopy.add(index, elem)
@@ -158,6 +159,7 @@ class CodeEvaluatorVisitor(
                     val name = node.name.getArrayRef(mt)
                     val arrayCopy = (mt[name]?.second as ArrayLiteral).values.toMutableList()
                     var index = (node.name.arrIndices.last().reduceToLiteral(mt) as IntLiteral).value
+                    checkIndexBounds(index, arrayCopy.size)
                     var elem = visitAndTranslate(node.value)!!
                     arrayCopy.removeAt(index)
                     arrayCopy.add(index, elem)
@@ -168,11 +170,14 @@ class CodeEvaluatorVisitor(
                 }
             }
             is PairElemNode -> { //node is a PairElem
+                if (mt.getLiteral((node.name.expr as IdentifierNode).name) !is PairMemoryLiteral) {
+                    throw ShellNullDereferenceError("cannot write into null pair literal")
+                }
                 if (node.name.isFirst) {
-                    (mt.getLiteral((node.name.expr as IdentifierNode).name) as PairMemoryLiteral).firstLiteral =
+                    (mt.getLiteral(node.name.expr.name) as PairMemoryLiteral).firstLiteral =
                         visitAndTranslate(node.value)!!
                 } else {
-                    (mt.getLiteral((node.name.expr as IdentifierNode).name) as PairMemoryLiteral).secondLiteral =
+                    (mt.getLiteral(node.name.expr.name) as PairMemoryLiteral).secondLiteral =
                         visitAndTranslate(node.value)!!
                 }
             }
@@ -313,19 +318,18 @@ class CodeEvaluatorVisitor(
         //TODO(Fix the declaring a variable even tho it semantic errors bug)
         when (node.value.type) {
             IntType -> {
-                var readInt = input.readLine()?.toInt()
-                while (readInt == null) {
-                    readInt = readLine()?.toInt()
-                }
                 when (node.value) {
-                    is IdentifierNode -> mt[node.value.name] = IntLiteral(readInt, null)
+                    is IdentifierNode -> mt[node.value.name] = IntLiteral(readAnInt()!!, null)
                     is PairElemNode -> {
+                        if (mt.getLiteral((node.value.expr as IdentifierNode).name) !is PairMemoryLiteral) {
+                            throw ShellNullDereferenceError(" cannot read into null pair literal")
+                        }
                         if (node.value.isFirst)
-                            (mt.getLiteral((node.value.expr as IdentifierNode).name) as PairMemoryLiteral).firstLiteral =
-                                IntLiteral(readInt, null)
+                            (mt.getLiteral(node.value.expr.name) as PairMemoryLiteral).firstLiteral =
+                                IntLiteral(readAnInt()!!, null)
                         else
-                            (mt.getLiteral((node.value.expr as IdentifierNode).name) as PairMemoryLiteral).secondLiteral =
-                                IntLiteral(readInt, null)
+                            (mt.getLiteral(node.value.expr.name) as PairMemoryLiteral).secondLiteral =
+                                IntLiteral(readAnInt()!!, null)
                     }
                     else -> {
                         TODO()
@@ -333,16 +337,18 @@ class CodeEvaluatorVisitor(
                 }
             }
             CharType -> {
-                var readChar = input.readLine().trim()[0]
                 when (node.value) {
-                    is IdentifierNode -> mt[node.value.name] = CharLiteral(readChar, null)
+                    is IdentifierNode -> mt[node.value.name] = CharLiteral(readAnChar(), null)
                     is PairElemNode -> {
+                        if (mt.getLiteral((node.value.expr as IdentifierNode).name) !is PairMemoryLiteral) {
+                            throw ShellNullDereferenceError(" cannot read into null pair literal")
+                        }
                         if (node.value.isFirst)
-                            (mt.getLiteral((node.value.expr as IdentifierNode).name) as PairMemoryLiteral).firstLiteral =
-                                CharLiteral(readChar, null)
+                            (mt.getLiteral(node.value.expr.name) as PairMemoryLiteral).firstLiteral =
+                                CharLiteral(readAnChar(), null)
                         else
-                            (mt.getLiteral((node.value.expr as IdentifierNode).name) as PairMemoryLiteral).secondLiteral =
-                                CharLiteral(readChar, null)
+                            (mt.getLiteral(node.value.expr.name) as PairMemoryLiteral).secondLiteral =
+                                CharLiteral(readAnChar(), null)
                     }
                     else -> {
                         TODO()
@@ -355,6 +361,18 @@ class CodeEvaluatorVisitor(
         }
 
         return null
+    }
+
+    private fun readAnChar(): Char {
+        return input.readLine().trim()[0]
+    }
+
+    private fun readAnInt(): Int? {
+        var readInt = input.readLine()?.toInt()
+        while (readInt == null) {
+            readInt = readLine()?.toInt()
+        }
+        return readInt
     }
 
     /** Evaluates return value and returns as literal */

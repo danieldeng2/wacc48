@@ -5,8 +5,7 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import shell.MemoryTable
+import shell.*
 import tree.nodes.expr.*
 import tree.type.*
 
@@ -121,12 +120,25 @@ data class BinOpNode(
     private fun reduceArithmeticToLiteral(mt: MemoryTable?): Literal {
         val firstIntExpr = firstExpr.reduceToLiteral(mt) as IntLiteral
         val secondIntExpr = secondExpr.reduceToLiteral(mt) as IntLiteral
+        detectIntegerOverflow(firstIntExpr.value, secondIntExpr.value, operator)
         return when (operator) {
-            BinaryOperator.PLUS -> IntLiteral(firstIntExpr.value + secondIntExpr.value, null)
+            BinaryOperator.PLUS -> {
+                if (firstIntExpr.value + secondIntExpr.value > Int.MAX_VALUE)
+                    throw ShellIntegerOverflowException("addition overflow")
+                IntLiteral(firstIntExpr.value + secondIntExpr.value, null)
+            }
             BinaryOperator.MINUS -> IntLiteral(firstIntExpr.value - secondIntExpr.value, null)
             BinaryOperator.MULTIPLY -> IntLiteral(firstIntExpr.value * secondIntExpr.value, null)
-            BinaryOperator.DIVIDE -> IntLiteral(firstIntExpr.value / secondIntExpr.value, null)
-            else -> IntLiteral(firstIntExpr.value % secondIntExpr.value, null)
+            BinaryOperator.DIVIDE -> {
+                if (secondIntExpr.value == 0)
+                    throw ShellDivideByZeroException("divide by zero not allowed")
+                IntLiteral(firstIntExpr.value / secondIntExpr.value, null)
+            }
+            else -> {
+                if (secondIntExpr.value == 0)
+                    throw ShellDivideByZeroException("mod by zero not allowed")
+                IntLiteral(firstIntExpr.value % secondIntExpr.value, null)
+            }
         }
     }
 

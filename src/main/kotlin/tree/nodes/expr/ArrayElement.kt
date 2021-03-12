@@ -9,8 +9,8 @@ import tree.type.ArrayType
 import tree.type.Type
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import shell.MemoryTable
+import shell.*
+import kotlin.system.exitProcess
 
 data class ArrayElement(
     val name: String,
@@ -26,21 +26,32 @@ data class ArrayElement(
         return if (arrIndices.size > 1) { //Deep array access
             var array: DeepArrayLiteral = mt?.getLiteral(name) as DeepArrayLiteral
             for (i in arrIndices.subList(0, arrIndices.size - 2)) {
+                val index = (i.reduceToLiteral(mt) as IntLiteral).value
+                checkIndexBounds(index, array.values.size)
                 array = mt.getLiteral(array.values[(i.reduceToLiteral(mt) as IntLiteral).value]) as DeepArrayLiteral
             }
-            var lastArray = mt.getLiteral(array.values[(arrIndices[arrIndices.size - 2] as IntLiteral).value]) as ArrayLiteral
+            val index = (arrIndices[arrIndices.size - 2] as IntLiteral).value
+            checkIndexBounds(index, array.values.size)
+            var lastArray =
+                mt.getLiteral(array.values[(arrIndices[arrIndices.size - 2] as IntLiteral).value]) as ArrayLiteral
             lastArray.values[(arrIndices.last().reduceToLiteral(mt) as IntLiteral).value].reduceToLiteral(mt)
         } else {
             val array: ArrayLiteral = mt?.getLiteral(name) as ArrayLiteral
-            array.values[(arrIndices.last().reduceToLiteral(mt) as IntLiteral).value].reduceToLiteral(mt)
+            val index = (arrIndices.last().reduceToLiteral(mt) as IntLiteral).value
+            checkIndexBounds(index, array.values.size)
+            array.values[index].reduceToLiteral(mt)
         }
     }
 
     fun getArrayRef(mt: MemoryTable): String {
         var array: DeepArrayLiteral = mt.getLiteral(name) as DeepArrayLiteral
         for (i in arrIndices.subList(0, arrIndices.size - 2)) {
-            array = mt.getLiteral(array.values[(i.reduceToLiteral(mt) as IntLiteral).value]) as DeepArrayLiteral
+            val index = (i.reduceToLiteral(mt) as IntLiteral).value
+            checkIndexBounds(index, array.values.size)
+            array = mt.getLiteral(array.values[index]) as DeepArrayLiteral
         }
+        val index = (arrIndices[arrIndices.size - 2] as IntLiteral).value
+        checkIndexBounds(index, array.values.size)
         return array.values[(arrIndices[arrIndices.size - 2] as IntLiteral).value]
     }
 
