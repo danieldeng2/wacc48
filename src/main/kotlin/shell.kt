@@ -10,14 +10,11 @@ import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.checkFunctionTerminates
 import tree.nodes.function.FuncNode
+import tree.type.VoidType
 import java.io.BufferedReader
 import java.io.PrintStream
 import java.nio.file.Path
 
-//TODO(maybe printing in colours)
-//TODO(import command maybe)
-
-//TODO(Fix the declaring a variable even tho it semantic errors bug)
 class WACCShell(
     private val input: BufferedReader = System.`in`.bufferedReader(),
     private val output: PrintStream = System.`out`,
@@ -30,7 +27,7 @@ class WACCShell(
 ) {
 
     fun runInteractiveShell() {
-        val st: SymbolTable = SymbolTable(null)
+        var st: SymbolTable = SymbolTable(null)
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
         var mt: MemoryTable = MemoryTable(null)
 
@@ -42,10 +39,6 @@ class WACCShell(
 
         var currLine: String? = readNewLine()
 
-        //TODO(clean this while condition)
-        //TODO(check that quit is never used as an identifier)
-        //TODO(make sure return/exit work only when called in global scope)
-        //TODO(make calling exit in normal scope be validated first, print code, then exit)
         while (currLine != null && currLine.trim() != "quit" && currLine.trim() != "return") {
             if (currLine.trim() == "") {
                 currLine = readNewLine()
@@ -65,7 +58,9 @@ class WACCShell(
                     checkFunctionTerminates(node)
                     node.validatePrototype(ft)
                 }
-                node.validate(st, ft)
+                val stCopy = st.clone()
+                node.validate(stCopy, ft)
+                st = stCopy
             } catch (e: SyntaxException) {
                 output.println("Syntax Error: ${e.message}")
                 if (testMode) {
@@ -94,7 +89,6 @@ class WACCShell(
                 return
             }
 
-            //TODO(make readnextline only used once in the while loop / consider cleaner way of reading)
             currLine = readNewLine()
         }
 
@@ -105,7 +99,7 @@ class WACCShell(
 
     /** Parse lines from stdin until a valid rule is found, or return null if
      * no viable rules can be extracted from what has been entered in stdin. */
-    fun parseStdinRule(currLine: String): ParserRuleContext? {
+    private fun parseStdinRule(currLine: String): ParserRuleContext? {
         var stdinBuffer = currLine
 
         do {
@@ -140,27 +134,25 @@ class WACCShell(
         } while (true)
     }
 
-    fun parseAndRunProgramFile(
+    private fun parseAndRunProgramFile(
         st: SymbolTable,
         ft: MutableMap<String, FuncNode>,
         evalVisitor: CodeEvaluatorVisitor
     ) {
-        if (programPath == null) {
+        if (programPath == null)
             return
-        }
+
         if (!programPath.toFile().exists()) {
             output.println("Error: wacc file $programPath does not exist")
             return
         }
 
         val node = runAnalyserPrintError(CharStreams.fromPath(programPath), st, ft)
-        if (evaluateCode) {
+        if (evaluateCode)
             evalVisitor.visitAndTranslate(node!!)
-        }
     }
 
     private fun printIntro() {
-        //TODO(help page maybe)
         if (!testMode) {
             output.println(">>> WACC Interactive Shell <<<")
             output.println("Instructions: ")

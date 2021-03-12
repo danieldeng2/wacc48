@@ -3,11 +3,17 @@ package tree
 import tree.type.Type
 
 class SymbolTable(private val parent: SymbolTable?, val isParamListST: Boolean = false) {
-
-    private val map: MutableMap<String, Pair<Type, Int>> = HashMap()
-    private val isDeclared: MutableSet<String> = HashSet()
+    private var map: MutableMap<String, Pair<Type, Int>> = HashMap()
+    private var isDeclared: MutableSet<String> = HashSet()
     var totalVarSize = 0
         private set
+
+    fun clone(): SymbolTable {
+        val st = SymbolTable(null)
+        st.map = map.toMutableMap()
+        st.isDeclared = isDeclared.toMutableSet()
+        return st
+    }
 
     fun containsInCurrentScope(key: String): Boolean = key in map
 

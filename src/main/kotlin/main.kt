@@ -5,13 +5,13 @@ import java.io.FileWriter
 import java.nio.file.Path
 
 fun main(args: Array<String>) {
-    if (args[0] == "-i") {
+    if (args[0] == "-s") {
         val shell: WACCShell
         if (args.size == 3) {
             if (args[1] == "-p")
                 shell = WACCShell(programPath = Path.of(args[2]))
             else {
-                println("Interpreter usage: ./interpret -p <WACC File>")
+                println("Shell usage: ./shell -p <WACC File>")
                 return
             }
         } else {

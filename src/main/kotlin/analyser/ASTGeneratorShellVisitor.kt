@@ -19,7 +19,6 @@ import tree.type.*
 
 class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
     var inFuncNodeCtx = false
-    //TODO(Get rid of the duplication between ASTGeneratorVisitor and ASTGeneratorShellVisitor)
 
     override fun visitCommand(ctx: WACCShellParser.CommandContext): ASTNode =
         when {

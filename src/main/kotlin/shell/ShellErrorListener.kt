@@ -19,7 +19,6 @@ class ShellErrorListener : BaseErrorListener() {
         ) {
             throw IncompleteRuleException("line $line:$charPositionInLine $msg")
         }
-        //TODO(underlining maybe for semantic/syntax errors during semantic analysis of shell commands)
 
         var underline: String = ""
         for (i in 1..(charPositionInLine + 4))
