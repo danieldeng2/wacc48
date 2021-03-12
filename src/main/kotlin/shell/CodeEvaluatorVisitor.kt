@@ -19,7 +19,6 @@ import java.io.PrintStream
 import java.util.*
 import kotlin.system.exitProcess
 
-//TODO(evaluated literal stack member to remove returning literal)
 /** The visitor that traverses the AST tree top down from a start node.
  * At each node, it evaluates any statements and expressions
  * editing and adding to the memory when needed. */
@@ -33,36 +32,42 @@ class CodeEvaluatorVisitor(
     private var returnFromFuncCall: Boolean = false
     private var inSeqCtx: Boolean = false
     private val argListStack: Stack<Literal> = Stack()
+    private val evalLiteralStack: Stack<Literal> = Stack()
+
+    fun printEvalLiteralStack(prompt: String) {
+        evalLiteralStack.forEach { output.println("$prompt${it.literalToString(mt)}")}
+        evalLiteralStack.clear()
+    }
 
     /** Wrapper method to tell [node] to invoke its corresponding
      *  'translate' method to evaluate code */
-    fun visitAndTranslate(node: ASTNode): Literal? {
-        return node.acceptCodeEvalVisitor(this)
+    fun visitAndTranslate(node: ASTNode) {
+        node.acceptCodeEvalVisitor(this)
+        //return evalLiteralStack.pop() ?: null
     }
 
     /** Evaluate whole program by calling evaluate on each of its children */
-    fun translateProgram(node: ProgNode): Literal? {
+    fun translateProgram(node: ProgNode) {
         node.functions.forEach {
             translateFunction(it)
         }
         translateMain(node.main)
-        return null
     }
 
     /** Evaluate the 'main' function */
-    fun translateMain(node: MainNode): Literal? {
-        return visitAndTranslate(node.body)
+    fun translateMain(node: MainNode) {
+        visitAndTranslate(node.body)
     }
 
     /** Evaluates expression to get exit code, then invoke syscall 'exit'. */
-    fun translateExit(node: ExitNode): Literal? {
-        val exitCode = (visitAndTranslate(node.expr) as IntLiteral).value
+    fun translateExit(node: ExitNode) {
+        visitAndTranslate(node.expr)
+        val exitCode = (evalLiteralStack.pop() as IntLiteral).value
         if (!testMode) {
             output.println("Exit code: $exitCode")
             exitProcess(exitCode)
         } else {
             this.exitCode = ((exitCode % 256) + 256) % 256
-            return null
         }
     }
 
@@ -71,17 +76,16 @@ class CodeEvaluatorVisitor(
      *
      *  No need to evaluate the body as its just declaring the function
      */
-    fun translateFunction(node: FuncNode): Literal? {
+    fun translateFunction(node: FuncNode) {
         node.paramList.forEach {
             node.paramListTable.declareVariable(it.text)
         }
-        return null
     }
 
     /** Makes a new memory table for the function body evaluation, adding the arguments
      *  into this memory table, and then evaluating the body and returning its resulting
      *  literal. */
-    fun translateFuncCall(node: FuncCallNode): Literal? {
+    fun translateFuncCall(node: FuncCallNode) {
         newMemoryTableScope()
 
         //push args' evaluated literals onto argListStack
@@ -93,49 +97,49 @@ class CodeEvaluatorVisitor(
             mt.set(it.text, arg.type, arg)
         }
 
-        val result = visitAndTranslate(node.functionNode.body)
+        visitAndTranslate(node.functionNode.body)
         returnFromFuncCall = false
 
         endMemoryTableScope()
-
-        return result
     }
 
     /** Declares the name of variable. See [SymbolTable.declareVariable] for more. */
-    fun translateParam(node: ParamNode): Literal? {
+    fun translateParam(node: ParamNode) {
         node.st.declareVariable(node.text)
         mt[node.text] = node.type
-        return null
     }
 
     /** Returns a pairMemoryLiteral to be stored in the memory table */
-    fun translateNewPair(node: NewPairNode): Literal? =
-        PairMemoryLiteral(
-            node.firstElem.reduceToLiteral(mt),
-            node.secondElem.reduceToLiteral(mt),
-            PairType(node.firstElem.type, node.secondElem.type, null)
+    fun translateNewPair(node: NewPairNode) =
+        evalLiteralStack.add(
+            PairMemoryLiteral(
+                node.firstElem.reduceToLiteral(mt),
+                node.secondElem.reduceToLiteral(mt),
+                PairType(node.firstElem.type, node.secondElem.type, null)
+            )
         )
 
     /** Add declaration to memory table and evaluated assignment literal */
-    fun translateDeclaration(node: DeclarationNode): Literal? {
+    fun translateDeclaration(node: DeclarationNode) {
         visitAndTranslate(node.name)
-        mt[node.name.text] = visitAndTranslate(node.value)!!
-        return null
+        visitAndTranslate(node.value)
+        mt[node.name.text] = evalLiteralStack.pop()
     }
 
     /** Loads the arguments in a function call onto the argListStack to load it
      * into a new memory table in translateFuncCall before evaluating the function body */
-    fun translateArgList(node: ArgListNode): Literal? {
+    fun translateArgList(node: ArgListNode) {
         node.args.reversed().forEach {
-            argListStack.push(visitAndTranslate(it))
+            visitAndTranslate(it)
+            argListStack.push(evalLiteralStack.pop())
         }
-        return null
     }
 
-    fun translateAssignment(node: AssignmentNode): Literal? {
+    fun translateAssignment(node: AssignmentNode) {
         when (node.name) {
             is IdentifierNode -> {
-                mt[node.name.name] = visitAndTranslate(node.value)!!
+                visitAndTranslate(node.value)
+                mt[node.name.name] = evalLiteralStack.pop()
             }
             is ArrayElement -> {
                 //ArrayRef is the name of the array we are assigning stuff to
@@ -150,7 +154,8 @@ class CodeEvaluatorVisitor(
                 val arrayCopy = arrayInMemory.values.toMutableList().apply {
                     checkIndexBounds(index, size)
                     removeAt(index)
-                    add(index, visitAndTranslate(node.value)!!)
+                    visitAndTranslate(node.value)
+                    add(index, evalLiteralStack.pop())
                 }
                 arrayInMemory.values = arrayCopy
             }
@@ -159,70 +164,75 @@ class CodeEvaluatorVisitor(
                     throw ShellNullDereferenceError("cannot write into null pair literal")
 
                 val pairMemLiteral = (mt.getLiteral(node.name.expr.name) as PairMemoryLiteral)
-                if (node.name.isFirst)
-                    pairMemLiteral.firstLiteral = visitAndTranslate(node.value)!!
-                else
-                    pairMemLiteral.secondLiteral = visitAndTranslate(node.value)!!
+                if (node.name.isFirst) {
+                    visitAndTranslate(node.value)
+                    pairMemLiteral.firstLiteral = evalLiteralStack.pop()
+                } else {
+                    visitAndTranslate(node.value)
+                    pairMemLiteral.secondLiteral = evalLiteralStack.pop()
+                }
             }
         }
-        return null
     }
 
-    fun translateBinOp(node: BinOpNode): Literal? = node.reduceToLiteral(mt)
+    fun translateBinOp(node: BinOpNode) = evalLiteralStack.add(node.reduceToLiteral(mt))
 
-    fun translateUnOp(node: UnOpNode): Literal? = node.reduceToLiteral(mt)
+    fun translateUnOp(node: UnOpNode) = evalLiteralStack.add(node.reduceToLiteral(mt))
 
     /** Choose what operation to carry out based on [AccessMode]. */
-    fun translatePairElem(node: PairElemNode): Literal? =
+    fun translatePairElem(node: PairElemNode) {
         if (node.mode == AccessMode.READ) {
             when (node.expr) {
                 is IdentifierNode -> {
                     when (val literal = mt.getLiteral(node.expr.name)) {
-                        is PairLiteral -> literal
-                        is PairMemoryLiteral -> if (node.isFirst) literal.firstLiteral else literal.secondLiteral
-                        else -> null
+                        is PairLiteral -> evalLiteralStack.add(literal)
+                        is PairMemoryLiteral ->
+                            if (node.isFirst)
+                                evalLiteralStack.add(literal.firstLiteral)
+                            else
+                                evalLiteralStack.add(literal.secondLiteral)
+                        else -> {}
                     }
                 }
                 is ArrayElement -> visitAndTranslate(node.expr)
-                else -> null
+                else -> {}
             }
-        } else null
+        }
+    }
 
-    fun translateArrayElement(elem: ArrayElement): Literal? =
-        elem.reduceToLiteral(mt)
+    fun translateArrayElement(elem: ArrayElement) =
+        evalLiteralStack.add(elem.reduceToLiteral(mt))
 
-    fun translateArrayLiteral(literal: ArrayLiteral): Literal? =
+    fun translateArrayLiteral(literal: ArrayLiteral) =
         if (literal.elemType is ArrayType) //multidimensional array
-            DeepArrayLiteral(literal.values.map { (it as IdentifierNode).name }, literal.elemType)
+            evalLiteralStack.add(DeepArrayLiteral(literal.values.map { (it as IdentifierNode).name }, literal.elemType))
         else
-            literal
+            evalLiteralStack.add(literal)
 
-    fun translateBoolLiteral(literal: BoolLiteral): Literal? = literal
+    fun translateBoolLiteral(literal: BoolLiteral) = evalLiteralStack.add(literal)
 
-    fun translateCharLiteral(literal: CharLiteral): Literal? = literal
+    fun translateCharLiteral(literal: CharLiteral) = evalLiteralStack.add(literal)
 
-    fun translateIdentifier(node: IdentifierNode): Literal? =
+    fun translateIdentifier(node: IdentifierNode) =
         when (node.mode) {
             AccessMode.ASSIGN -> null
-            else -> mt.getLiteral(node.name)
+            else -> evalLiteralStack.add(mt.getLiteral(node.name))
         }
 
-    fun translateIntLiteral(literal: IntLiteral): Literal? = literal
+    fun translateIntLiteral(literal: IntLiteral) = evalLiteralStack.add(literal)
 
-    fun translatePairLiteral(literal: PairLiteral): Literal? = literal
+    fun translatePairLiteral(literal: PairLiteral) = evalLiteralStack.add(literal)
 
-    fun translateStringLiteral(literal: StringLiteral): Literal? = literal
+    fun translateStringLiteral(literal: StringLiteral) = evalLiteralStack.add(literal)
 
     /** Opens new memory table scope. */
-    fun translateBegin(node: BeginNode): Literal? {
+    fun translateBegin(node: BeginNode) {
         if (returnFromFuncCall)
-            return null
+            return
 
         newMemoryTableScope()
-        var resultOfBody: Literal? = visitAndTranslate(node.stat)
+        visitAndTranslate(node.stat)
         endMemoryTableScope()
-
-        return resultOfBody
     }
 
     private fun newMemoryTableScope() {
@@ -233,56 +243,47 @@ class CodeEvaluatorVisitor(
         mt = mt.parent!!
     }
 
-    fun translateFree(node: FreeNode): Literal? {
+    fun translateFree(node: FreeNode) {
         //May seem redundant but needed for casting
         if (node.value is IdentifierNode)
             mt.remove(node.value.name)
         else if (node.value is ArrayElement)
             mt.remove(node.value.name)
-
-        return null
     }
 
-    fun translateIf(node: IfNode): Literal? {
+    fun translateIf(node: IfNode) {
         if (returnFromFuncCall)
-            return null
+            return
 
         newMemoryTableScope()
-        var resultOfIf =
-            if ((visitAndTranslate(node.proposition) as BoolLiteral).value)
-                visitAndTranslate(node.trueStat)
-            else
-                visitAndTranslate(node.falseStat)
+        visitAndTranslate(node.proposition)
+        if ((evalLiteralStack.pop() as BoolLiteral).value)
+            visitAndTranslate(node.trueStat)
+        else
+            visitAndTranslate(node.falseStat)
         endMemoryTableScope()
-
-        return resultOfIf
     }
 
     /** Literally print the evaluated value out */
-    fun translatePrint(node: PrintNode): Literal? {
-        val value = visitAndTranslate(node.value)?.literalToString()
+    fun translatePrint(node: PrintNode) {
+        visitAndTranslate(node.value)
+        val value = evalLiteralStack.pop().literalToString()
 
         if (node.returnAfterPrint) output.println(value) else output.print(value)
 
         //If we are printing as the last print statement in a sequence, add new line
         if (!testMode && !inSeqCtx && !node.returnAfterPrint)
             output.println("")
-
-        return null
     }
 
-    fun translateRead(node: ReadNode): Literal? {
-        visitAndTranslate(node.value)
-
+    fun translateRead(node: ReadNode) {
         if (node.value is PairElemNode && node.value.expr is IdentifierNode)
             if (mt.getLiteral(node.value.expr.name) !is PairMemoryLiteral)
                 throw ShellNullDereferenceError(" cannot read into null pair literal")
         visitAndTranslate(AssignmentNode(node.value, readType(node.value.type), null))
-
-        return null
     }
 
-    private fun readType(type: Type): Literal =
+    private fun readType(type: Type) =
         when (type) {
             IntType -> readAnInt()
             CharType -> readAChar()
@@ -301,42 +302,44 @@ class CodeEvaluatorVisitor(
     }
 
     /** Evaluates return value and returns as literal */
-    fun translateReturn(node: ReturnNode): Literal? {
-        val returnVal = visitAndTranslate(node.value)?.reduceToLiteral(mt)!!
+    fun translateReturn(node: ReturnNode) {
+        visitAndTranslate(node.value)
         returnFromFuncCall = true
-        return returnVal
     }
 
-    fun translateSeq(node: SeqNode): Literal? {
+    fun translateSeq(node: SeqNode) {
         if (returnFromFuncCall)
-            return null
+            return
 
         val wasAlreadyInSeqCtx = inSeqCtx
         inSeqCtx = true
 
-        node.sequence.subList(0, node.sequence.size - 1).forEach { visitAndTranslate(it) }
+        node.sequence.subList(0, node.sequence.size - 1).forEach {
+            visitAndTranslate(it)
+        }
 
         if (!wasAlreadyInSeqCtx)
             inSeqCtx = false
 
-        return visitAndTranslate(node.sequence.last())?.reduceToLiteral(mt)
+        visitAndTranslate(node.sequence.last())
     }
 
-    fun translateWhile(node: WhileNode): Literal? {
+    fun translateWhile(node: WhileNode) {
         if (returnFromFuncCall)
-            return null
+            return
 
         newMemoryTableScope()
-        var resultOfBody: Literal? = null
-        while ((node.proposition.reduceToLiteral(mt) as BoolLiteral).value) {
-            resultOfBody = visitAndTranslate(node.body)
+        visitAndTranslate(node.proposition)
+        var proposition = evalLiteralStack.pop()
+        while ((proposition as BoolLiteral).value) {
+            visitAndTranslate(node.body)
+            visitAndTranslate(node.proposition)
+            proposition = evalLiteralStack.pop()
         }
         endMemoryTableScope()
-
-        return resultOfBody
     }
 
-    fun translatePairLiteral(literal: PairMemoryLiteral): Literal? = literal
+    fun translatePairLiteral(literal: PairMemoryLiteral) = evalLiteralStack.add(literal)
 
-    fun translateDeepArrayLiteral(literal: DeepArrayLiteral): Literal? = literal
+    fun translateDeepArrayLiteral(literal: DeepArrayLiteral) = evalLiteralStack.add(literal)
 }

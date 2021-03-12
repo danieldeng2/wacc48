@@ -26,7 +26,7 @@ data class ReturnNode(
         visitor.translateReturn(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateReturn(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateReturn(this)
     }
 }

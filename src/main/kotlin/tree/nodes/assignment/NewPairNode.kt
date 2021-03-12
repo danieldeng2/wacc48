@@ -34,8 +34,8 @@ data class NewPairNode(
         visitor.translateNewPair(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateNewPair(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateNewPair(this)
     }
 
 }

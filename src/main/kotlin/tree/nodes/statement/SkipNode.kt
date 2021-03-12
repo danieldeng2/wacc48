@@ -19,7 +19,5 @@ object SkipNode : StatNode {
     }
 
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {}
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return null
-    }
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {}
 }

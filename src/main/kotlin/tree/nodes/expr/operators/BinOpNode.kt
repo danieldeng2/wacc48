@@ -203,8 +203,8 @@ data class BinOpNode(
         visitor.translateBinOp(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateBinOp(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateBinOp(this)
     }
 }
 

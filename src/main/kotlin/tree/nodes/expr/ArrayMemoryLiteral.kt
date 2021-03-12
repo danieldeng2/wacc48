@@ -18,7 +18,7 @@ class DeepArrayLiteral(val values: List<String>, elemType: Type) : Literal {
 
     override fun literalToString(mt: MemoryTable?): String =
         if (elemType is CharType)
-            values.map { (it as CharLiteral).literalToString() }.joinToString("")
+            values.map { (mt?.getLiteral(it) as CharLiteral).literalToString() }.joinToString("")
         else
             "[" + values.joinToString(", ") { mt?.getLiteral(it)?.reduceToLiteral(mt)?.literalToString()!! } + "]"
 
@@ -36,7 +36,7 @@ class DeepArrayLiteral(val values: List<String>, elemType: Type) : Literal {
         visitor.translateDeepArrayLiteral(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateDeepArrayLiteral(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateDeepArrayLiteral(this)
     }
 }

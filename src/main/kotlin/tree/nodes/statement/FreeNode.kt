@@ -29,7 +29,7 @@ data class FreeNode(
         visitor.translateFree(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateFree(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateFree(this)
     }
 }

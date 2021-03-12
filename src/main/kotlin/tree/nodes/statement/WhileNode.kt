@@ -34,8 +34,8 @@ data class WhileNode(
         visitor.translateWhile(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateWhile(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateWhile(this)
     }
 }
 

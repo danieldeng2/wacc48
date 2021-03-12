@@ -25,7 +25,7 @@ data class BeginNode(
         visitor.translateBegin(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateBegin(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateBegin(this)
     }
 }

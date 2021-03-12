@@ -58,7 +58,7 @@ data class SeqNode(
         visitor.translateSeq(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateSeq(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateSeq(this)
     }
 }

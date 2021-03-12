@@ -27,8 +27,8 @@ object PairLiteral : Literal {
         visitor.translatePairLiteral(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translatePairLiteral(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translatePairLiteral(this)
     }
 }
 
@@ -43,7 +43,7 @@ class PairMemoryLiteral(var firstLiteral: Literal, var secondLiteral: Literal, o
     override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translatePairLiteral(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translatePairLiteral(this)
     }
 }

@@ -40,7 +40,7 @@ data class AssignmentNode(
         visitor.translateAssignment(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateAssignment(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateAssignment(this)
     }
 }

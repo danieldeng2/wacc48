@@ -24,8 +24,8 @@ data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) : Literal {
         visitor.translateCharLiteral(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateCharLiteral(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateCharLiteral(this)
     }
 
 }

@@ -34,8 +34,8 @@ data class ProgNode(
         visitor.translateProgram(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateProgram(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateProgram(this)
     }
 }
 

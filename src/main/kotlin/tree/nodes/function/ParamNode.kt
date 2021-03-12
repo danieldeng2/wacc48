@@ -34,8 +34,8 @@ data class ParamNode(
         visitor.translateParam(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateParam(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateParam(this)
     }
 
 }

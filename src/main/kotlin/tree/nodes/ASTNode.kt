@@ -11,5 +11,5 @@ interface ASTNode {
     fun validate(st: SymbolTable, funTable: MutableMap<String, FuncNode>)
 
     fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor)
-    fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal?
+    fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor)
 }

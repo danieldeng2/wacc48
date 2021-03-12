@@ -61,8 +61,8 @@ data class FuncCallNode(
         visitor.translateFuncCall(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateFuncCall(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateFuncCall(this)
     }
 }
 

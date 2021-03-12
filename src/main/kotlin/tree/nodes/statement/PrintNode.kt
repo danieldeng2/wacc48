@@ -27,8 +27,8 @@ data class PrintNode(
         visitor.translatePrint(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translatePrint(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translatePrint(this)
     }
 
 }

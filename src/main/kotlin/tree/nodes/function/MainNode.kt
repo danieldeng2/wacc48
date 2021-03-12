@@ -27,8 +27,8 @@ class MainNode(
         visitor.translateMain(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateMain(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateMain(this)
     }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =

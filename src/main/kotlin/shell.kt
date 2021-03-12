@@ -85,10 +85,8 @@ class WACCShell(
             }
 
             if (evaluateCode) {
-                val resultLiteral = evalVisitor.visitAndTranslate(node)
-                if (resultLiteral != null) {
-                    output.println("$resultPrompt${resultLiteral.literalToString()}")
-                }
+                evalVisitor.visitAndTranslate(node)
+                evalVisitor.printEvalLiteralStack(resultPrompt)
             }
             if (evalVisitor.exitCode != null) {
                 input.close()

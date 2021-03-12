@@ -27,7 +27,7 @@ data class BoolLiteral(
         visitor.translateBoolLiteral(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateBoolLiteral(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateBoolLiteral(this)
     }
 }

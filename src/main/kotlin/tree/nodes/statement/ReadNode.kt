@@ -35,7 +35,7 @@ data class ReadNode(
         visitor.translateRead(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateRead(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateRead(this)
     }
 }

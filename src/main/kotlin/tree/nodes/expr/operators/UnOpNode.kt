@@ -76,8 +76,8 @@ data class UnOpNode(
         visitor.translateUnOp(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateUnOp(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateUnOp(this)
     }
 
 }

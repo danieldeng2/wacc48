@@ -31,7 +31,7 @@ data class IntLiteral(
         visitor.translateIntLiteral(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateIntLiteral(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateIntLiteral(this)
     }
 }

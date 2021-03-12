@@ -25,7 +25,7 @@ data class ArgListNode(
         visitor.translateArgList(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateArgList(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateArgList(this)
     }
 }

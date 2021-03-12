@@ -39,8 +39,8 @@ data class IdentifierNode(
         visitor.translateIdentifier(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateIdentifier(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateIdentifier(this)
     }
 
 }

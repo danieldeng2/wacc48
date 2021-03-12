@@ -32,8 +32,8 @@ data class ExitNode(
         visitor.translateExit(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateExit(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateExit(this)
     }
 
 }

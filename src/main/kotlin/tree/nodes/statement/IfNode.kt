@@ -41,7 +41,7 @@ data class IfNode(
         visitor.translateIf(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateIf(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateIf(this)
     }
 }

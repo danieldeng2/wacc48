@@ -83,7 +83,7 @@ data class ArrayElement(
         visitor.translateArrayElement(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateArrayElement(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateArrayElement(this)
     }
 }

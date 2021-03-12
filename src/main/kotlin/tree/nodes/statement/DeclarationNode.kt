@@ -37,8 +37,8 @@ data class DeclarationNode(
         visitor.translateDeclaration(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translateDeclaration(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translateDeclaration(this)
     }
 
 }

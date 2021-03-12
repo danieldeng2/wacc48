@@ -44,8 +44,8 @@ data class PairElemNode(
         visitor.translatePairElem(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor): Literal? {
-        return visitor.translatePairElem(this)
+    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
+        visitor.translatePairElem(this)
     }
 
 }
