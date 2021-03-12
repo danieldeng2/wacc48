@@ -99,7 +99,7 @@ fun CodeGeneratorVisitor.assignToPosition(node: PairElemNode, memOffset: Int) {
             LDRInstr(Register.R0, MemAddr(Register.R0)),
 
             //Free existing value
-            BLInstr("free"),
+            Syscall("free"),
 
             // Allocate memory for new value
             MOVInstr(

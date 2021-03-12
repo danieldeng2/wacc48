@@ -36,16 +36,16 @@ object FreePair : LibraryFunction {
         // Free fst element
         PUSHInstr(Register.R0),
         LDRInstr(Register.R0, MemAddr(Register.R0)),
-        BLInstr("free"),
+        Syscall("free"),
 
         // Free snd element
         LDRInstr(Register.R0, MemAddr(Register.SP)),
         LDRInstr(Register.R0, MemAddr(Register.R0, NumOp(NUM_BYTE_ADDRESS))),
-        BLInstr("free"),
+        Syscall("free"),
 
         // Free the pair object
         POPInstr(Register.R0),
-        BLInstr("free"),
+        Syscall("free"),
 
         FunctionEnd()
     )

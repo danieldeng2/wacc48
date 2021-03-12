@@ -41,8 +41,8 @@ object ReadChar : LibraryFunction {
             FunctionStart(),
             PUSHInstr(Register.R0),
             LDRInstr(Register.R0, LabelOp(msgIndex!!)),
-            ADDInstr(Register.SP, Register.SP, NumOp(NUM_BYTE_ADDRESS)),
             Syscall("scanf"),
+            ADDInstr(Register.SP, Register.SP, NumOp(NUM_BYTE_ADDRESS)),
             FunctionEnd()
         )
 
