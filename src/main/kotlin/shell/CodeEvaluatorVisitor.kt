@@ -116,7 +116,6 @@ class CodeEvaluatorVisitor(
     /** Add declaration to memory table and evaluated assignment literal */
     fun translateDeclaration(node: DeclarationNode): Literal? {
         visitAndTranslate(node.name)
-        //println(node)
         mt[node.name.text] = visitAndTranslate(node.value)!!
         return null
     }
@@ -133,15 +132,7 @@ class CodeEvaluatorVisitor(
     fun translateAssignment(node: AssignmentNode): Literal? {
         when (node.name) {
             is IdentifierNode -> {
-//                if (node.value.type is PairType) {
-//                    if ((node.value as PairElemNode).isFirst) {
-//                        mt[node.name.name] = visitAndTranslate(node.value)!!
-//                    } else {
-//
-//                    }
-//                } else {
-                    mt[node.name.name] = visitAndTranslate(node.value)!!
-//                }
+                mt[node.name.name] = visitAndTranslate(node.value)!!
             }
             is ArrayElement -> {
                 TODO("figure out what to do here")
@@ -170,17 +161,28 @@ class CodeEvaluatorVisitor(
     /** Choose what operation to carry out based on [AccessMode]. */
     fun translatePairElem(node: PairElemNode): Literal? {
         if (node.mode == AccessMode.READ) {
-            return when (val literal = mt.getLiteral((node.expr as IdentifierNode).name)) {
-                is PairLiteral -> literal
-                is PairMemoryLiteral -> if (node.isFirst) literal.firstLiteral else literal.secondLiteral
-                else -> null
+            when (node.expr) {
+                is IdentifierNode -> {
+                    return when (val literal = mt.getLiteral(node.expr.name)) {
+                        is PairLiteral -> literal
+                        is PairMemoryLiteral -> if (node.isFirst) literal.firstLiteral else literal.secondLiteral
+                        else -> {
+                            null
+                        }
+                    }
+                }
+                is ArrayElement -> {
+                    return visitAndTranslate(node.expr)
+                }
+                else -> {
+                    return null
+                }
             }
         } else {
             //TODO("figure out how to handle when writing to pair")
             return null
         }
     }
-
 
     fun translateArrayElement(elem: ArrayElement): Literal? {
         return when (elem.mode) {

@@ -43,10 +43,10 @@ class ShellEvaluationTest {
     //    checkAllMatches("valid/runtimeErr")
     //}
 
-    //@Test
-    //fun scopeTestsShouldMatchReferenceOutput() {
-    //    checkAllMatches("valid/scope")
-    //}
+    @Test
+    fun scopeTestsShouldMatchReferenceOutput() {
+        checkAllMatches("shell/valid/scope")
+    }
 
     @Test
     fun sequencesShouldMatchReferenceOutput() {

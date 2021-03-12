@@ -5,7 +5,7 @@ import tree.nodes.expr.Literal
 import tree.type.Type
 
 class MemoryTable(private val parent: MemoryTable?) {
-    private val map: MutableMap<String, Pair<Type, Literal?>> = HashMap()
+    val map: MutableMap<String, Pair<Type, Literal?>> = HashMap()
     private val isDeclared: MutableSet<String> = HashSet()
 
     operator fun set(id: String, type: Type, literal: Literal) {
@@ -25,7 +25,7 @@ class MemoryTable(private val parent: MemoryTable?) {
 
     operator fun set(id: String, literal: Literal) {
         if (id in map) {
-            if (map[id]?.first != literal.type && isDeclared.contains(id))
+            if (map[id]?.first != literal.type)
                 throw SemanticsException(
                     "Setting mismatching type(${map[id]?.first}) and literal(${literal.type}) in memory table", null
                 )

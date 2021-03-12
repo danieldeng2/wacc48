@@ -24,9 +24,9 @@ data class ArrayElement(
     override fun reduceToLiteral(mt: MemoryTable?): Literal {
         var array: ArrayLiteral = mt?.getLiteral(name) as ArrayLiteral
         for (i in arrIndices.subList(0, arrIndices.size - 1)) {
-            array = array.values[(i.reduceToLiteral() as IntLiteral).value].reduceToLiteral() as ArrayLiteral
+            array = array.values[(i.reduceToLiteral(mt) as IntLiteral).value].reduceToLiteral() as ArrayLiteral
         }
-        return array.values[(arrIndices.last().reduceToLiteral() as IntLiteral).value].reduceToLiteral()
+        return array.values[(arrIndices.last().reduceToLiteral(mt) as IntLiteral).value].reduceToLiteral(mt)
     }
 
     override fun validate(
