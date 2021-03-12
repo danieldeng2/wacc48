@@ -4,6 +4,7 @@ import generator.instructions.FunctionEnd
 import generator.instructions.FunctionStart
 import generator.instructions.Syscall
 import generator.instructions.arithmetic.ADDInstr
+import generator.instructions.arithmetic.SUBInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDRInstr
@@ -44,9 +45,11 @@ object PrintStr : LibraryFunction {
             LabelInstr(label),
             FunctionStart(),
             PUSHInstr(Register.R0),
+            Syscall("strlen"),
+            PUSHInstr(Register.R0),
             LDRInstr(Register.R0, LabelOp(msgIndex!!)),
             Syscall("printf"),
-            ADDInstr(Register.SP, Register.SP, NumOp(NUM_BYTE_ADDRESS)),
+            ADDInstr(Register.SP, Register.SP, NumOp(2 * NUM_BYTE_ADDRESS)),
             MOVInstr(Register.R0, NumOp(0)),
             Syscall("fflush"),
             FunctionEnd()

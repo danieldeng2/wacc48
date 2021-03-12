@@ -2,6 +2,7 @@ package generator.translator.lib.errors
 
 import generator.instructions.FunctionEnd
 import generator.instructions.FunctionStart
+import generator.instructions.Instruction
 import generator.instructions.branch.BLEQInstr
 import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr
@@ -24,6 +25,10 @@ object CheckNullPointer : LibraryFunction {
         BLEQInstr(RuntimeError.label),
         FunctionEnd()
     )
+
+    override fun generatex86(): List<Instruction> {
+        TODO("Not yet implemented")
+    }
 
     override fun initIndex(ctx: TranslatorContext) {
         ctx.addLibraryFunction(RuntimeError)

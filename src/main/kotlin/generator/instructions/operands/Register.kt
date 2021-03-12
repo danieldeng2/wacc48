@@ -1,17 +1,53 @@
 package generator.instructions.operands
 
-enum class Register(val repr: String, private val x86repr: String) :
-    LoadableOp {
-    PC("pc", ""),
-    LR("lr", ""),
-    SP("sp", "esp"),
-    R0("r0", "eax"),
-    R1("r1", "edi"),
-    R2("r2", "esi"),
-    R3("r3", "edx"),
-    R4("r4", "ecx");
+import java.lang.UnsupportedOperationException
 
-    override fun toArm() = repr
+abstract class Register : LoadableOp {
 
-    override fun tox86() = x86repr
+    abstract val armRepr: String
+
+    abstract val x86ByteAddr: Array<String>
+
+    override fun toArm() = armRepr
+    override fun tox86() = x86ByteAddr[2]
+
+    fun x86AddressByte(numBytes: Int): String {
+        val arr = arrayOf(1, 2, 4)
+        if (numBytes !in arr) {
+            throw UnsupportedOperationException("Invalid attempt to access register of $numBytes bytes")
+        }
+
+        return x86ByteAddr[arr.indexOf(numBytes)]
+    }
+
+    object SP : Register() {
+        override val armRepr = "sp"
+        override val x86ByteAddr = arrayOf("spl", "sp", "esp")
+    }
+
+    object R0 : Register() {
+        override val armRepr = "r0"
+        override val x86ByteAddr = arrayOf("al", "ax", "eax")
+    }
+
+    object R1 : Register() {
+        override val armRepr = "r1"
+        override val x86ByteAddr = arrayOf("dil", "di", "edi")
+    }
+
+    object R2 : Register() {
+        override val armRepr = "r2"
+        override val x86ByteAddr = arrayOf("sil", "si", "esi")
+    }
+
+    object R3 : Register() {
+        override val armRepr = "r3"
+        override val x86ByteAddr = arrayOf("dl", "dx", "edx")
+    }
+
+    object R4 : Register() {
+        override val armRepr = "r4"
+        override val x86ByteAddr = arrayOf("cl", "cx", "ecx")
+    }
+
 }

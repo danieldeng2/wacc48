@@ -9,7 +9,7 @@ class SUBInstr(val rd: Register, val rn: Register, val imm: NumOp) :
 
     override fun tox86() =
         when {
-            imm.value == 0 -> listOf("\tsub ${rd.tox86()}, ${rn.tox86()}")
+            imm.value == 0 -> listOf("\tmov ${rd.tox86()}, ${rn.tox86()}")
             rd == rn -> listOf("\tsub ${rd.tox86()}, ${imm.tox86()}")
             else -> listOf(
                 "\tmov ${rd.tox86()}, ${rn.tox86()}",

@@ -7,8 +7,7 @@ class Ascii(val msg: String) : Instruction {
     private val msgLen = msg.length - msg.filter { it == '\\' }.count()
 
     override fun tox86() = listOf(
-        if (msg.endsWith("\\0")) "\tdb \"${msg.removeSuffix("\\0")}\", 0"
-        else "\tdb \"$msg\""
+        "\tdb \"${msg.removeSuffix("\\0")}\", 0"
     )
 
     override fun toArm() = listOf(

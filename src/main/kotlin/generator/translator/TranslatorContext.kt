@@ -85,15 +85,14 @@ class TranslatorContext {
 
     fun assemblex86(): List<Instruction> =
         mutableListOf<Instruction>().apply {
-            Syscall.requiredSyscalls.forEach {
-                add(LabelInstr("extern $it", isGlobalHeader = true))
-            }
+            text.addAll(usedLibraryFunctions.flatMap { it.generatex86() })
 
             if (data.size > 1)
                 addAll(data)
 
-
-            text.addAll(usedLibraryFunctions.flatMap { it.generatex86() })
+            Syscall.requiredSyscalls.forEach {
+                add(LabelInstr("extern $it", isGlobalHeader = true))
+            }
             addAll(text)
         }
 

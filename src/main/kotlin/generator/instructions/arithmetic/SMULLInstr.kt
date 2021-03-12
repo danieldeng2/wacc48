@@ -10,5 +10,16 @@ class SMULLInstr(
     val rm: Register
 ) : Instruction {
 
-    override fun toArm() = "\tSMULL ${rdLow.toArm()}, ${rdHigh.toArm()}, ${rn.toArm()}, ${rm.toArm()}"
+    override fun tox86() = listOf(
+        "\tmov ${Register.R0.tox86()}, ${rn.tox86()}",
+        "\timul ${rm.tox86()}",
+        "\tpush edx",
+        "\tpush eax",
+        "\tpop ${rdLow.tox86()}",
+        "\tpop ${rdHigh.tox86()}"
+    )
+
+
+    override fun toArm() =
+        "\tSMULL ${rdLow.toArm()}, ${rdHigh.toArm()}, ${rn.toArm()}, ${rm.toArm()}"
 }

@@ -2,6 +2,7 @@ package generator.translator.lib.errors
 
 import generator.instructions.FunctionEnd
 import generator.instructions.FunctionStart
+import generator.instructions.Instruction
 import generator.instructions.branch.BLCSInstr
 import generator.instructions.branch.BLLTInstr
 import generator.instructions.compare.CMPInstr
@@ -34,6 +35,10 @@ object CheckArrayBounds : LibraryFunction {
         BLCSInstr(RuntimeError.label),
         FunctionEnd()
     )
+
+    override fun generatex86(): List<Instruction> {
+        TODO("Not yet implemented")
+    }
 
     override fun initIndex(ctx: TranslatorContext) {
         ctx.addLibraryFunction(RuntimeError)

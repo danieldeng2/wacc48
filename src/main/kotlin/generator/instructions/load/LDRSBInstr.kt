@@ -9,5 +9,8 @@ class LDRSBInstr(
     private val op: LoadableOp
 ) : Instruction {
 
+    override fun tox86() =
+        listOf("\tmov ${reg.x86AddressByte(1)}, ${op.tox86()}")
+
     override fun toArm() = "\tLDRSB ${reg.toArm()}, ${op.toArm()}"
 }
