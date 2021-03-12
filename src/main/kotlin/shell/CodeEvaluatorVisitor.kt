@@ -116,6 +116,7 @@ class CodeEvaluatorVisitor(
     /** Add declaration to memory table and evaluated assignment literal */
     fun translateDeclaration(node: DeclarationNode): Literal? {
         visitAndTranslate(node.name)
+        //println(node)
         mt[node.name.text] = visitAndTranslate(node.value)!!
         return null
     }
@@ -183,7 +184,7 @@ class CodeEvaluatorVisitor(
 
     fun translateArrayElement(elem: ArrayElement): Literal? {
         return when (elem.mode) {
-            AccessMode.READ -> elem.reduceToLiteral()
+            AccessMode.READ -> elem.reduceToLiteral(mt)
             else -> TODO("work out what to do with this")
         }
     }

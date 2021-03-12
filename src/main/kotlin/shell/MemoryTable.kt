@@ -25,7 +25,7 @@ class MemoryTable(private val parent: MemoryTable?) {
 
     operator fun set(id: String, literal: Literal) {
         if (id in map) {
-            if (map[id]?.first != literal.type)
+            if (map[id]?.first != literal.type && isDeclared.contains(id))
                 throw SemanticsException(
                     "Setting mismatching type(${map[id]?.first}) and literal(${literal.type}) in memory table", null
                 )
