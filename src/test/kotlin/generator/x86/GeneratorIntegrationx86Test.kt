@@ -21,7 +21,7 @@ class GeneratorIntegrationx86Test {
 
     @Test
     fun functionShouldMatchReferenceOutput() {
-        runAllTests("valid/function")
+        runAllTests("valid/function/")
     }
 
     @Test

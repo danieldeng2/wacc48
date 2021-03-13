@@ -17,11 +17,14 @@ class Ascii(val msg: String) : Instruction {
     override fun tox86(): List<String> {
         var stripNull = msg.removeSuffix("\\0")
         escapeCharMap.forEach { (chr, rep) ->
-            stripNull = stripNull.replace(chr, "\", $rep, \"")
+            stripNull = stripNull.replace(chr, "\\$rep\\")
         }
 
-        stripNull = stripNull.filterNot { it == '\\' }
-        return listOf("\tdb \"$stripNull\", 0")
+        val partitions = stripNull
+            .split("\\")
+            .joinToString(separator = ",") { if (it.startsWith("0x")) it else "\'$it\'" }
+
+        return listOf("\tdb $partitions, 0")
     }
 
     override fun toArm() = listOf(

@@ -10,6 +10,7 @@ import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.move.MOVInstr
+import generator.instructions.operands.ArgumentAddr
 import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
@@ -76,20 +77,22 @@ fun CodeGeneratorVisitor.assignToPosition(node: PairElemNode, memOffset: Int) {
     ctx.addLibraryFunction(CheckNullPointer)
     ctx.text.add(pushAndIncrement(ctx, Register.R0))
 
-    val stackOffset =
+    val (offset, isArg) =
         ctx.getOffsetOfVar(
             (node.expr as IdentifierNode).name,
             node.st
         )
 
+    val memoryLocation = if (isArg)
+        ArgumentAddr(Register.SP, NumOp(offset))
+    else
+        MemAddr(Register.SP, NumOp(offset))
+
     ctx.text.addAll(
         listOf(
 
             // Loads address of pair into R0 and check for NULL
-            LDRInstr(
-                Register.R0,
-                MemAddr(Register.SP, NumOp(stackOffset))
-            ),
+            LDRInstr(Register.R0, memoryLocation),
             BLInstr(CheckNullPointer.label),
 
             // Loads address of the element in context into R0 and saves it

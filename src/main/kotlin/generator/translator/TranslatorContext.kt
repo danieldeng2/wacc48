@@ -98,6 +98,8 @@ class TranslatorContext {
 
     /** Calculate the offset of variable with identifier [id], relative
      * to the current position of the stack pointer. */
-    fun getOffsetOfVar(id: String, st: SymbolTable) =
-        st.getVariablePosition(id) + stackPtrOffset
+    fun getOffsetOfVar(id: String, st: SymbolTable): Pair<Int, Boolean> {
+        val (baseOffset, isArgument) = st.getVariablePosition(id)
+        return Pair(baseOffset + stackPtrOffset, isArgument)
+    }
 }

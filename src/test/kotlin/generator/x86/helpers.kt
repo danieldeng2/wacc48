@@ -83,7 +83,7 @@ private fun runTestFile(f: File): Pair<EmulatorResult, EmulatorResult> {
                     .redirectOutput(ProcessBuilder.Redirect.PIPE)
                     .start()
 
-        x86EmulationProc.waitFor(10, TimeUnit.SECONDS)
+        x86EmulationProc.waitFor(30, TimeUnit.SECONDS)
 
         val x86EmulatorResult = EmulatorResult(
             test = outx86,

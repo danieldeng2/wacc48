@@ -183,8 +183,8 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
         visitAndTranslate(node.value)
         visitAndTranslate(node.name)
 
-        val offset = ctx.getOffsetOfVar(node.name.text, node.st)
-        ctx.text.add(storeLocalVar(node.name.type, offset))
+        val (offset, isArg) = ctx.getOffsetOfVar(node.name.text, node.st)
+        ctx.text.add(storeLocalVar(node.name.type, offset, isArgument = isArg))
     }
 
     /** Loads the arguments in a function call onto the stack in reversed order.
@@ -312,11 +312,11 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     /** Looks up variable in the symbol table and calculate offset from current
      * stack pointer position. Then choose an operation based on its [AccessMode]*/
     fun translateIdentifier(node: IdentifierNode) {
-        val offset = ctx.getOffsetOfVar(node.name, node.st)
+        val (offset, isArg) = ctx.getOffsetOfVar(node.name, node.st)
         ctx.text.add(
             when (node.mode) {
-                AccessMode.ASSIGN -> storeLocalVar(node.type, offset)
-                AccessMode.READ -> loadLocalVar(node.type, offset)
+                AccessMode.ASSIGN -> storeLocalVar(node.type, offset, isArgument = isArg)
+                AccessMode.READ -> loadLocalVar(node.type, offset, isArgument = isArg)
                 else -> ADDInstr(
                     Register.R0,
                     Register.SP,

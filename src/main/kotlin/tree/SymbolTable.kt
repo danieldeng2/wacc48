@@ -2,7 +2,10 @@ package tree
 
 import tree.type.Type
 
-class SymbolTable(private val parent: SymbolTable?, val isParamListST: Boolean = false) {
+class SymbolTable(
+    private val parent: SymbolTable?,
+    val isParamListST: Boolean = false
+) {
 
     private val map: MutableMap<String, Pair<Type, Int>> = HashMap()
     private val isDeclared: MutableSet<String> = HashSet()
@@ -35,13 +38,14 @@ class SymbolTable(private val parent: SymbolTable?, val isParamListST: Boolean =
         return false
     }
 
-    fun getVariablePosition(id: String): Int {
-        val offset = if (isParamListST) 4 else 0
-
+    fun getVariablePosition(id: String): Pair<Int, Boolean> {
         if (id in isDeclared) {
-            return totalVarSize - map[id]!!.second + offset
+            return Pair(totalVarSize - map[id]!!.second, isParamListST)
         }
-        return parent!!.getVariablePosition(id) + totalVarSize
+
+        val (parentOffset, isArgument) = parent!!.getVariablePosition(id)
+
+        return Pair(parentOffset + totalVarSize, isArgument)
     }
 
     fun varSizeTotal(): Int {
