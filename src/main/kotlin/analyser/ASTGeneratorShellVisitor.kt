@@ -263,7 +263,12 @@ class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
     override fun visitArrayLiter(ctx: WACCShellParser.ArrayLiterContext): ASTNode =
         ArrayLiteral(
             values = ctx.expr().map { visit(it) as ExprNode },
-            ctx = ctx
+            ctx = ctx,
+            nameInMemTable =
+            if (ctx.getParent() is WACCShellParser.DeclarationStatContext)
+                (ctx.getParent() as WACCShellParser.DeclarationStatContext).param().IDENT().text
+            else
+                null
         )
 
     override fun visitArrayElem(ctx: WACCShellParser.ArrayElemContext): ASTNode =

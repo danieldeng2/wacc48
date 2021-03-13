@@ -15,7 +15,8 @@ import tree.type.VoidType
 
 data class ArrayLiteral(
     var values: List<ExprNode>,
-    val ctx: ParserRuleContext?
+    val ctx: ParserRuleContext?,
+    val nameInMemTable: String? = null
 ) : Literal {
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, ctx)

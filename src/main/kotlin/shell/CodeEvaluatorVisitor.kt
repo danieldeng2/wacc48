@@ -35,7 +35,7 @@ class CodeEvaluatorVisitor(
     private val evalLiteralStack: Stack<Literal> = Stack()
 
     fun printEvalLiteralStack(prompt: String) {
-        evalLiteralStack.forEach { output.println("$prompt${it.literalToString(mt)}")}
+        evalLiteralStack.forEach { output.println("$prompt${it.literalToString(mt)}") }
         evalLiteralStack.clear()
     }
 
@@ -43,7 +43,6 @@ class CodeEvaluatorVisitor(
      *  'translate' method to evaluate code */
     fun visitAndTranslate(node: ASTNode) {
         node.acceptCodeEvalVisitor(this)
-        //return evalLiteralStack.pop() ?: null
     }
 
     /** Evaluate whole program by calling evaluate on each of its children */
@@ -145,19 +144,53 @@ class CodeEvaluatorVisitor(
                 //ArrayRef is the name of the array we are assigning stuff to
                 val arrayRef = if (node.name.arrIndices.size > 1) node.name.getArrayRef(mt) else node.name.name
 
-                if (mt.getLiteral(arrayRef) is DeepArrayLiteral)
-                    TODO("Setting elements of multidimensional arrays (except for last) not supported yet")
-
-                //copy the values of the array and change the element we need to, then put this into memory
-                val arrayInMemory = mt.getLiteral(arrayRef) as ArrayLiteral
-                var index = (node.name.arrIndices.last().reduceToLiteral(mt) as IntLiteral).value
-                val arrayCopy = arrayInMemory.values.toMutableList().apply {
-                    checkIndexBounds(index, size)
-                    removeAt(index)
-                    visitAndTranslate(node.value)
-                    add(index, evalLiteralStack.pop())
+                if (mt.getLiteral(arrayRef) is DeepArrayLiteral) { //Assigning to multidimensional arrayliteral
+                    val arrayInMemory = mt.getLiteral(arrayRef) as DeepArrayLiteral
+                    var index = (node.name.arrIndices.last().reduceToLiteral(mt) as IntLiteral).value
+                    val arrayCopy = arrayInMemory.values.toMutableList().apply {
+                        checkIndexBounds(index, size)
+                        removeAt(index)
+                        if (node.value is IdentifierNode) {
+                            add(index, node.value.name)
+                        } else if (node.value is ArrayElement) {
+                            add(index, node.value.getArrayRef(mt))
+                        } else if (node.value is PairElemNode) {
+                            visitAndTranslate(node.value)
+                            val arrFromPair = evalLiteralStack.pop()
+                            if (arrFromPair is ArrayLiteral) {
+                                add(
+                                    index,
+                                    arrFromPair.nameInMemTable
+                                        ?: throw ShellRunTimeException(
+                                            "Missing reference of array to memory table. " +
+                                                    "Cannot assign new array from pair"
+                                        )
+                                )
+                            } else if (arrFromPair is DeepArrayLiteral)
+                                add(
+                                    index,
+                                    arrFromPair.nameInMemTable
+                                        ?: throw ShellRunTimeException(
+                                            "Missing reference of array to memory table. " +
+                                                    "Cannot assign new array from pair"
+                                        )
+                                )
+                        }
+                    }
+                    arrayInMemory.values = arrayCopy
+                } else {
+                    //When assigning to one dimensional array:
+                    //copy the values of the array and change the element we need to, then put this into memory
+                    val arrayInMemory = mt.getLiteral(arrayRef) as ArrayLiteral
+                    var index = (node.name.arrIndices.last().reduceToLiteral(mt) as IntLiteral).value
+                    val arrayCopy = arrayInMemory.values.toMutableList().apply {
+                        checkIndexBounds(index, size)
+                        removeAt(index)
+                        visitAndTranslate(node.value)
+                        add(index, evalLiteralStack.pop())
+                    }
+                    arrayInMemory.values = arrayCopy
                 }
-                arrayInMemory.values = arrayCopy
             }
             is PairElemNode -> { //node is a PairElem
                 if (mt.getLiteral((node.name.expr as IdentifierNode).name) !is PairMemoryLiteral)
@@ -191,11 +224,13 @@ class CodeEvaluatorVisitor(
                                 evalLiteralStack.add(literal.firstLiteral)
                             else
                                 evalLiteralStack.add(literal.secondLiteral)
-                        else -> {}
+                        else -> {
+                        }
                     }
                 }
                 is ArrayElement -> visitAndTranslate(node.expr)
-                else -> {}
+                else -> {
+                }
             }
         }
     }
@@ -204,9 +239,11 @@ class CodeEvaluatorVisitor(
         evalLiteralStack.add(elem.reduceToLiteral(mt))
 
     fun translateArrayLiteral(literal: ArrayLiteral) =
-        if (literal.elemType is ArrayType) //multidimensional array
-            evalLiteralStack.add(DeepArrayLiteral(literal.values.map { (it as IdentifierNode).name }, literal.elemType))
-        else
+        if (literal.elemType is ArrayType) {//multidimensional array
+            val newLiteral = DeepArrayLiteral(literal.values.map { (it as IdentifierNode).name }, literal.elemType)
+            newLiteral.nameInMemTable = literal.nameInMemTable
+            evalLiteralStack.add(newLiteral)
+        } else
             evalLiteralStack.add(literal)
 
     fun translateBoolLiteral(literal: BoolLiteral) = evalLiteralStack.add(literal)
@@ -267,7 +304,7 @@ class CodeEvaluatorVisitor(
     /** Literally print the evaluated value out */
     fun translatePrint(node: PrintNode) {
         visitAndTranslate(node.value)
-        val value = evalLiteralStack.pop().literalToString()
+        val value = evalLiteralStack.pop().literalToString(mt)
 
         if (node.returnAfterPrint) output.println(value) else output.print(value)
 
