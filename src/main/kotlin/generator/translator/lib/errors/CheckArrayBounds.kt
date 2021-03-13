@@ -23,11 +23,20 @@ object CheckArrayBounds : LibraryFunction {
     private var outOfBoundsMsgIndex: Int? = null
 
 
-    override fun generateArm() = generateInstruction()
+    override fun generateArm() = listOf(
+        LabelInstr(label),
+        FunctionStart(),
+        CMPInstr(Register.R0, NumOp(0)),
+        LDRLTInstr(Register.R0, LabelOp(negMsgIndex!!)),
+        BLLTInstr(RuntimeError.label),
+        LDRInstr(Register.R1, MemAddr(Register.R4)),
+        CMPInstr(Register.R0, Register.R1),
+        LDRCSInstr(Register.R0, LabelOp(outOfBoundsMsgIndex!!)),
+        BLCSInstr(RuntimeError.label),
+        FunctionEnd()
+    )
 
-    override fun generatex86() = generateInstruction()
-
-    private fun generateInstruction() = listOf(
+    override fun generatex86() = listOf(
         LabelInstr(label),
         FunctionStart(),
         CMPInstr(Register.R0, NumOp(0)),

@@ -12,14 +12,17 @@ class LDREQInstr(
     private val op: LoadableOp
 ) : Instruction {
 
+    companion object {
+        private var counter = 0
+    }
+
     override fun tox86() = when (op) {
         !is LabelOp -> listOf("\tcmove ${reg.tox86()}, ${op.tox86()}")
         else ->
             listOf(
-                "\tpush ${reg.tox86()}",
+                "\tjne __LDREQ$counter",
                 "\tmov ${reg.tox86()}, ${op.tox86()}",
-                "\tcmovne ${reg.tox86()}, ${MemAddr(Register.SP).tox86()}",
-                "\tadd ${Register.SP.tox86()}, ${ArmConstants.NUM_BYTE_ADDRESS}"
+                "__LDREQ${counter++}:"
             )
     }
 

@@ -14,7 +14,8 @@ class ADDInstr(val rd: Register, val rn: Register, val op: LoadableOp?) :
             is ShiftOp -> listOf(
                 "\tpush ${op.reg.tox86()}",
                 "\t${op.shiftType.x86repr} ${op.reg.tox86()}, ${op.num.tox86()}",
-                "\tcmp ${rd.tox86()}, ${op.reg.tox86()}",
+                "\tmov ${rd.tox86()}, ${rn.tox86()}",
+                "\tadd ${rd.tox86()}, ${op.reg.tox86()}",
                 "\tpop ${op.reg.tox86()}"
             )
             else -> listOf(

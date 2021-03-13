@@ -15,7 +15,7 @@ class Syscall(val syscallName: String) : Instruction {
     override fun tox86() = listOf(
         "\tpush ${Register.R0.tox86()}",
         "\tcall $syscallName",
-        "\tadd ${Register.SP.tox86()}, 4",
+        "\tadd ${Register.SP.tox86()}, 4"
     )
 
     override fun toArm() = "\tBL $syscallName"

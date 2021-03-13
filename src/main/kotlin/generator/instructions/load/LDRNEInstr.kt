@@ -13,14 +13,17 @@ class LDRNEInstr(
     private val op: LoadableOp
 ) : Instruction {
 
+    companion object {
+        private var counter = 0
+    }
+
     override fun tox86() = when (op) {
         !is LabelOp -> listOf("\tcmovne ${reg.tox86()}, ${op.tox86()}")
         else ->
             listOf(
-                "\tpush ${reg.tox86()}",
+                "\tje __LDRNE${counter}",
                 "\tmov ${reg.tox86()}, ${op.tox86()}",
-                "\tcmove ${reg.tox86()}, ${MemAddr(Register.SP).tox86()}",
-                "\tadd ${Register.SP.tox86()}, ${ArmConstants.NUM_BYTE_ADDRESS}"
+                "__LDRNE${counter++}:"
             )
     }
 

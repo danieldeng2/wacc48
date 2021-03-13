@@ -9,7 +9,7 @@ class BLCSInstr(val label: String) : Instruction {
     }
 
     override fun tox86() = listOf(
-        "\tjae __BLCS$counter",
+        "\tjb __BLCS$counter",
         "\tcall $label",
         "__BLCS${counter++}:"
     )

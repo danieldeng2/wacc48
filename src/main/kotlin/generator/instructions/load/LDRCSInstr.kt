@@ -10,14 +10,17 @@ import generator.translator.ArmConstants
 class LDRCSInstr(val rd: Register, val op: LoadableOp) :
     Instruction {
 
+    companion object {
+        private var counter = 0
+    }
+
     override fun tox86() = when (op) {
         !is LabelOp -> listOf("\tcmovb ${rd.tox86()}, ${op.tox86()}")
         else ->
             listOf(
-                "\tpush ${rd.tox86()}",
+                "\tjb __LDRCS${counter}",
                 "\tmov ${rd.tox86()}, ${op.tox86()}",
-                "\tcmovnae ${rd.tox86()}, ${MemAddr(Register.SP).tox86()}",
-                "\tadd ${Register.SP.tox86()}, ${ArmConstants.NUM_BYTE_ADDRESS}"
+                "__LDRCS${counter++}:"
             )
     }
     override fun toArm() = "\tLDRCS ${rd.toArm()}, ${op.toArm()}"

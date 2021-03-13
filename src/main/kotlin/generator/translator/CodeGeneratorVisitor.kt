@@ -412,10 +412,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
                 add(Syscall("putchar"))
             } else {
 
-                val printFunc = when (value.type) {
-                    ArrayType(CharType, null) -> getPrintOption(StringType)
-                    else -> getPrintOption(value.type)
-                }
+                val printFunc = getPrintOption(value.type)
 
                 ctx.addLibraryFunction(printFunc)
                 add(BLInstr(printFunc.label))
