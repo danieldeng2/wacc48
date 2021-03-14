@@ -1,14 +1,12 @@
 package generator
 
+import ArmCompiler
 import WalkDirectory
-import org.antlr.v4.runtime.CharStreams
+import generator.reference.EmulatorResult
 import generator.reference.RefCompiler
 import generator.reference.RefEmulator
 import java.io.File
 import java.io.FileWriter
-import generator.reference.EmulatorResult
-import runAnalyser
-import runGenerator
 import kotlin.test.fail
 
 fun checkAllMatches(label: String) {
@@ -19,7 +17,8 @@ fun checkAllMatches(label: String) {
         val stdin = if (inputFile.exists()) inputFile.readLines()[0] else ""
 
         val referenceResult = referencePipeline(f.path, refASM, stdin = stdin)
-        val compilerResult = compilerPipeline(f.path, compilerASM, stdin = stdin)
+        val compilerResult =
+            compilerPipeline(f.path, compilerASM, stdin = stdin)
 
         if (compilerResult.emulatorOut != referenceResult.emulatorOut)
             fail(
@@ -52,12 +51,12 @@ private fun compilerPipeline(
     outputName: String,
     stdin: String = ""
 ): EmulatorResult {
-    val input = CharStreams.fromFileName(path)
-    val pNode = runAnalyser(input)
-    val assembly = runGenerator(pNode, armAssembly = true)
+
+    val armCompiler = ArmCompiler(File(path), File(path).parentFile, true)
+    armCompiler.start()
 
     return executeAssembly(
-        assembly = assembly,
+        assembly = armCompiler.instructions,
         stdin = stdin,
         file = File(outputName)
     )

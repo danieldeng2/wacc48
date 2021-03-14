@@ -1,17 +1,17 @@
 package analyser
 
+import ArmCompiler
 import WalkDirectory
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
-import org.antlr.v4.runtime.CharStreams
 import org.junit.Test
-import runAnalyser
 
 class AnalyserIntegrationTest {
+
     @Test
     fun validProgramsShouldNotProduceException() {
         WalkDirectory("valid").run {
-            runAnalyser(CharStreams.fromFileName(it.path))
+            ArmCompiler(it, it.parentFile, false).analyse()
         }
     }
 
@@ -19,7 +19,7 @@ class AnalyserIntegrationTest {
     fun syntaxErrorsShouldThrowSyntaxException() {
         WalkDirectory("invalid/syntaxErr").run { f ->
             try {
-                runAnalyser(CharStreams.fromFileName(f.path))
+                ArmCompiler(f, f.parentFile, false).analyse()
                 error("This program contains syntax error")
             } catch (e: SyntaxException) {
                 //Test passes
@@ -31,7 +31,7 @@ class AnalyserIntegrationTest {
     fun semanticErrorsShouldThrowSemanticsException() {
         WalkDirectory("invalid/semanticErr").run { f ->
             try {
-                runAnalyser(CharStreams.fromFileName(f.path))
+                ArmCompiler(f, f.parentFile, false).analyse()
                 error("This program contains semantic error")
             } catch (e: SemanticsException) {
                 //Test passes

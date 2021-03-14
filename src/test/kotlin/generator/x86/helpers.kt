@@ -1,12 +1,10 @@
 package generator.x86
 
+import I386Compiler
 import WalkDirectory
 import generator.reference.EmulatorResult
 import generator.reference.RefCompiler
 import generator.reference.RefEmulator
-import org.antlr.v4.runtime.CharStreams
-import runAnalyser
-import runGenerator
 import writeResult
 import java.io.File
 import java.io.IOException
@@ -59,10 +57,11 @@ private fun runTestFile(f: File): Pair<EmulatorResult, EmulatorResult> {
     val inputFile = File(f.path.replace(".wacc", ".input"))
     val stdin = if (inputFile.exists()) inputFile.readLines()[0] else ""
 
-    val input = CharStreams.fromFileName(f.path)
-    val pNode = runAnalyser(input)
 
-    val instructionsx86 = runGenerator(pNode, armAssembly = false)
+    val i386Compiler = I386Compiler(File(f.path), File(f.parent), true)
+    i386Compiler.start()
+
+    val instructionsx86 = i386Compiler.instructions
     val instructionsArm = RefCompiler(f).run()
 
     writeResult(outx86, instructionsx86)

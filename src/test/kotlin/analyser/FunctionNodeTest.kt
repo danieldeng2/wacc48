@@ -1,5 +1,9 @@
 package analyser
 
+import analyser.exceptions.SemanticsException
+import analyser.exceptions.SyntaxException
+import org.junit.Test
+import tree.SymbolTable
 import tree.nodes.ProgNode
 import tree.nodes.expr.BoolLiteral
 import tree.nodes.function.FuncNode
@@ -11,10 +15,6 @@ import tree.nodes.statement.StatNode
 import tree.type.BoolType
 import tree.type.IntType
 import tree.type.VoidType
-import analyser.exceptions.SemanticsException
-import analyser.exceptions.SyntaxException
-import tree.SymbolTable
-import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 

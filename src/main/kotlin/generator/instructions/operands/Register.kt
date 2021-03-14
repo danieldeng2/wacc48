@@ -1,7 +1,5 @@
 package generator.instructions.operands
 
-import java.lang.UnsupportedOperationException
-
 abstract class Register : LoadableOp {
 
     abstract val armRepr: String

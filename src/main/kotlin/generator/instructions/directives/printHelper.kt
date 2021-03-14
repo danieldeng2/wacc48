@@ -11,7 +11,8 @@ class Ascii(val msg: String) : Instruction {
         "\\n" to "0x0A",
         "\\r" to "0x0D",
         "\\b" to "0x08",
-        "\\f" to "0x0C"
+        "\\f" to "0x0C",
+        "\"" to "\'\"\'"
     )
 
     override fun tox86(): List<String> {
@@ -22,7 +23,12 @@ class Ascii(val msg: String) : Instruction {
 
         val partitions = stripNull
             .split("\\")
-            .joinToString(separator = ",") { if (it.startsWith("0x")) it else "\'$it\'" }
+            .joinToString(separator = ",") {
+                if (it.startsWith("0x") || it == "\'\"\'")
+                    it
+                else
+                    "\"$it\""
+            }
 
         return listOf("\tdb $partitions, 0")
     }

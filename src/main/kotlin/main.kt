@@ -1,27 +1,68 @@
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.NoSuchOption
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.default
+import com.github.ajalt.clikt.parameters.groups.mutuallyExclusiveOptions
+import com.github.ajalt.clikt.parameters.groups.single
+import com.github.ajalt.clikt.parameters.options.convert
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.types.path
-import org.antlr.v4.runtime.CharStream
-import org.antlr.v4.runtime.CharStreams
+import com.github.ajalt.clikt.parameters.types.choice
+import com.github.ajalt.clikt.parameters.types.file
+import java.io.File
 import java.io.FileWriter
+import java.nio.file.Paths
 
 class ArgParse : CliktCommand() {
-    private val arm by option("-arm", help = "Generate code for ARM11").flag()
-    private val sourcePath by argument(help = "Path to WACC file").path(
+
+    override val commandHelp = """
+        Welcome to group 48 WACC compiler.
+        
+        You can: 
+        ```
+            - Compile .wacc file to x86 assembly
+            - Compile .wacc file to ARM assembly
+            - Runs an interactive shell
+        ```
+        
+        Run --help for more information.
+    """.trimIndent()
+
+    private val createExecutable by option(
+        "-x",
+        "--executable",
+        help = "Create executable from assembly file"
+    ).flag()
+
+    private val outDirectory by option(
+        "-o",
+        "--dir",
+        "-d",
+        help = "Directory for the output file"
+    ).file(mustExist = true, canBeDir = true, canBeFile = false)
+        .default(Paths.get(".").toFile())
+
+    private val sourceFile by argument(help = "Path to WACC file").file(
         mustExist = true,
         canBeFile = true,
         canBeDir = false
     )
 
-    override fun run() {
-        echo("WACC Compiler - Group 48")
+    private val app: String by option(
+        "-a",
+        "--app",
+        help = "Choose an application you'd like to run"
+    ).choice("arm", "x86", "shell").default("arm")
 
-        val input: CharStream = CharStreams.fromPath(sourcePath)
-        val pNode = runAnalyserCatchError(input)
-        val output = runGenerator(pNode, armAssembly = arm)
-        writeResult(sourcePath.fileName.toString(), output)
+
+    override fun run() {
+        val application = when (app) {
+            "x86" -> I386Compiler(sourceFile, outDirectory, createExecutable)
+            "arm" -> ArmCompiler(sourceFile, outDirectory, createExecutable)
+            else -> throw NoSuchOption("No such option exists!")
+        }
+        application.start()
     }
 }
 
