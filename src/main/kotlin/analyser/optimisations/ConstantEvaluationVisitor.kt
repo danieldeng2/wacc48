@@ -14,7 +14,27 @@ import tree.nodes.statement.*
 
 class ConstantEvaluationVisitor : ASTVisitor {
 
-    private fun analyse(expr: ExprNode): ExprNode {
+    private fun analyseExpression(expr: ExprNode): ExprNode {
+        return when (expr) {
+            is ArrayElement -> {
+                expr.arrIndices = expr.arrIndices.map { analyseExpression(it) }
+                expr
+            }
+            is ArrayLiteral -> {
+                expr.values = expr.values.map { analyseExpression(it) }
+                expr
+            }
+            is BinOpNode -> analyseBinOp(expr)
+            is UnOpNode -> analyseUnOp(expr)
+            else -> expr
+        }
+    }
+
+    private fun analyseBinOp(expr: BinOpNode): ExprNode {
+        return expr
+    }
+
+    private fun analyseUnOp(expr: UnOpNode): ExprNode {
         return expr
     }
 
@@ -34,7 +54,7 @@ class ConstantEvaluationVisitor : ASTVisitor {
     }
 
     override fun visitExit(node: ExitNode) {
-        node.expr = analyse(node.expr)
+        node.expr = analyseExpression(node.expr)
     }
 
     override fun visitFunction(node: FuncNode) {
@@ -50,24 +70,24 @@ class ConstantEvaluationVisitor : ASTVisitor {
     }
 
     override fun visitNewPair(node: NewPairNode) {
-        node.firstElem = analyse(node.firstElem)
-        node.secondElem = analyse(node.secondElem)
+        node.firstElem = analyseExpression(node.firstElem)
+        node.secondElem = analyseExpression(node.secondElem)
     }
 
     override fun visitDeclaration(node: DeclarationNode) {
         when (node.value) {
-            is ExprNode -> node.value = analyse(node.value as ExprNode)
+            is ExprNode -> node.value = analyseExpression(node.value as ExprNode)
             else -> node.value.acceptVisitor(this)
         }
     }
 
     override fun visitArgList(node: ArgListNode) {
-        node.args = node.args.map { analyse(it) }
+        node.args = node.args.map { analyseExpression(it) }
     }
 
     override fun visitAssignment(node: AssignmentNode) {
         when (node.value) {
-            is ExprNode -> node.value = analyse(node.value as ExprNode)
+            is ExprNode -> node.value = analyseExpression(node.value as ExprNode)
             else -> node.value.acceptVisitor(this)
         }
         node.name.acceptVisitor(this)
@@ -75,24 +95,24 @@ class ConstantEvaluationVisitor : ASTVisitor {
     }
 
     override fun visitBinOp(node: BinOpNode) {
-        node.firstExpr = analyse(node.firstExpr)
-        node.secondExpr = analyse(node.secondExpr)
+        node.firstExpr = analyseExpression(node.firstExpr)
+        node.secondExpr = analyseExpression(node.secondExpr)
     }
 
     override fun visitUnOp(node: UnOpNode) {
-        node.expr = analyse(node.expr)
+        node.expr = analyseExpression(node.expr)
     }
 
     override fun visitPairElem(node: PairElemNode) {
-        node.expr = analyse(node.expr)
+        node.expr = analyseExpression(node.expr)
     }
 
     override fun visitArrayElement(elem: ArrayElement) {
-        elem.arrIndices = elem.arrIndices.map { analyse(it) }
+        elem.arrIndices = elem.arrIndices.map { analyseExpression(it) }
     }
 
     override fun visitArrayLiteral(literal: ArrayLiteral) {
-        literal.values = literal.values.map { analyse(it) }
+        literal.values = literal.values.map { analyseExpression(it) }
     }
 
     override fun visitBoolLiteral(literal: BoolLiteral) {
@@ -124,17 +144,17 @@ class ConstantEvaluationVisitor : ASTVisitor {
     }
 
     override fun visitFree(node: FreeNode) {
-        node.value = analyse(node.value)
+        node.value = analyseExpression(node.value)
     }
 
     override fun visitIf(node: IfNode) {
-        node.proposition = analyse(node.proposition)
+        node.proposition = analyseExpression(node.proposition)
         node.trueStat.acceptVisitor(this)
         node.falseStat.acceptVisitor(this)
     }
 
     override fun visitPrint(node: PrintNode) {
-        node.value = analyse(node.value)
+        node.value = analyseExpression(node.value)
     }
 
     override fun visitRead(node: ReadNode) {
@@ -142,7 +162,7 @@ class ConstantEvaluationVisitor : ASTVisitor {
     }
 
     override fun visitReturn(node: ReturnNode) {
-        node.value = analyse(node.value)
+        node.value = analyseExpression(node.value)
     }
 
     override fun visitSeq(node: SeqNode) {
@@ -152,7 +172,7 @@ class ConstantEvaluationVisitor : ASTVisitor {
     }
 
     override fun visitWhile(node: WhileNode) {
-        node.proposition = analyse(node.proposition)
+        node.proposition = analyseExpression(node.proposition)
         node.body.acceptVisitor(this)
     }
 }
