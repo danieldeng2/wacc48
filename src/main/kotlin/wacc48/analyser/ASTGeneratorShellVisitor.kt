@@ -1,7 +1,7 @@
 package wacc48.analyser
 
-import WACCShellParser
-import WACCShellParserBaseVisitor
+import wacc48.antlr.WACCShellParser
+import wacc48.antlr.WACCShellParserBaseVisitor
 import wacc48.analyser.exceptions.SyntaxException
 import org.apache.commons.text.StringEscapeUtils
 import wacc48.tree.nodes.ASTNode

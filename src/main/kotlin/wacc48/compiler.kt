@@ -1,7 +1,7 @@
 package wacc48
 
-import WACCLexer
-import WACCParser
+import wacc48.antlr.WACCLexer
+import wacc48.antlr.WACCParser
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc48.analyser.ASTGeneratorVisitor

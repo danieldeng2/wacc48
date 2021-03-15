@@ -13,7 +13,7 @@ version = "1.0-SNAPSHOT"
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "MainKt"
+        attributes["Main-Class"] = "wacc48.MainKt"
     }
     configurations["compileClasspath"].forEach { file: File ->
         from(zipTree(file.absoluteFile))
@@ -45,7 +45,8 @@ tasks.withType<KotlinCompile>() {
 
 tasks.generateGrammarSource {
     maxHeapSize = "64m"
-    arguments = arguments + listOf("-visitor", "-no-listener")
+    arguments = arguments + listOf("-visitor", "-no-listener", "-package", "wacc48.antlr")
+    outputDirectory = File("${project.buildDir}/generated-src/antlr/main/wacc48/antlr")
 }
 
 tasks.compileKotlin {

@@ -1,7 +1,7 @@
 package wacc48.analyser
 
-import WACCParser
-import WACCParserBaseVisitor
+import wacc48.antlr.WACCParser
+import wacc48.antlr.WACCParserBaseVisitor
 import wacc48.analyser.exceptions.SyntaxException
 import org.apache.commons.text.StringEscapeUtils
 import wacc48.tree.nodes.ASTNode

@@ -1,7 +1,7 @@
 package wacc48.entrypoint
 
-import WACCLexer
-import WACCParser
+import wacc48.antlr.WACCLexer
+import wacc48.antlr.WACCParser
 import wacc48.analyser.ASTGeneratorVisitor
 import wacc48.analyser.exceptions.SemanticsException
 import wacc48.analyser.exceptions.SyntaxException

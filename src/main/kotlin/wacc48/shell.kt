@@ -1,7 +1,7 @@
 package wacc48
 
-import WACCLexer
-import WACCShellParser
+import wacc48.antlr.WACCLexer
+import wacc48.antlr.WACCShellParser
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
