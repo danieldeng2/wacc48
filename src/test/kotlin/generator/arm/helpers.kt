@@ -17,9 +17,9 @@ fun checkAllMatches(label: String) {
         val inputFile = File(f.path.replace(".wacc", ".input"))
         val stdin = if (inputFile.exists()) inputFile.readLines()[0] else ""
 
-        val referenceResult = referencePipeline(f.path, refASM, stdin = stdin)
+        val referenceResult = referencePipeline(f, File(refASM), stdin = stdin)
         val compilerResult =
-            compilerPipeline(f.path, compilerASM, stdin = stdin)
+            compilerPipeline(f, File(compilerASM), stdin = stdin)
 
         if (compilerResult.emulatorOut != referenceResult.emulatorOut)
             fail(
@@ -48,35 +48,34 @@ fun checkAllMatches(label: String) {
 }
 
 private fun compilerPipeline(
-    path: String,
-    outputName: String,
+    srcFile: File,
+    asmOutputFile: File,
     stdin: String = ""
 ): EmulatorResult {
 
-    ArmFormatter()
-
     val armCompiler =
-        WaccCompiler(ArmFormatter(), File(path), File(outputName), true)
+        WaccCompiler(ArmFormatter(), srcFile, asmOutputFile.parentFile)
     armCompiler.start()
+    armCompiler.assembleExecutable(srcFile, asmOutputFile)
 
     return executeAssembly(
         assembly = armCompiler.instructions,
         stdin = stdin,
-        file = File(outputName)
+        file = asmOutputFile
     )
 }
 
 private fun referencePipeline(
-    path: String,
-    outputName: String,
+    srcFile: File,
+    asmOutputFile: File,
     stdin: String = ""
 ): EmulatorResult {
-    val assembly = RefCompiler(File(path)).run()
+    val assembly = RefCompiler(srcFile).run()
 
     return executeAssembly(
         assembly = assembly,
         stdin = stdin,
-        file = File(outputName)
+        file = asmOutputFile
     )
 }
 

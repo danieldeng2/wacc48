@@ -27,8 +27,7 @@ interface CompilerFormatter {
 class WaccCompiler(
     val formatter: CompilerFormatter,
     val sourceFile: File,
-    val outDir: File,
-    val writeExecutable: Boolean
+    val outDir: File
 ) : Application {
 
     lateinit var programNode: ASTNode
@@ -41,12 +40,6 @@ class WaccCompiler(
         val srcNoExtension = sourceFile.name.removeSuffix(".wacc")
         val asmFile = File(outDir, "$srcNoExtension.s")
         writeToFile(instructions, asmFile.path)
-
-        if (writeExecutable) {
-            val execFile = File(outDir, srcNoExtension)
-            formatter.createExecutable(asmFile.path, execFile.path)
-        }
-
     }
 
     fun analyse() {
@@ -70,6 +63,10 @@ class WaccCompiler(
             st = SymbolTable(null),
             funTable = mutableMapOf()
         )
+    }
+
+    fun assembleExecutable(asmFile: File, execFile: File) {
+        formatter.createExecutable(asmFile.path, execFile.path)
     }
 
     private fun runAnalyserCatchError() =

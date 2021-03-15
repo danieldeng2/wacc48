@@ -56,14 +56,12 @@ class ArgParse : CliktCommand() {
             "x86" -> WaccCompiler(
                 I386Formatter(),
                 sourceFile,
-                outDirectory,
-                createExecutable
+                outDirectory
             )
             "arm" -> WaccCompiler(
                 ArmFormatter(),
                 sourceFile,
-                outDirectory,
-                createExecutable
+                outDirectory
             )
             else -> throw NoSuchOption("No such option exists!")
         }
