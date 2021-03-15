@@ -4,15 +4,15 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.BoolType
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
+import tree.ASTVisitor
 
 data class BoolLiteral(
-    val value: Boolean,
+    var value: Boolean,
     val ctx: ParserRuleContext?
 ) : Literal {
+
     override var type: Type = BoolType
 
     override fun literalToString(mt: MemoryTable?): String = value.toString()
@@ -23,11 +23,8 @@ data class BoolLiteral(
     ) {
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateBoolLiteral(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitBoolLiteral(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateBoolLiteral(this)
-    }
 }

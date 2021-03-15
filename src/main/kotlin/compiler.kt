@@ -2,11 +2,11 @@ import analyser.ASTGeneratorVisitor
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import analyser.exceptions.ThrowingErrorListener
-import tree.SymbolTable
-import tree.nodes.ASTNode
 import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
+import tree.SymbolTable
+import tree.nodes.ASTNode
 import tree.nodes.function.FuncNode
 import kotlin.system.exitProcess
 

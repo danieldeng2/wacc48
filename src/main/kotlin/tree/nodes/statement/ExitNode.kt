@@ -5,13 +5,11 @@ import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.IntType
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import tree.nodes.expr.Literal
+import tree.ASTVisitor
 
 data class ExitNode(
-    val expr: ExprNode,
+    var expr: ExprNode,
     val ctx: ParserRuleContext?
 ) : StatNode {
 
@@ -28,12 +26,8 @@ data class ExitNode(
             )
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateExit(this)
-    }
-
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateExit(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitExit(this)
     }
 
 }

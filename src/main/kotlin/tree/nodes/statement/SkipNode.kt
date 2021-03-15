@@ -2,9 +2,7 @@ package tree.nodes.statement
 
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
-import generator.translator.CodeGeneratorVisitor
-import shell.CodeEvaluatorVisitor
-import tree.nodes.expr.Literal
+import tree.ASTVisitor
 
 object SkipNode : StatNode {
 
@@ -18,6 +16,5 @@ object SkipNode : StatNode {
         return "Skip"
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {}
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {}
+    override fun acceptVisitor(visitor: ASTVisitor) {}
 }

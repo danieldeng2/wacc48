@@ -1,14 +1,12 @@
 package tree.nodes
 
 import analyser.exceptions.SyntaxException
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.nodes.function.MainNode
 import tree.nodes.statement.*
-import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import tree.nodes.expr.Literal
 
 data class ProgNode(
     val functions: List<FuncNode>,
@@ -30,13 +28,22 @@ data class ProgNode(
         main.validate(st, funTable)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateProgram(this)
+
+    private fun allPathsTerminated(body: StatNode): Boolean =
+        when (body) {
+            is SeqNode -> allPathsTerminated(body.last())
+            is BeginNode -> allPathsTerminated(body.stat)
+            is IfNode -> allPathsTerminated(body.trueStat)
+                    && allPathsTerminated(body.falseStat)
+            is ReturnNode -> true
+            is ExitNode -> true
+            else -> false
+        }
+
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitProgram(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateProgram(this)
-    }
 }
 
 fun checkFunctionTerminates(func: FuncNode) {

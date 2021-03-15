@@ -1,15 +1,13 @@
 package tree.nodes.function
 
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.expr.ExprNode
-import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import tree.nodes.expr.Literal
 
 data class ArgListNode(
-    val args: List<ExprNode>,
+    var args: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : ASTNode {
     override fun validate(
@@ -21,11 +19,7 @@ data class ArgListNode(
         }
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateArgList(this)
-    }
-
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateArgList(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitArgList(this)
     }
 }

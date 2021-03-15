@@ -5,14 +5,12 @@ import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.BoolType
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import tree.nodes.expr.Literal
+import tree.ASTVisitor
 
 data class WhileNode(
-    val proposition: ExprNode,
-    val body: StatNode,
+    var proposition: ExprNode,
+    var body: StatNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
     lateinit var bodyST: SymbolTable
@@ -30,12 +28,9 @@ data class WhileNode(
         body.validate(bodyST, funTable)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateWhile(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitWhile(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateWhile(this)
-    }
 }
 

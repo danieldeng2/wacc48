@@ -1,18 +1,22 @@
 package tree.nodes.expr.operators
 
 import analyser.exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
-import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
 import shell.*
 import tree.nodes.expr.*
 import tree.type.*
+import tree.type.BoolType
+import tree.type.CharType
+import tree.type.IntType
+import tree.type.Type
+import tree.ASTVisitor
 
 data class BinOpNode(
     val operator: BinaryOperator,
-    val firstExpr: ExprNode,
-    val secondExpr: ExprNode,
+    var firstExpr: ExprNode,
+    var secondExpr: ExprNode,
     val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType
@@ -38,12 +42,12 @@ data class BinOpNode(
             return when (operator) {
                 BinaryOperator.EQ ->
                     BoolLiteral(
-                        firstExpr.literalToString() == (secondExpr as ArrayLiteral).literalToString(),
+                        (firstExpr as ArrayLiteral).literalToString() == (secondExpr as ArrayLiteral).literalToString(),
                         null
                     )
                 else ->
                     BoolLiteral(
-                        firstExpr.literalToString() != (secondExpr as ArrayLiteral).literalToString(),
+                        (firstExpr as ArrayLiteral).literalToString() != (secondExpr as ArrayLiteral).literalToString(),
                         null
                     )
             }
@@ -54,44 +58,77 @@ data class BinOpNode(
                 val firstIntExpr = firstExpr.reduceToLiteral(mt) as IntLiteral
                 val secondIntExpr = secondExpr.reduceToLiteral(mt) as IntLiteral
                 return when (operator) {
-                    BinaryOperator.EQ -> BoolLiteral(firstIntExpr.value == secondIntExpr.value, null)
-                    else -> BoolLiteral(firstIntExpr.value != secondIntExpr.value, null)
+                    BinaryOperator.EQ -> BoolLiteral(
+                        firstIntExpr.value == secondIntExpr.value,
+                        null
+                    )
+                    else -> BoolLiteral(
+                        firstIntExpr.value != secondIntExpr.value,
+                        null
+                    )
                 }
             }
             BoolType -> {
                 val firstBoolExpr = firstExpr.reduceToLiteral(mt) as BoolLiteral
-                val secondBoolExpr = secondExpr.reduceToLiteral(mt) as BoolLiteral
+                val secondBoolExpr =
+                    secondExpr.reduceToLiteral(mt) as BoolLiteral
                 return when (operator) {
-                    BinaryOperator.EQ -> BoolLiteral(firstBoolExpr.value == secondBoolExpr.value, null)
-                    else -> BoolLiteral(firstBoolExpr.value != secondBoolExpr.value, null)
+                    BinaryOperator.EQ -> BoolLiteral(
+                        firstBoolExpr.value == secondBoolExpr.value,
+                        null
+                    )
+                    else -> BoolLiteral(
+                        firstBoolExpr.value != secondBoolExpr.value,
+                        null
+                    )
                 }
             }
             CharType -> {
                 val firstCharExpr = firstExpr.reduceToLiteral(mt) as CharLiteral
-                val secondCharExpr = secondExpr.reduceToLiteral(mt) as CharLiteral
+                val secondCharExpr =
+                    secondExpr.reduceToLiteral(mt) as CharLiteral
                 return when (operator) {
-                    BinaryOperator.EQ -> BoolLiteral(firstCharExpr.value == secondCharExpr.value, null)
-                    else -> BoolLiteral(firstCharExpr.value != secondCharExpr.value, null)
+                    BinaryOperator.EQ -> BoolLiteral(
+                        firstCharExpr.value == secondCharExpr.value,
+                        null
+                    )
+                    else -> BoolLiteral(
+                        firstCharExpr.value != secondCharExpr.value,
+                        null
+                    )
                 }
             }
             StringType -> {
-                val firstStringExpr = firstExpr.reduceToLiteral(mt) as StringLiteral
-                val secondStringExpr = secondExpr.reduceToLiteral(mt) as StringLiteral
+                val firstStringExpr =
+                    firstExpr.reduceToLiteral(mt) as StringLiteral
+                val secondStringExpr =
+                    secondExpr.reduceToLiteral(mt) as StringLiteral
                 return when (operator) {
-                    BinaryOperator.EQ -> BoolLiteral(firstStringExpr.value == secondStringExpr.value, null)
-                    else -> BoolLiteral(firstStringExpr.value != secondStringExpr.value, null)
+                    BinaryOperator.EQ -> BoolLiteral(
+                        firstStringExpr.value == secondStringExpr.value,
+                        null
+                    )
+                    else -> BoolLiteral(
+                        firstStringExpr.value != secondStringExpr.value,
+                        null
+                    )
                 }
             }
             is ArrayType -> {
                 val firstArrExpr = firstExpr.reduceToLiteral(mt)
                 val secondArrExpr = secondExpr.reduceToLiteral(mt)
-                return BinOpNode(operator, firstArrExpr, secondArrExpr, null).reduceToLiteral()
+                return BinOpNode(
+                    operator,
+                    firstArrExpr,
+                    secondArrExpr,
+                    null
+                ).reduceToLiteral()
             }
             else -> { //Pair type
                 val firstPair =
-                    if (firstExpr is IdentifierNode) mt?.getLiteral(firstExpr.name) else PairLiteral
+                    if (firstExpr is IdentifierNode) mt?.getLiteral((firstExpr as IdentifierNode).name) else PairLiteral
                 val secondPair =
-                    if (secondExpr is IdentifierNode) mt?.getLiteral(secondExpr.name) else PairLiteral
+                    if (secondExpr is IdentifierNode) mt?.getLiteral((secondExpr as IdentifierNode).name) else PairLiteral
                 return when (operator) {
                     BinaryOperator.EQ ->
                         if (firstPair is PairMemoryLiteral && secondPair is PairMemoryLiteral)
@@ -100,7 +137,10 @@ data class BinOpNode(
                                 null
                             )
                         else
-                            BoolLiteral((firstPair is PairLiteral && secondPair is PairLiteral), null)
+                            BoolLiteral(
+                                (firstPair is PairLiteral && secondPair is PairLiteral),
+                                null
+                            )
                     else ->
                         if (firstPair is PairMemoryLiteral && secondPair is PairMemoryLiteral)
                             BoolLiteral(
@@ -108,7 +148,10 @@ data class BinOpNode(
                                 null
                             )
                         else
-                            BoolLiteral(!(firstPair is PairLiteral && secondPair is PairLiteral), null)
+                            BoolLiteral(
+                                !(firstPair is PairLiteral && secondPair is PairLiteral),
+                                null
+                            )
                 }
 
             }
@@ -128,8 +171,14 @@ data class BinOpNode(
                     throw ShellIntegerOverflowException("addition overflow")
                 IntLiteral(firstIntExpr.value + secondIntExpr.value, null)
             }
-            BinaryOperator.MINUS -> IntLiteral(firstIntExpr.value - secondIntExpr.value, null)
-            BinaryOperator.MULTIPLY -> IntLiteral(firstIntExpr.value * secondIntExpr.value, null)
+            BinaryOperator.MINUS -> IntLiteral(
+                firstIntExpr.value - secondIntExpr.value,
+                null
+            )
+            BinaryOperator.MULTIPLY -> IntLiteral(
+                firstIntExpr.value * secondIntExpr.value,
+                null
+            )
             BinaryOperator.DIVIDE -> {
                 if (secondIntExpr.value == 0)
                     throw ShellDivideByZeroException("divide by zero not allowed")
@@ -147,7 +196,10 @@ data class BinOpNode(
         val firstBoolExpr = firstExpr.reduceToLiteral(mt) as BoolLiteral
         val secondBoolExpr = secondExpr.reduceToLiteral(mt) as BoolLiteral
         if (operator == BinaryOperator.AND)
-            return BoolLiteral(firstBoolExpr.value && secondBoolExpr.value, null)
+            return BoolLiteral(
+                firstBoolExpr.value && secondBoolExpr.value,
+                null
+            )
         return BoolLiteral(firstBoolExpr.value || secondBoolExpr.value, null)
     }
 
@@ -156,19 +208,43 @@ data class BinOpNode(
             val firstIntExpr = firstExpr.reduceToLiteral(mt) as IntLiteral
             val secondIntExpr = secondExpr.reduceToLiteral(mt) as IntLiteral
             return when (operator) {
-                BinaryOperator.GT -> BoolLiteral(firstIntExpr.value > secondIntExpr.value, null)
-                BinaryOperator.LT -> BoolLiteral(firstIntExpr.value < secondIntExpr.value, null)
-                BinaryOperator.GE -> BoolLiteral(firstIntExpr.value >= secondIntExpr.value, null)
-                else -> BoolLiteral(firstIntExpr.value <= secondIntExpr.value, null)
+                BinaryOperator.GT -> BoolLiteral(
+                    firstIntExpr.value > secondIntExpr.value,
+                    null
+                )
+                BinaryOperator.LT -> BoolLiteral(
+                    firstIntExpr.value < secondIntExpr.value,
+                    null
+                )
+                BinaryOperator.GE -> BoolLiteral(
+                    firstIntExpr.value >= secondIntExpr.value,
+                    null
+                )
+                else -> BoolLiteral(
+                    firstIntExpr.value <= secondIntExpr.value,
+                    null
+                )
             }
         } else { //Char type
             val firstCharExpr = firstExpr.reduceToLiteral(mt) as CharLiteral
             val secondCharExpr = secondExpr.reduceToLiteral(mt) as CharLiteral
             return when (operator) {
-                BinaryOperator.GT -> BoolLiteral(firstCharExpr.value > secondCharExpr.value, null)
-                BinaryOperator.LT -> BoolLiteral(firstCharExpr.value < secondCharExpr.value, null)
-                BinaryOperator.GE -> BoolLiteral(firstCharExpr.value >= secondCharExpr.value, null)
-                else -> BoolLiteral(firstCharExpr.value <= secondCharExpr.value, null)
+                BinaryOperator.GT -> BoolLiteral(
+                    firstCharExpr.value > secondCharExpr.value,
+                    null
+                )
+                BinaryOperator.LT -> BoolLiteral(
+                    firstCharExpr.value < secondCharExpr.value,
+                    null
+                )
+                BinaryOperator.GE -> BoolLiteral(
+                    firstCharExpr.value >= secondCharExpr.value,
+                    null
+                )
+                else -> BoolLiteral(
+                    firstCharExpr.value <= secondCharExpr.value,
+                    null
+                )
             }
         }
     }
@@ -199,13 +275,10 @@ data class BinOpNode(
             )
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateBinOp(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitBinOp(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateBinOp(this)
-    }
 }
 
 

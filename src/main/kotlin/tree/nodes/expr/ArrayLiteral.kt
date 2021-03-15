@@ -11,6 +11,7 @@ import tree.type.ArrayType
 import tree.type.CharType
 import tree.type.Type
 import tree.type.VoidType
+import tree.ASTVisitor
 
 
 data class ArrayLiteral(
@@ -29,7 +30,6 @@ data class ArrayLiteral(
 
     override fun reduceToLiteral(mt: MemoryTable?): Literal =
         this
-
 
     override fun validate(
         st: SymbolTable,
@@ -52,11 +52,8 @@ data class ArrayLiteral(
         }
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateArrayLiteral(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitArrayLiteral(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateArrayLiteral(this)
-    }
 }

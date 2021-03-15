@@ -3,12 +3,10 @@ package tree.nodes.assignment
 import analyser.exceptions.SemanticsException
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
-import tree.nodes.statement.StatNode
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import tree.nodes.expr.Literal
 import tree.nodes.function.FuncCallNode
+import tree.ASTVisitor
+import tree.nodes.statement.StatNode
 
 data class AssignmentNode(
     val name: LHSNode,
@@ -36,11 +34,8 @@ data class AssignmentNode(
         }
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateAssignment(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitAssignment(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateAssignment(this)
-    }
 }

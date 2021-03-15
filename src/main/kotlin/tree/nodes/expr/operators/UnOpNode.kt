@@ -4,16 +4,16 @@ import analyser.exceptions.SyntaxException
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.*
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
 import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 import shell.detectIntegerOverflow
 import tree.nodes.expr.*
+import tree.ASTVisitor
 
 data class UnOpNode(
     val operator: UnaryOperator,
-    val expr: ExprNode,
+    var expr: ExprNode,
     val ctx: ParserRuleContext?,
 ) : ExprNode {
     override var type: Type = operator.returnType
@@ -72,12 +72,8 @@ data class UnOpNode(
     }
 
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateUnOp(this)
-    }
-
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateUnOp(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitUnOp(this)
     }
 
 }

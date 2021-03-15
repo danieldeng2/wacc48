@@ -9,10 +9,8 @@ import tree.type.CharType
 import tree.type.IntType
 import tree.type.StringType
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import tree.nodes.expr.Literal
+import tree.ASTVisitor
 
 data class ReadNode(
     val value: LHSNode,
@@ -31,11 +29,7 @@ data class ReadNode(
             throw SemanticsException("Cannot read from type ${value.type}", ctx)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateRead(this)
-    }
-
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateRead(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitRead(this)
     }
 }

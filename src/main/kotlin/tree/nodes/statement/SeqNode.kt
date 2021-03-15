@@ -2,13 +2,11 @@ package tree.nodes.statement
 
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
-import tree.nodes.expr.Literal
+import tree.ASTVisitor
 
 data class SeqNode(
-    val sequence: List<StatNode>,
+    var sequence: List<StatNode>,
     val ctx: ParserRuleContext?,
 ) : StatNode, List<StatNode> {
 
@@ -54,11 +52,8 @@ data class SeqNode(
     override fun subList(fromIndex: Int, toIndex: Int): List<StatNode> =
         sequence.subList(fromIndex, toIndex)
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateSeq(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitSeq(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateSeq(this)
-    }
 }

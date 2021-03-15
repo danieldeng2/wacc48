@@ -1,9 +1,8 @@
 package tree.nodes.expr
 
-import generator.translator.CodeGeneratorVisitor
-import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 import shell.ShellRunTimeException
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.ArrayType
@@ -14,6 +13,7 @@ import tree.type.VoidType
 //To be used in the evaluator memory table to represent arrays of other arrays
 //Values is a list of the names of the subarrays being referenced in the memory table
 class DeepArrayLiteral(var values: List<String>, elemType: Type) : Literal {
+
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, null)
     var nameInMemTable: String? = null
@@ -37,11 +37,8 @@ class DeepArrayLiteral(var values: List<String>, elemType: Type) : Literal {
     ) {
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateDeepArrayLiteral(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitDeepArrayLiteral(this)
     }
 
-    override fun acceptCodeEvalVisitor(visitor: CodeEvaluatorVisitor) {
-        visitor.translateDeepArrayLiteral(this)
-    }
 }

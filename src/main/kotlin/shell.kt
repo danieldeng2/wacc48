@@ -29,7 +29,7 @@ class WACCShell(
     fun runInteractiveShell() {
         var st: SymbolTable = SymbolTable(null)
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
-        var mt: MemoryTable = MemoryTable(null)
+        val mt: MemoryTable = MemoryTable(null)
 
         val evalVisitor = CodeEvaluatorVisitor(mt, input, output, testMode)
 
@@ -80,7 +80,7 @@ class WACCShell(
             }
 
             if (evaluateCode) {
-                evalVisitor.visitAndTranslate(node)
+                evalVisitor.visitNode(node)
                 evalVisitor.printEvalLiteralStack(resultPrompt)
             }
             if (evalVisitor.exitCode != null) {
@@ -149,7 +149,7 @@ class WACCShell(
 
         val node = runAnalyserPrintError(CharStreams.fromPath(programPath), st, ft)
         if (evaluateCode)
-            evalVisitor.visitAndTranslate(node!!)
+            evalVisitor.visitNode(node!!)
     }
 
     private fun printIntro() {
