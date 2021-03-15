@@ -1,5 +1,6 @@
 package analyser.optimisations
 
+import analyser.exceptions.SemanticsException
 import tree.ASTVisitor
 import tree.nodes.ASTNode
 import tree.nodes.ProgNode
@@ -8,6 +9,7 @@ import tree.nodes.assignment.NewPairNode
 import tree.nodes.assignment.PairElemNode
 import tree.nodes.expr.*
 import tree.nodes.expr.operators.BinOpNode
+import tree.nodes.expr.operators.BinaryOperator
 import tree.nodes.expr.operators.UnOpNode
 import tree.nodes.expr.operators.UnaryOperator
 import tree.nodes.function.*
@@ -32,7 +34,70 @@ object ConstantEvaluationVisitor : ASTVisitor {
     }
 
     private fun analyseBinOp(binExpr: BinOpNode): ExprNode {
-        return binExpr
+        val firstExprResult = analyseExpression(binExpr.firstExpr)
+        val secondExprResult = analyseExpression(binExpr.secondExpr)
+
+        if (firstExprResult !is BaseLiteral ||
+            secondExprResult !is BaseLiteral
+        ) {
+            binExpr.firstExpr = firstExprResult
+            binExpr.secondExpr = secondExprResult
+            return binExpr
+        }
+
+        if (firstExprResult is StringLiteral &&
+            secondExprResult is StringLiteral
+        ) {
+            var result = firstExprResult.value == secondExprResult.value
+            if (binExpr.operator == BinaryOperator.NEQ) {
+                result = !result
+            }
+            return BoolLiteral(
+                value = result,
+                ctx = binExpr.ctx
+            )
+        }
+
+        val firstLiteral = analyseLiteral(firstExprResult)
+        val secondLiteral = analyseLiteral(secondExprResult)
+
+        return when (binExpr.operator) {
+            BinaryOperator.PLUS -> IntLiteral(value = firstLiteral + secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.MINUS -> IntLiteral(value = firstLiteral - secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.MULTIPLY -> IntLiteral(value = firstLiteral * secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.DIVIDE -> {
+                if (secondLiteral != 0)
+                    return IntLiteral(value = firstLiteral / secondLiteral, ctx = binExpr.ctx)
+                binExpr.firstExpr = firstExprResult
+                binExpr.secondExpr = secondExprResult
+                return binExpr
+            }
+            BinaryOperator.MODULUS -> IntLiteral(value = firstLiteral % secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.GT -> BoolLiteral(value = firstLiteral > secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.LT -> BoolLiteral(value = firstLiteral < secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.GE -> BoolLiteral(value = firstLiteral >= secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.LE -> BoolLiteral(value = firstLiteral <= secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.EQ -> BoolLiteral(value = firstLiteral == secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.NEQ -> BoolLiteral(value = firstLiteral != secondLiteral, ctx = binExpr.ctx)
+            BinaryOperator.AND -> BoolLiteral(
+                value = firstLiteral == 1 && secondLiteral == 1,
+                ctx = binExpr.ctx
+            )
+            BinaryOperator.OR -> BoolLiteral(
+                value = firstLiteral == 1 || secondLiteral == 1,
+                ctx = binExpr.ctx
+            )
+        }
+    }
+
+    private fun analyseLiteral(expr: BaseLiteral): Int {
+        return when (expr) {
+            is IntLiteral -> expr.value
+            is CharLiteral -> expr.value.toInt()
+            is BoolLiteral -> expr.value.compareTo(false)
+            else -> throw SemanticsException("Invalid literal in binary expression", null)
+        }
+
     }
 
     private fun analyseUnOp(unExpr: UnOpNode): ExprNode {
