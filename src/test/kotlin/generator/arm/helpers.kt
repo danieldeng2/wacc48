@@ -56,7 +56,6 @@ private fun compilerPipeline(
     val armCompiler =
         WaccCompiler(ArmFormatter(), srcFile, asmOutputFile.parentFile)
     armCompiler.start()
-    armCompiler.assembleExecutable(srcFile, asmOutputFile)
 
     return executeAssembly(
         assembly = armCompiler.instructions,
