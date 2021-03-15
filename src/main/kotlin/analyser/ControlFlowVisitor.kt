@@ -12,7 +12,6 @@ import tree.nodes.expr.operators.UnOpNode
 import tree.nodes.function.*
 import tree.nodes.statement.*
 
-@Suppress("UNREACHABLE_CODE")
 class ControlFlowVisitor : ASTVisitor {
 
     private fun analyseStat(node: StatNode): StatNode {
@@ -163,7 +162,7 @@ class ControlFlowVisitor : ASTVisitor {
     }
 
     override fun visitSeq(node: SeqNode) {
-        node.sequence.map { analyseStat(it) }
+        node.sequence = node.sequence.map { analyseStat(it) }
     }
 
     override fun visitWhile(node: WhileNode) {
