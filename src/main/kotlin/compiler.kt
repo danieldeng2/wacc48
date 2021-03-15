@@ -16,23 +16,27 @@ interface Application {
     fun start()
 }
 
-abstract class Compiler(
-    private val sourceFile: File,
-    private val outDir: File,
-    private val writeExecutable: Boolean
-) :
-    Application {
+interface CompilerFormatter {
+
+    fun compile(astNode: ASTNode): List<String>
+
+    fun createExecutable(asmPath: String, execPath: String)
+
+}
+
+class WaccCompiler(
+    val formatter: CompilerFormatter,
+    val sourceFile: File,
+    val outDir: File,
+    val writeExecutable: Boolean
+) : Application {
 
     lateinit var programNode: ASTNode
     lateinit var instructions: List<String>
 
-    abstract fun createExecutable(asmFileName: String, execFileName: String)
-
-    abstract fun compile()
-
     override fun start() {
         runAnalyserCatchError()
-        compile()
+        instructions = formatter.compile(programNode)
 
         val srcNoExtension = sourceFile.name.removeSuffix(".wacc")
         val asmFile = File(outDir, "$srcNoExtension.s")
@@ -40,7 +44,7 @@ abstract class Compiler(
 
         if (writeExecutable) {
             val execFile = File(outDir, srcNoExtension)
-            createExecutable(asmFile.path, execFile.path)
+            formatter.createExecutable(asmFile.path, execFile.path)
         }
 
     }
@@ -86,61 +90,52 @@ abstract class Compiler(
     }
 }
 
-class ArmCompiler(
-    sourceFile: File,
-    outDir: File,
-    writeExecutable: Boolean
-) : Compiler(sourceFile, outDir, writeExecutable) {
+class ArmFormatter : CompilerFormatter {
 
     private val compiler = "arm-linux-gnueabi-gcc"
     private val architecture = "arm1176jzf-s"
 
+    override fun compile(astNode: ASTNode): List<String> =
+        CodeGeneratorVisitor(astNode).translateToArm()
 
-    override fun compile() {
-        instructions = CodeGeneratorVisitor(programNode).translateToArm()
-    }
 
-    override fun createExecutable(asmFileName: String, execFileName: String) {
+    override fun createExecutable(asmPath: String, execPath: String) {
         ProcessBuilder(
             compiler,
             "-o",
-            execFileName,
+            execPath,
             "-mcpu=$architecture",
             "-mtune=$architecture",
-            asmFileName
+            asmPath
         ).start().waitFor(10, TimeUnit.SECONDS)
     }
 }
 
-class I386Compiler(
-    sourceFile: File,
-    outDir: File,
-    writeExecutable: Boolean
-) : Compiler(sourceFile, outDir, writeExecutable) {
+class I386Formatter : CompilerFormatter {
 
     private val assembler = "nasm"
     private val linker = "gcc"
 
-    override fun compile() {
-        instructions = CodeGeneratorVisitor(programNode).translateTox86()
-    }
+    override fun compile(astNode: ASTNode) =
+        CodeGeneratorVisitor(astNode).translateTox86()
 
-    override fun createExecutable(asmFileName: String, execFileName: String) {
-        val objectFileName = "$execFileName.o"
+
+    override fun createExecutable(asmPath: String, execPath: String) {
+        val objectFileName = "$execPath.o"
         ProcessBuilder(
             assembler,
             "-f",
             "elf32",
             "-o",
             objectFileName,
-            asmFileName
+            asmPath
         ).start().waitFor(10, TimeUnit.SECONDS)
 
         ProcessBuilder(
             linker,
             "-m32",
             "-o",
-            execFileName,
+            execPath,
             objectFileName
         ).start().waitFor(10, TimeUnit.SECONDS)
     }

@@ -1,6 +1,7 @@
-package generator
+package generator.arm
 
-import ArmCompiler
+import ArmFormatter
+import WaccCompiler
 import WalkDirectory
 import generator.reference.EmulatorResult
 import generator.reference.RefCompiler
@@ -52,7 +53,10 @@ private fun compilerPipeline(
     stdin: String = ""
 ): EmulatorResult {
 
-    val armCompiler = ArmCompiler(File(path), File(path).parentFile, true)
+    ArmFormatter()
+
+    val armCompiler =
+        WaccCompiler(ArmFormatter(), File(path), File(outputName), true)
     armCompiler.start()
 
     return executeAssembly(

@@ -1,6 +1,8 @@
 package generator.x86
 
-import I386Compiler
+import CompilerFormatter
+import I386Formatter
+import WaccCompiler
 import WalkDirectory
 import generator.reference.EmulatorResult
 import generator.reference.RefCompiler
@@ -57,8 +59,8 @@ private fun runTestFile(f: File): Pair<EmulatorResult, EmulatorResult> {
     val inputFile = File(f.path.replace(".wacc", ".input"))
     val stdin = if (inputFile.exists()) inputFile.readLines()[0] else ""
 
-
-    val i386Compiler = I386Compiler(File(f.path), File(f.parent), true)
+    val i386Compiler =
+        WaccCompiler(I386Formatter(), File(f.path), File(f.parent), true)
     i386Compiler.start()
 
     val instructionsx86 = i386Compiler.instructions

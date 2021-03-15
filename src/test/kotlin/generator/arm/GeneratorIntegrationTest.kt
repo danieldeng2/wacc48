@@ -1,6 +1,5 @@
 package generator.arm
 
-import generator.checkAllMatches
 import org.junit.Test
 
 class GeneratorIntegrationTest {

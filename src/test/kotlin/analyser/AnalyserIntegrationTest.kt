@@ -1,6 +1,7 @@
 package analyser
 
-import ArmCompiler
+import ArmFormatter
+import WaccCompiler
 import WalkDirectory
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
@@ -11,7 +12,7 @@ class AnalyserIntegrationTest {
     @Test
     fun validProgramsShouldNotProduceException() {
         WalkDirectory("valid").run {
-            ArmCompiler(it, it.parentFile, false).analyse()
+            WaccCompiler(ArmFormatter(), it, it.parentFile, false).analyse()
         }
     }
 
@@ -19,7 +20,7 @@ class AnalyserIntegrationTest {
     fun syntaxErrorsShouldThrowSyntaxException() {
         WalkDirectory("invalid/syntaxErr").run { f ->
             try {
-                ArmCompiler(f, f.parentFile, false).analyse()
+                WaccCompiler(ArmFormatter(), f, f.parentFile, false).analyse()
                 error("This program contains syntax error")
             } catch (e: SyntaxException) {
                 //Test passes
@@ -31,7 +32,7 @@ class AnalyserIntegrationTest {
     fun semanticErrorsShouldThrowSemanticsException() {
         WalkDirectory("invalid/semanticErr").run { f ->
             try {
-                ArmCompiler(f, f.parentFile, false).analyse()
+                WaccCompiler(ArmFormatter(), f, f.parentFile, false).analyse()
                 error("This program contains semantic error")
             } catch (e: SemanticsException) {
                 //Test passes

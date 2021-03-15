@@ -1,16 +1,11 @@
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.NoSuchOption
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.arguments.default
-import com.github.ajalt.clikt.parameters.groups.mutuallyExclusiveOptions
-import com.github.ajalt.clikt.parameters.groups.single
-import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
-import java.io.File
 import java.io.FileWriter
 import java.nio.file.Paths
 
@@ -58,8 +53,18 @@ class ArgParse : CliktCommand() {
 
     override fun run() {
         val application = when (app) {
-            "x86" -> I386Compiler(sourceFile, outDirectory, createExecutable)
-            "arm" -> ArmCompiler(sourceFile, outDirectory, createExecutable)
+            "x86" -> WaccCompiler(
+                I386Formatter(),
+                sourceFile,
+                outDirectory,
+                createExecutable
+            )
+            "arm" -> WaccCompiler(
+                ArmFormatter(),
+                sourceFile,
+                outDirectory,
+                createExecutable
+            )
             else -> throw NoSuchOption("No such option exists!")
         }
         application.start()
