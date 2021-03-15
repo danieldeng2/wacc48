@@ -1,11 +1,10 @@
-package wacc48.entrypoint
+package wacc48.architecture
 
 import wacc48.generator.translator.CodeGeneratorVisitor
 import wacc48.tree.nodes.ASTNode
 import java.util.concurrent.TimeUnit
 
-
-class I386Formatter : CompilerFormatter {
+object I386Architecture : Architecture {
 
     private val assembler = "nasm"
     private val linker = "gcc"

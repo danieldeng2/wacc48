@@ -1,10 +1,10 @@
-package wacc48.entrypoint
+package wacc48.architecture
 
 import wacc48.generator.translator.CodeGeneratorVisitor
 import wacc48.tree.nodes.ASTNode
 import java.util.concurrent.TimeUnit
 
-class ArmFormatter : CompilerFormatter {
+object ArmArchitecture : Architecture {
 
     private val compiler = "arm-linux-gnueabi-gcc"
     private val architecture = "arm1176jzf-s"

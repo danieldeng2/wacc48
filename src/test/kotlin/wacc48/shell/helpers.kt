@@ -1,6 +1,5 @@
 package wacc48.shell
 
-import wacc48.WACCShell
 import WalkDirectory
 import wacc48.generator.arm.referencePipeline
 import wacc48.generator.reference.EmulatorResult

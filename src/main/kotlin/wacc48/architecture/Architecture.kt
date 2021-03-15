@@ -1,9 +1,9 @@
-package wacc48.entrypoint
+package wacc48.architecture
 
 import wacc48.tree.nodes.ASTNode
 
 
-interface CompilerFormatter {
+interface Architecture {
 
     fun compile(astNode: ASTNode): List<String>
 

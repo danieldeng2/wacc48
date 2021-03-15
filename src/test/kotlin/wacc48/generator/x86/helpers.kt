@@ -1,13 +1,14 @@
 package wacc48.generator.x86
 
 import WalkDirectory
-import wacc48.entrypoint.I386Formatter
-import wacc48.entrypoint.WaccCompiler
+import org.antlr.v4.runtime.CharStreams
+import wacc48.architecture.I386Architecture
 import wacc48.generator.reference.EmulatorResult
 import wacc48.generator.reference.RefCompiler
 import wacc48.generator.reference.RefEmulator
-import wacc48.writeResult
+import wacc48.runAnalyser
 import java.io.File
+import java.io.FileWriter
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import kotlin.test.fail
@@ -58,11 +59,9 @@ private fun runTestFile(f: File): Pair<EmulatorResult, EmulatorResult> {
     val inputFile = File(f.path.replace(".wacc", ".input"))
     val stdin = if (inputFile.exists()) inputFile.readLines()[0] else ""
 
-    val i386Compiler =
-        WaccCompiler(I386Formatter(), File(f.path), File(f.parent))
-    i386Compiler.start()
+    val astNode = runAnalyser(CharStreams.fromFileName(f.path))
 
-    val instructionsx86 = i386Compiler.instructions
+    val instructionsx86 = I386Architecture.compile(astNode)
     val instructionsArm = RefCompiler(f).run()
 
     writeResult(outx86, instructionsx86)
@@ -104,6 +103,13 @@ private fun runTestFile(f: File): Pair<EmulatorResult, EmulatorResult> {
         throw IOException("Emulation failed for $outx86!")
     }
 
+}
+
+private fun writeResult(inputName: String, output: List<String>) {
+    val outName = inputName.replace(".wacc", ".s")
+    val writer = FileWriter(outName)
+    output.forEach { writer.appendLine(it) }
+    writer.close()
 }
 
 private fun assembleAndLinkx86(outputPathPrefix: String) {

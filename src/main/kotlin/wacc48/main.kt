@@ -8,26 +8,12 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
-import wacc48.entrypoint.ArmFormatter
-import wacc48.entrypoint.I386Formatter
-import wacc48.entrypoint.WaccCompiler
-import java.io.FileWriter
-import java.nio.file.Paths
+import wacc48.architecture.ArmArchitecture
+import wacc48.architecture.I386Architecture
+import wacc48.shell.WACCShell
+import java.io.File
 
 class ArgParse : CliktCommand() {
-
-    override val commandHelp = """
-        Welcome to group 48 WACC compiler.
-        
-        You can: 
-        ```
-            - Compile .wacc file to x86 assembly
-            - Compile .wacc file to ARM assembly
-            - Runs an interactive wacc48.shell
-        ```
-        
-        Run --help for more information.
-    """.trimIndent()
 
     private val createExecutable by option(
         "-x",
@@ -35,13 +21,11 @@ class ArgParse : CliktCommand() {
         help = "Create executable from assembly file"
     ).flag()
 
-    private val outDirectory by option(
-        "-o",
-        "--dir",
-        "-d",
-        help = "Directory for the output file"
-    ).file(mustExist = true, canBeDir = true, canBeFile = false)
-        .default(Paths.get(".").toFile())
+    private val sourceFile by argument(help = "Path to WACC file").file(
+        mustExist = true,
+        canBeFile = true,
+        canBeDir = false
+    )
 
     private val sourceFile by argument(help = "Path to WACC file").file(
         mustExist = true,
@@ -49,36 +33,24 @@ class ArgParse : CliktCommand() {
         canBeDir = false
     )
 
-    private val app: String by option(
-        "-a",
-        "--app",
-        help = "Choose an application you'd like to run"
-    ).choice("arm", "x86", "wacc48/shell").default("arm")
-
-
     override fun run() {
-        val application = when (app) {
-            "x86" -> WaccCompiler(
-                I386Formatter(),
-                sourceFile,
-                outDirectory
-            )
-            "arm" -> WaccCompiler(
-                ArmFormatter(),
-                sourceFile,
-                outDirectory
-            )
+        val architecture = when (app) {
+            "x86" -> I386Architecture
+            "arm" -> ArmArchitecture
+            "shell" -> {
+                WACCShell().runInteractiveShell()
+                return
+            }
             else -> throw NoSuchOption("No such option exists!")
         }
-        application.start()
+
+        val programNode = runAnalyserCatchError(sourceFile)
+        val instructions = architecture.compile(programNode)
+
+        val srcNoExtension = sourceFile.name.removeSuffix(".wacc")
+        val asmFile = File("$srcNoExtension.s")
+        writeToFile(instructions, asmFile.path)
     }
 }
 
 fun main(args: Array<String>) = ArgParse().main(args)
-
-fun writeResult(inputName: String, output: List<String>) {
-    val outName = inputName.replace(".wacc", ".s")
-    val writer = FileWriter(outName)
-    output.forEach { writer.appendLine(it) }
-    writer.close()
-}

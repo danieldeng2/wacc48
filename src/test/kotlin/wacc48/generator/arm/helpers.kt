@@ -1,11 +1,12 @@
 package wacc48.generator.arm
 
 import WalkDirectory
-import wacc48.entrypoint.ArmFormatter
-import wacc48.entrypoint.WaccCompiler
+import org.antlr.v4.runtime.CharStreams
+import wacc48.architecture.ArmArchitecture
 import wacc48.generator.reference.EmulatorResult
 import wacc48.generator.reference.RefCompiler
 import wacc48.generator.reference.RefEmulator
+import wacc48.runAnalyser
 import java.io.File
 import java.io.FileWriter
 import kotlin.test.fail
@@ -52,13 +53,11 @@ private fun compilerPipeline(
     asmOutputFile: File,
     stdin: String = ""
 ): EmulatorResult {
-
-    val armCompiler =
-        WaccCompiler(ArmFormatter(), srcFile, asmOutputFile.parentFile)
-    armCompiler.start()
+    val pNode = runAnalyser(CharStreams.fromFileName(srcFile.path))
+    val architecture = ArmArchitecture.compile(pNode)
 
     return executeAssembly(
-        assembly = armCompiler.instructions,
+        assembly = architecture,
         stdin = stdin,
         file = asmOutputFile
     )

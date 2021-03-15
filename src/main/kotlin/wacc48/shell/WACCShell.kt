@@ -1,7 +1,5 @@
-package wacc48
+package wacc48.shell
 
-import wacc48.antlr.WACCLexer
-import wacc48.antlr.WACCShellParser
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
@@ -9,10 +7,9 @@ import org.antlr.v4.runtime.ParserRuleContext
 import wacc48.analyser.ASTGeneratorShellVisitor
 import wacc48.analyser.exceptions.SemanticsException
 import wacc48.analyser.exceptions.SyntaxException
-import wacc48.shell.CodeEvaluatorVisitor
-import wacc48.shell.IncompleteRuleException
-import wacc48.shell.MemoryTable
-import wacc48.shell.ShellErrorListener
+import wacc48.antlr.WACCLexer
+import wacc48.antlr.WACCShellParser
+import wacc48.runAnalyser
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.checkFunctionTerminates
