@@ -27,11 +27,13 @@ class ControlFlowVisitor : ASTVisitor {
     }
 
     private fun analyseIf(node: IfNode): StatNode {
-        return when (node.proposition) {
+        when (node.proposition) {
             is BoolLiteral -> {
                 if (node.proposition.value) {
+                    print("false removed")
                     return node.trueStat
                 }
+                print("true removed")
                 return node.falseStat
             }
             else -> return node
