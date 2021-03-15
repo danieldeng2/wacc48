@@ -153,9 +153,9 @@ class WACCShell(
             return
         }
 
-        val node = runAnalyserPrintError(CharStreams.fromPath(programPath), st, ft)
+        val node = runAnalyser(CharStreams.fromPath(programPath), st, ft)
         if (evaluateCode)
-            evalVisitor.visitNode(node!!)
+            evalVisitor.visitNode(node)
     }
 
     private fun printIntro() {
