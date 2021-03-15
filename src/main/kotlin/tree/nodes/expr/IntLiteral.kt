@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class IntLiteral(
-    val value: Int,
+    var value: Int,
     val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = IntType

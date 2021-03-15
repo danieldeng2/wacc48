@@ -9,6 +9,7 @@ import tree.nodes.assignment.PairElemNode
 import tree.nodes.expr.*
 import tree.nodes.expr.operators.BinOpNode
 import tree.nodes.expr.operators.UnOpNode
+import tree.nodes.expr.operators.UnaryOperator
 import tree.nodes.function.*
 import tree.nodes.statement.*
 
@@ -30,12 +31,30 @@ object ConstantEvaluationVisitor : ASTVisitor {
         }
     }
 
-    private fun analyseBinOp(expr: BinOpNode): ExprNode {
-        return expr
+    private fun analyseBinOp(binExpr: BinOpNode): ExprNode {
+        return binExpr
     }
 
-    private fun analyseUnOp(expr: UnOpNode): ExprNode {
-        return expr
+    private fun analyseUnOp(unExpr: UnOpNode): ExprNode {
+        val expression = analyseExpression(unExpr.expr)
+        when (unExpr.operator) {
+            UnaryOperator.MINUS -> {
+                print(expression.toString())
+                if (expression is IntLiteral) {
+                    expression.value = -expression.value
+                    return expression
+                }
+            }
+            UnaryOperator.NEGATE -> {
+                if (expression is BoolLiteral) {
+                    expression.value = !expression.value
+                    return expression
+                }
+            }
+        }
+
+        unExpr.expr = expression
+        return unExpr
     }
 
     override fun visitNode(node: ASTNode) {

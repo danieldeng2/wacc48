@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class BoolLiteral(
-    val value: Boolean,
+    var value: Boolean,
     val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = BoolType
