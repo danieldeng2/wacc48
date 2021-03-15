@@ -12,7 +12,7 @@ import tree.nodes.expr.operators.UnOpNode
 import tree.nodes.function.*
 import tree.nodes.statement.*
 
-class ConstantEvaluationVisitor : ASTVisitor {
+object ConstantEvaluationVisitor : ASTVisitor {
 
     private fun analyseExpression(expr: ExprNode): ExprNode {
         return when (expr) {

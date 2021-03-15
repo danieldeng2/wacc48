@@ -12,7 +12,7 @@ import tree.nodes.expr.operators.UnOpNode
 import tree.nodes.function.*
 import tree.nodes.statement.*
 
-class ControlFlowVisitor : ASTVisitor {
+object ControlFlowVisitor : ASTVisitor {
 
     private fun analyseStat(node: StatNode): StatNode {
         return when (node) {
