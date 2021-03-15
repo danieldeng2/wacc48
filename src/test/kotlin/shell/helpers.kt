@@ -2,8 +2,8 @@ package shell
 
 import WACCShell
 import WalkDirectory
+import generator.arm.referencePipeline
 import generator.reference.EmulatorResult
-import generator.referencePipeline
 import java.io.File
 import java.io.PrintStream
 import java.nio.file.Path

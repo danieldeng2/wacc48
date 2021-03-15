@@ -3,7 +3,10 @@ package generator.instructions.operands
 interface ImmOp : LoadableOp
 
 class NumOp(val value: Int, val isLoad: Boolean = false) : ImmOp {
-    override fun toString() = if (isLoad) {
+
+    override fun tox86() = "$value"
+
+    override fun toArm() = if (isLoad) {
         "=$value"
     } else {
         "#${value}"
@@ -11,14 +14,22 @@ class NumOp(val value: Int, val isLoad: Boolean = false) : ImmOp {
 }
 
 class CharOp(val value: Char) : ImmOp {
-    override fun toString() = when (value) {
+    override fun toArm() = when (value) {
         '\u0000' -> "#0"
         else -> "#\'$value\'"
+    }
+
+    override fun tox86() = when (value) {
+        '\u0000' -> "0"
+        else -> "${value.toInt()}"
     }
 }
 
 class LabelOp(val index: Int) : ImmOp {
-    override fun toString() = "=msg_$index"
+
+    override fun tox86() = "msg_$index"
+
+    override fun toArm() = "=msg_$index"
 
 }
 

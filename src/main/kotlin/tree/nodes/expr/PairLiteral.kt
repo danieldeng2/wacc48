@@ -1,7 +1,5 @@
 package tree.nodes.expr
 
-import generator.translator.CodeGeneratorVisitor
-import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 import tree.ASTVisitor
 import tree.SymbolTable

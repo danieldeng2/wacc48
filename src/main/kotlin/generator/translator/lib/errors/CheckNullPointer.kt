@@ -1,5 +1,7 @@
 package generator.translator.lib.errors
 
+import generator.instructions.FunctionEnd
+import generator.instructions.FunctionStart
 import generator.instructions.branch.BLEQInstr
 import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr
@@ -7,8 +9,6 @@ import generator.instructions.load.LDREQInstr
 import generator.instructions.operands.LabelOp
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
-import generator.instructions.stack.POPInstr
-import generator.instructions.stack.PUSHInstr
 import generator.translator.TranslatorContext
 import generator.translator.lib.LibraryFunction
 
@@ -16,14 +16,19 @@ object CheckNullPointer : LibraryFunction {
     private var msgIndex: Int? = null
     override val label = "p_check_null_pointer"
 
-    override fun translate() = listOf(
+    override fun generateArm() = generateInstruction()
+
+    override fun generatex86() = generateInstruction()
+
+    private fun generateInstruction() = listOf(
         LabelInstr(label),
-        PUSHInstr(Register.LR),
+        FunctionStart(),
         CMPInstr(Register.R0, NumOp(0)),
         LDREQInstr(Register.R0, LabelOp(msgIndex!!)),
         BLEQInstr(RuntimeError.label),
-        POPInstr(Register.PC)
+        FunctionEnd()
     )
+
 
     override fun initIndex(ctx: TranslatorContext) {
         ctx.addLibraryFunction(RuntimeError)

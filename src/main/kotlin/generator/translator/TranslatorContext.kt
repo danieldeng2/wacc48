@@ -1,10 +1,10 @@
 package generator.translator
 
 import generator.instructions.Instruction
+import generator.instructions.Syscall
 import generator.instructions.branch.BLInstr
 import generator.instructions.directives.Ascii
 import generator.instructions.directives.LabelInstr
-import generator.instructions.directives.Word
 import generator.translator.lib.LibraryFunction
 import tree.SymbolTable
 
@@ -64,7 +64,6 @@ class TranslatorContext {
         stringMap[msg] = msgCounter
         data.apply {
             add(LabelInstr("msg_$msgCounter"))
-            add(Word(msg.length - msg.filter { it == '\\' }.count()))
             add(Ascii(msg))
         }
         return msgCounter++
@@ -75,17 +74,32 @@ class TranslatorContext {
      *  a complete assembly file
      *  @return list of all instructions in the output assembly file
      */
-    fun assemble(): List<Instruction> =
+    fun assembleArm(): List<Instruction> =
         mutableListOf<Instruction>().apply {
             if (data.size > 1)
                 addAll(data)
 
-            text.addAll(usedLibraryFunctions.flatMap { it.translate() })
+            text.addAll(usedLibraryFunctions.flatMap { it.generateArm() })
+            addAll(text)
+        }
+
+    fun assemblex86(): List<Instruction> =
+        mutableListOf<Instruction>().apply {
+            text.addAll(usedLibraryFunctions.flatMap { it.generatex86() })
+
+            if (data.size > 1)
+                addAll(data)
+
+            Syscall.requiredSyscalls.forEach {
+                add(LabelInstr("extern $it", isGlobalHeader = true))
+            }
             addAll(text)
         }
 
     /** Calculate the offset of variable with identifier [id], relative
      * to the current position of the stack pointer. */
-    fun getOffsetOfVar(id: String, st: SymbolTable) =
-            st.getVariablePosition(id) + stackPtrOffset
+    fun getOffsetOfVar(id: String, st: SymbolTable): Pair<Int, Boolean> {
+        val (baseOffset, isArgument) = st.getVariablePosition(id)
+        return Pair(baseOffset + stackPtrOffset, isArgument)
+    }
 }

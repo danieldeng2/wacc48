@@ -1,10 +1,5 @@
 package generator.translator.helpers
 
-import tree.nodes.expr.ArrayElement
-import tree.type.ArrayType
-import tree.type.BoolType
-import tree.type.CharType
-import tree.type.Type
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
@@ -13,6 +8,11 @@ import generator.instructions.operands.*
 import generator.translator.ArmConstants.NUM_BYTE_ADDRESS
 import generator.translator.CodeGeneratorVisitor
 import generator.translator.lib.errors.CheckArrayBounds
+import tree.nodes.expr.ArrayElement
+import tree.type.ArrayType
+import tree.type.BoolType
+import tree.type.CharType
+import tree.type.Type
 
 /** An example of a line of code that calls this:
  *  ```
@@ -33,11 +33,15 @@ fun CodeGeneratorVisitor.translateArrayAssignment(elem: ArrayElement) {
     ctx.text.apply {
 
         add(pushAndIncrement(ctx, Register.R0, Register.R4))
+
+        val (offset, isArg) = ctx.getOffsetOfVar(elem.name, elem.st)
+
         add(
             loadLocalVar(
                 varType = ArrayType(elem.type, null),
-                stackOffset = ctx.getOffsetOfVar(elem.name, elem.st),
-                rd = Register.R4
+                stackOffset = offset,
+                rd = Register.R4,
+                isArgument = isArg
             )
         )
 
@@ -83,13 +87,13 @@ fun CodeGeneratorVisitor.translateArrayRead(elem: ArrayElement) {
 
     ctx.text.apply {
 
-        val offset = ctx.getOffsetOfVar(elem.name, elem.st)
-        add(
-            LDRInstr(
-                Register.R0,
-                MemAddr(Register.SP, NumOp(offset))
-            )
-        )
+        val (offset, isArg) = ctx.getOffsetOfVar(elem.name, elem.st)
+        val memoryLocation = if (isArg)
+            ArgumentAddr(Register.SP, NumOp(offset))
+        else
+            MemAddr(Register.SP, NumOp(offset))
+
+        add(LDRInstr(Register.R0, memoryLocation))
         add(pushAndIncrement(ctx, Register.R4))
         add(MOVInstr(Register.R4, Register.R0))
 

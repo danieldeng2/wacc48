@@ -5,6 +5,10 @@ import generator.translator.TranslatorContext
 
 interface LibraryFunction {
     val label: String
-    fun translate(): List<Instruction>
+
+    fun generateArm(): List<Instruction>
+
+    fun generatex86(): List<Instruction>
+
     fun initIndex(ctx: TranslatorContext)
 }

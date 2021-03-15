@@ -1,8 +1,6 @@
 package generator.translator.helpers
 
-import generator.instructions.arithmetic.ADDSInstr
-import generator.instructions.arithmetic.SMULLInstr
-import generator.instructions.arithmetic.SUBSInstr
+import generator.instructions.arithmetic.*
 import generator.instructions.branch.BEQInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.branch.BLNEInstr
@@ -61,7 +59,7 @@ fun CodeGeneratorVisitor.translateModulo(node: BinOpNode) {
 
     ctx.text.apply {
         add(BLInstr(DivideByZeroError.label))
-        add(BLInstr("__aeabi_idivmod"))
+        add(MODInstr())
         add(MOVInstr(Register.R0, Register.R1))
     }
 }
@@ -73,7 +71,7 @@ fun CodeGeneratorVisitor.translateDivide(node: BinOpNode) {
 
     ctx.text.apply {
         add(BLInstr(DivideByZeroError.label))
-        add(BLInstr("__aeabi_idiv"))
+        add(IDIVInstr())
     }
 }
 

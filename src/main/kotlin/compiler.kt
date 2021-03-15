@@ -2,7 +2,6 @@ import analyser.ASTGeneratorVisitor
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import analyser.exceptions.ThrowingErrorListener
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
 import tree.SymbolTable
@@ -35,11 +34,6 @@ fun runAnalyser(
     )
 
     return programNode
-}
-
-fun runGenerator(pNode: ASTNode): List<String> {
-    val codeGen = CodeGeneratorVisitor(pNode)
-    return codeGen.translate().map { it.toString() }
 }
 
 fun runAnalyserCatchError(

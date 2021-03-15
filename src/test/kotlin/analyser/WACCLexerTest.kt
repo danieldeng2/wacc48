@@ -1,9 +1,9 @@
 package analyser
 
 import WACCLexer
-import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
+import org.antlr.v4.runtime.Token
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

@@ -1,12 +1,12 @@
 package tree.nodes.statement
 
 import analyser.exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.BoolType
-import org.antlr.v4.runtime.ParserRuleContext
-import tree.ASTVisitor
 
 data class IfNode(
     var proposition: ExprNode,

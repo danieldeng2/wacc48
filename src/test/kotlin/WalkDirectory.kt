@@ -1,5 +1,4 @@
 import java.io.File
-import java.lang.AssertionError
 import kotlin.test.assertEquals
 
 class WalkDirectory(private val name: String) {

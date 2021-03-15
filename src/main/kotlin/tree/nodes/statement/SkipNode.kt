@@ -1,8 +1,8 @@
 package tree.nodes.statement
 
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
-import tree.ASTVisitor
 
 object SkipNode : StatNode {
 

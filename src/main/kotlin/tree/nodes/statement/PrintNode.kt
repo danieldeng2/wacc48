@@ -1,10 +1,10 @@
 package tree.nodes.statement
 
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
-import org.antlr.v4.runtime.ParserRuleContext
-import tree.ASTVisitor
 
 data class PrintNode(
     var value: ExprNode,

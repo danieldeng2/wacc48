@@ -1,6 +1,8 @@
 package generator.translator
 
-import generator.instructions.Instruction
+import generator.instructions.FunctionEnd
+import generator.instructions.FunctionStart
+import generator.instructions.Syscall
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BEQInstr
 import generator.instructions.branch.BInstr
@@ -11,8 +13,6 @@ import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.move.MOVInstr
 import generator.instructions.operands.*
-import generator.instructions.stack.POPInstr
-import generator.instructions.stack.PUSHInstr
 import generator.instructions.store.STRInstr
 import generator.translator.ArmConstants.FALSE_VALUE
 import generator.translator.ArmConstants.NULL_ADDRESS
@@ -38,10 +38,8 @@ import tree.nodes.expr.operators.UnOpNode
 import tree.nodes.expr.operators.UnaryOperator
 import tree.nodes.function.*
 import tree.nodes.statement.*
-import tree.type.ArrayType
 import tree.type.CharType
 import tree.type.IntType
-import tree.type.StringType
 
 /** The visitor that traverses the AST tree top down, starting from
  * [rootNode]. At each node, it generates the intermediate representation
@@ -56,9 +54,15 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
      *
      *  @return List of intermediate ARM instructions
      */
-    fun translate(): List<Instruction> {
+    fun translateToArm(): List<String> {
         visitNode(rootNode)
-        return ctx.assemble()
+        return ctx.assembleArm().map { it.toArm() }
+    }
+
+    fun translateTox86(): List<String> {
+        visitNode(rootNode)
+        return ctx.assemblex86().map { it.tox86() }.flatten()
+
     }
 
     /** Wrapper method to tell [node] to invoke its corresponding
@@ -82,20 +86,21 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
         ctx.stackPtrOffset = 0
         ctx.text.apply {
             add(LabelInstr("main"))
-            add(PUSHInstr(Register.LR))
+            add(FunctionStart())
 
             newScope(node.st) {
                 visitNode(node.body)
             }
             add(MOVInstr(Register.R0, NumOp(0)))
-            add(POPInstr(Register.PC))
+            add(FunctionEnd())
         }
     }
 
     /** Evaluates expression to get exit code, then invoke syscall 'exit'. */
     override fun visitExit(node: ExitNode) {
         visitNode(node.expr)
-        ctx.text.add(BLInstr("exit"))
+        ctx.text.add(Syscall("exit"))
+
     }
 
 
@@ -113,7 +118,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
 
         ctx.text.apply {
             add(LabelInstr("f_${node.identifier}"))
-            add(PUSHInstr(Register.LR))
+            add(FunctionStart())
 
             startScope(node.bodyTable)
             visitNode(node.body)
@@ -132,7 +137,13 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
             add(BLInstr("f_${node.name}"))
 
             if (node.argListSize != 0)
-                add(ADDInstr(Register.SP, Register.SP, NumOp(node.argListSize)))
+                add(
+                    ADDInstr(
+                        Register.SP,
+                        Register.SP,
+                        NumOp(node.argListSize)
+                    )
+                )
         }
     }
 
@@ -156,7 +167,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
 
             // Malloc for the pair itself
             add(MOVInstr(Register.R0, NumOp(2 * NUM_BYTE_ADDRESS)))
-            add(BLInstr("malloc"))
+            add(Syscall("malloc"))
             add(popAndDecrement(ctx, Register.R1, Register.R2))
 
             add(STRInstr(Register.R2, MemAddr(Register.R0)))
@@ -178,8 +189,14 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
         visitNode(node.value)
         visitNode(node.name)
 
-        val offset = ctx.getOffsetOfVar(node.name.text, node.st)
-        ctx.text.add(storeLocalVar(node.name.type, offset))
+        val (offset, isArg) = ctx.getOffsetOfVar(node.name.text, node.st)
+        ctx.text.add(
+            storeLocalVar(
+                node.name.type,
+                offset,
+                isArgument = isArg
+            )
+        )
     }
 
     /** Loads the arguments in a function call onto the stack in reversed order.
@@ -267,16 +284,10 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
      * the required memory to store the size of the array. */
     override fun visitArrayLiteral(literal: ArrayLiteral) {
         ctx.text.apply {
-            add(
-                MOVInstr(
-                    Register.R0,
-                    NumOp(
-                        literal.values.size * literal.elemType.reserveStackSize
-                                + IntType.reserveStackSize
-                    )
-                )
-            )
-            add(BLInstr("malloc"))
+            val mallocSize =
+                literal.values.size * literal.elemType.reserveStackSize + IntType.reserveStackSize
+            add(MOVInstr(Register.R0, NumOp(mallocSize)))
+            add(Syscall("malloc"))
             add(MOVInstr(Register.R3, Register.R0))
 
             literal.values.forEachIndexed { index, arrayElem ->
@@ -313,11 +324,20 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
     /** Looks up variable in the symbol table and calculate offset from current
      * stack pointer position. Then choose an operation based on its [AccessMode]*/
     override fun visitIdentifier(node: IdentifierNode) {
-        val offset = ctx.getOffsetOfVar(node.name, node.st)
+        val (offset, isArg) = ctx.getOffsetOfVar(node.name, node.st)
+
         ctx.text.add(
             when (node.mode) {
-                AccessMode.ASSIGN -> storeLocalVar(node.type, offset)
-                AccessMode.READ -> loadLocalVar(node.type, offset)
+                AccessMode.ASSIGN -> storeLocalVar(
+                    node.type,
+                    offset,
+                    isArgument = isArg
+                )
+                AccessMode.READ -> loadLocalVar(
+                    node.type,
+                    offset,
+                    isArgument = isArg
+                )
                 else -> ADDInstr(
                     Register.R0,
                     Register.SP,
@@ -416,13 +436,10 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
 
         ctx.text.apply {
             if (value.type == CharType) {
-                add(BLInstr("putchar"))
+                add(Syscall("putchar"))
             } else {
 
-                val printFunc = when (value.type) {
-                    ArrayType(CharType, null) -> getPrintOption(StringType)
-                    else -> getPrintOption(value.type)
-                }
+                val printFunc = getPrintOption(value.type)
 
                 ctx.addLibraryFunction(printFunc)
                 add(BLInstr(printFunc.label))
@@ -458,7 +475,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
         ctx.text.apply {
             visitNode(node.value)
             endAllScopes(node.st)
-            add(POPInstr(Register.PC))
+            add(FunctionEnd())
         }
     }
 

@@ -2,7 +2,6 @@ package tree.nodes.function
 
 import analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
 import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.ASTNode

@@ -1,9 +1,6 @@
 package generator.translator.helpers
 
-import generator.translator.lib.print.PrintBool
-import generator.translator.lib.print.PrintInt
-import generator.translator.lib.print.PrintReference
-import generator.translator.lib.print.PrintStr
+import generator.translator.lib.print.*
 import tree.type.*
 import java.rmi.UnexpectedException
 
@@ -14,6 +11,7 @@ fun getPrintOption(exprType: Type) =
         IntType -> PrintInt
         StringType -> PrintStr
         BoolType -> PrintBool
+        ArrayType(CharType, null) -> PrintCharArray
         is GenericPair, is ArrayType -> PrintReference
         else -> throw UnexpectedException(
             "Else branch should not be reached for operator $exprType"

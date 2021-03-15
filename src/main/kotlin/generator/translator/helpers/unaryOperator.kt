@@ -1,6 +1,5 @@
 package generator.translator.helpers
 
-import tree.nodes.expr.operators.UnOpNode
 import generator.instructions.arithmetic.RSBSInstr
 import generator.instructions.branch.BLVSInstr
 import generator.instructions.logical.EORInstr
@@ -8,6 +7,7 @@ import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.CodeGeneratorVisitor
 import generator.translator.lib.errors.OverflowError
+import tree.nodes.expr.operators.UnOpNode
 
 
 fun CodeGeneratorVisitor.translateNegate(node: UnOpNode) {

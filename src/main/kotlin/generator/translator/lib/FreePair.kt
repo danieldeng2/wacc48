@@ -1,7 +1,9 @@
 package generator.translator.lib
 
+import generator.instructions.FunctionEnd
+import generator.instructions.FunctionStart
+import generator.instructions.Syscall
 import generator.instructions.branch.BEQInstr
-import generator.instructions.branch.BLInstr
 import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDREQInstr
@@ -20,9 +22,9 @@ object FreePair : LibraryFunction {
     private var msgIndex: Int? = null
     override val label = "p_free_pair"
 
-    override fun translate() = listOf(
+    override fun generateArm() = listOf(
         LabelInstr(label),
-        PUSHInstr(Register.LR),
+        FunctionStart(),
 
         // Check for null dereferencing
         CMPInstr(Register.R0, NumOp(0)),
@@ -32,18 +34,44 @@ object FreePair : LibraryFunction {
         // Free fst element
         PUSHInstr(Register.R0),
         LDRInstr(Register.R0, MemAddr(Register.R0)),
-        BLInstr("free"),
+        Syscall("free"),
 
         // Free snd element
         LDRInstr(Register.R0, MemAddr(Register.SP)),
         LDRInstr(Register.R0, MemAddr(Register.R0, NumOp(NUM_BYTE_ADDRESS))),
-        BLInstr("free"),
+        Syscall("free"),
 
         // Free the pair object
         POPInstr(Register.R0),
-        BLInstr("free"),
+        Syscall("free"),
 
-        POPInstr(Register.PC)
+        FunctionEnd()
+    )
+
+    override fun generatex86() = listOf(
+        LabelInstr(label),
+        FunctionStart(),
+
+        // Check for null dereferencing
+        CMPInstr(Register.R0, NumOp(0)),
+        LDREQInstr(Register.R0, LabelOp(msgIndex!!)),
+        BEQInstr(RuntimeError.label),
+
+        // Free fst element
+        PUSHInstr(Register.R0),
+        LDRInstr(Register.R0, MemAddr(Register.R0)),
+        Syscall("free"),
+
+        // Free snd element
+        LDRInstr(Register.R0, MemAddr(Register.SP)),
+        LDRInstr(Register.R0, MemAddr(Register.R0, NumOp(NUM_BYTE_ADDRESS))),
+        Syscall("free"),
+
+        // Free the pair object
+        POPInstr(Register.R0),
+        Syscall("free"),
+
+        FunctionEnd()
     )
 
     override fun initIndex(ctx: TranslatorContext) {
@@ -53,5 +81,4 @@ object FreePair : LibraryFunction {
             "NullReferenceError: dereference a null reference\\n\\0"
         )
     }
-
 }

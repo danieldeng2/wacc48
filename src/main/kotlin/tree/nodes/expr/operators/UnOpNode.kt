@@ -1,15 +1,14 @@
 package tree.nodes.expr.operators
 
 import analyser.exceptions.SyntaxException
-import tree.SymbolTable
-import tree.nodes.function.FuncNode
-import tree.type.*
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
 import shell.detectIntegerOverflow
-import tree.nodes.expr.*
 import tree.ASTVisitor
+import tree.SymbolTable
+import tree.nodes.expr.*
+import tree.nodes.function.FuncNode
+import tree.type.*
 
 data class UnOpNode(
     val operator: UnaryOperator,

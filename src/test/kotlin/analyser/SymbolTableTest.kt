@@ -1,8 +1,8 @@
 package analyser
 
+import org.junit.Test
 import tree.SymbolTable
 import tree.nodes.expr.BoolLiteral
-import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull

@@ -1,11 +1,11 @@
 package tree.nodes.assignment
 
 import analyser.exceptions.SemanticsException
-import tree.SymbolTable
-import tree.nodes.function.FuncNode
 import org.antlr.v4.runtime.ParserRuleContext
-import tree.nodes.function.FuncCallNode
 import tree.ASTVisitor
+import tree.SymbolTable
+import tree.nodes.function.FuncCallNode
+import tree.nodes.function.FuncNode
 import tree.nodes.statement.StatNode
 
 data class AssignmentNode(

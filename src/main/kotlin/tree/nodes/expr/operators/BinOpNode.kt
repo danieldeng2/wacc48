@@ -2,16 +2,12 @@ package tree.nodes.expr.operators
 
 import analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
-import tree.SymbolTable
-import tree.nodes.function.FuncNode
 import shell.*
-import tree.nodes.expr.*
-import tree.type.*
-import tree.type.BoolType
-import tree.type.CharType
-import tree.type.IntType
-import tree.type.Type
 import tree.ASTVisitor
+import tree.SymbolTable
+import tree.nodes.expr.*
+import tree.nodes.function.FuncNode
+import tree.type.*
 
 data class BinOpNode(
     val operator: BinaryOperator,

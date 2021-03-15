@@ -1,17 +1,15 @@
 package tree.nodes.expr
 
 import analyser.exceptions.SemanticsException
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.CodeEvaluatorVisitor
 import shell.MemoryTable
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.ArrayType
 import tree.type.CharType
 import tree.type.Type
 import tree.type.VoidType
-import tree.ASTVisitor
 
 
 data class ArrayLiteral(

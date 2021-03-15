@@ -1,12 +1,12 @@
 package analyser
 
 import analyser.exceptions.SemanticsException
+import org.junit.Test
 import tree.SymbolTable
 import tree.nodes.ProgNode
 import tree.nodes.expr.BoolLiteral
 import tree.nodes.function.MainNode
 import tree.nodes.statement.*
-import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 

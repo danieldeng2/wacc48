@@ -1,8 +1,6 @@
 package shell
 
-import tree.nodes.expr.IntLiteral
 import tree.nodes.expr.operators.BinaryOperator
-import java.lang.Math.abs
 
 open class ShellRunTimeException(s: String) : Exception(s)
 

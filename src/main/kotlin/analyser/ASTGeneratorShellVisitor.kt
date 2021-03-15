@@ -1,5 +1,6 @@
 package analyser
 
+import WACCShellParser
 import WACCShellParserBaseVisitor
 import analyser.exceptions.SyntaxException
 import org.apache.commons.text.StringEscapeUtils

@@ -1,7 +1,9 @@
 package generator.translator.helpers
 
+import generator.instructions.Instruction
 import generator.instructions.load.LDRInstr
 import generator.instructions.load.LDRSBInstr
+import generator.instructions.operands.ArgumentAddr
 import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
@@ -19,17 +21,26 @@ fun storeLocalVar(
     stackOffset: Int,
     rd: Register = Register.SP,
     rn: Register = Register.R0,
-    isArgLoad: Boolean = false
-) =
-    when (varType) {
+    isArgLoad: Boolean = false,
+    isArgument: Boolean = false
+): Instruction {
+
+    val memAddrLocation =
+        if (isArgument)
+            ArgumentAddr(rd, NumOp(stackOffset), isArgLoad)
+        else
+            MemAddr(rd, NumOp(stackOffset), isArgLoad)
+
+    return when (varType) {
         is BoolType, CharType ->
-            STRBInstr(rn, MemAddr(rd, NumOp(stackOffset), isArgLoad))
+            STRBInstr(rn, memAddrLocation)
 
         is IntType, StringType, is GenericPair, is ArrayType ->
-            STRInstr(rn, MemAddr(rd, NumOp(stackOffset), isArgLoad))
+            STRInstr(rn, memAddrLocation)
 
         else -> throw UnknownError("Cannot store $varType")
     }
+}
 
 /** Selects the correct 'load' instruction based on the size of [varType].
  *
@@ -40,14 +51,23 @@ fun loadLocalVar(
     varType: Type,
     stackOffset: Int,
     rn: Register = Register.SP,
-    rd: Register = Register.R0
-) =
-    when (varType) {
+    rd: Register = Register.R0,
+    isArgument: Boolean = false
+): Instruction {
+
+    val memAddrLocation =
+        if (isArgument)
+            ArgumentAddr(rn, NumOp(stackOffset))
+        else
+            MemAddr(rn, NumOp(stackOffset))
+
+    return when (varType) {
         is BoolType, CharType ->
-            LDRSBInstr(rd, MemAddr(rn, NumOp(stackOffset)))
+            LDRSBInstr(rd, memAddrLocation)
 
         is IntType, StringType, is GenericPair, is ArrayType ->
-            LDRInstr(rd, MemAddr(rn, NumOp(stackOffset)))
+            LDRInstr(rd, memAddrLocation)
 
         else -> throw UnknownError("Cannot load $varType")
     }
+}

@@ -1,9 +1,9 @@
 package tree.nodes.statement
 
-import tree.SymbolTable
-import tree.nodes.function.FuncNode
 import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
+import tree.SymbolTable
+import tree.nodes.function.FuncNode
 
 data class SeqNode(
     var sequence: List<StatNode>,

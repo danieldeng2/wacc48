@@ -5,12 +5,14 @@ import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
-import shell.*
+import shell.CodeEvaluatorVisitor
+import shell.IncompleteRuleException
+import shell.MemoryTable
+import shell.ShellErrorListener
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.checkFunctionTerminates
 import tree.nodes.function.FuncNode
-import tree.type.VoidType
 import java.io.BufferedReader
 import java.io.PrintStream
 import java.nio.file.Path

@@ -8,5 +8,8 @@ class LDRInstr(
     private val reg: Register,
     private val op: LoadableOp,
 ) : Instruction {
-    override fun toString() = "\tLDR ${reg.repr}, $op"
+
+    override fun tox86() = listOf("\tmov ${reg.tox86()}, ${op.tox86()}")
+
+    override fun toArm() = "\tLDR ${reg.toArm()}, ${op.toArm()}"
 }

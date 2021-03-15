@@ -1,20 +1,22 @@
 package generator.translator.helpers
 
-import tree.nodes.assignment.AccessMode
-import tree.nodes.assignment.PairElemNode
-import tree.nodes.expr.ExprNode
-import tree.nodes.expr.IdentifierNode
-import tree.type.Type
+import generator.instructions.Syscall
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
 import generator.instructions.move.MOVInstr
+import generator.instructions.operands.ArgumentAddr
 import generator.instructions.operands.MemAddr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
 import generator.translator.CodeGeneratorVisitor
 import generator.translator.lib.errors.CheckNullPointer
+import tree.nodes.assignment.AccessMode
+import tree.nodes.assignment.PairElemNode
+import tree.nodes.expr.ExprNode
+import tree.nodes.expr.IdentifierNode
+import tree.type.Type
 
 /** Evaluates the expression [elem], allocate memory for the result and store
  * the result of the evaluation into allocated memory.
@@ -26,7 +28,7 @@ fun CodeGeneratorVisitor.storeElemInHeap(elem: ExprNode) {
         listOf(
             pushAndIncrement(ctx, Register.R0),
             MOVInstr(Register.R0, NumOp(elem.type.reserveStackSize)),
-            BLInstr("malloc"),
+            Syscall("malloc"),
             popAndDecrement(ctx, Register.R1),
             storeLocalVar(
                 varType = elem.type,
@@ -75,20 +77,22 @@ fun CodeGeneratorVisitor.assignToPosition(node: PairElemNode, memOffset: Int) {
     ctx.addLibraryFunction(CheckNullPointer)
     ctx.text.add(pushAndIncrement(ctx, Register.R0))
 
-    val stackOffset =
+    val (offset, isArg) =
         ctx.getOffsetOfVar(
             (node.expr as IdentifierNode).name,
             node.st
         )
 
+    val memoryLocation = if (isArg)
+        ArgumentAddr(Register.SP, NumOp(offset))
+    else
+        MemAddr(Register.SP, NumOp(offset))
+
     ctx.text.addAll(
         listOf(
 
             // Loads address of pair into R0 and check for NULL
-            LDRInstr(
-                Register.R0,
-                MemAddr(Register.SP, NumOp(stackOffset))
-            ),
+            LDRInstr(Register.R0, memoryLocation),
             BLInstr(CheckNullPointer.label),
 
             // Loads address of the element in context into R0 and saves it
@@ -98,14 +102,14 @@ fun CodeGeneratorVisitor.assignToPosition(node: PairElemNode, memOffset: Int) {
             LDRInstr(Register.R0, MemAddr(Register.R0)),
 
             //Free existing value
-            BLInstr("free"),
+            Syscall("free"),
 
             // Allocate memory for new value
             MOVInstr(
                 Register.R0,
                 NumOp(node.type.reserveStackSize)
             ),
-            BLInstr("malloc"),
+            Syscall("malloc"),
 
             // Stores the new value into the memory address of the pair element
             popAndDecrement(ctx, Register.R1),

@@ -1,6 +1,5 @@
 package generator.translator.lib.errors
 
-import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDRInstr
@@ -14,11 +13,15 @@ object OverflowError : LibraryFunction {
     override val label = "p_throw_overflow_error"
     private var msgIndex: Int? = null
 
-    override fun translate() = mutableListOf<Instruction>().apply {
-        add(LabelInstr(label))
-        add(LDRInstr(Register.R0, LabelOp(msgIndex!!)))
-        add(BLInstr(RuntimeError.label))
-    }
+    override fun generateArm() = generateInstruction()
+
+    override fun generatex86() = generateInstruction()
+
+    private fun generateInstruction() = listOf(
+        LabelInstr(label),
+        LDRInstr(Register.R0, LabelOp(msgIndex!!)),
+        BLInstr(RuntimeError.label)
+    )
 
     override fun initIndex(ctx: TranslatorContext) {
         msgIndex =

@@ -1,13 +1,13 @@
 package tree.nodes.assignment
 
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.PairType
 import tree.type.Type
 import tree.type.VoidType
-import org.antlr.v4.runtime.ParserRuleContext
-import tree.ASTVisitor
 
 data class NewPairNode(
     var firstElem: ExprNode,

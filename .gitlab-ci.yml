@@ -9,8 +9,26 @@ gradle-build:
   script: 
     - ./gradlew jar
 
-gradle-test:
+gradle-test-analyser:
   stage: gradleTest 
   script: 
-    - ./gradlew clean test
+    - ./gradlew clean test --tests 'analyser.*'
 
+gradle-test-arm:
+  stage: gradleTest
+  script:
+    - ./gradlew clean test --tests 'generator.arm.*'
+
+gradle-test-x86:
+  image: adoptopenjdk/openjdk11:x86_64-ubuntu-jdk-11.0.10_9
+  stage: gradleTest
+  script:
+    - apt-get update
+    - apt-get install -y nasm
+    - apt-get install -y build-essential
+    - ./gradlew clean test --tests 'generator.x86.*'
+
+gradle-test-shell:
+  stage: gradleTest
+  script:
+    - ./gradlew clean test --tests 'generator.shell.*'
