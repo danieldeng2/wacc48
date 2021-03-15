@@ -27,19 +27,21 @@ class ControlFlowVisitor : ASTVisitor {
     }
 
     private fun analyseIf(node: IfNode): StatNode {
-        when (node.proposition) {
-            is BoolLiteral -> {
-                if (node.proposition.value) {
-                    return analyseStat(node.trueStat)
-                }
-                return analyseStat(node.falseStat)
+        val proposition = node.proposition
+        if (proposition is BoolLiteral) {
+            if (proposition.value) {
+                return analyseStat(node.trueStat)
             }
-            else -> return node
+            return analyseStat(node.falseStat)
         }
+        return node
+
     }
 
     private fun analyseWhile(node: WhileNode): StatNode {
-        if (node.proposition is BoolLiteral && !node.proposition.value) {
+        val proposition = node.proposition
+        if (proposition is BoolLiteral && !proposition.value
+        ) {
             return SkipNode
         }
         node.body = analyseStat(node.body)
