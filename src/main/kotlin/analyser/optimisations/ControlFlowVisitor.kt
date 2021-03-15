@@ -1,4 +1,4 @@
-package analyser
+package analyser.optimisations
 
 import tree.ASTVisitor
 import tree.nodes.ASTNode
@@ -26,27 +26,6 @@ class ControlFlowVisitor : ASTVisitor {
         }
     }
 
-    private fun analyseIf(node: IfNode): StatNode {
-        when (node.proposition) {
-            is BoolLiteral -> {
-                if (node.proposition.value) {
-                    print("false removed")
-                    return node.trueStat
-                }
-                print("true removed")
-                return node.falseStat
-            }
-            else -> return node
-        }
-    }
-
-    private fun analyseWhile(node: WhileNode): StatNode {
-        if (node.proposition is BoolLiteral && !node.proposition.value) {
-            return SkipNode
-        }
-        return node
-    }
-
     override fun visitNode(node: ASTNode) {
         node.acceptVisitor(this)
     }
@@ -62,13 +41,50 @@ class ControlFlowVisitor : ASTVisitor {
         node.body = analyseStat(node.body)
     }
 
-    override fun visitExit(node: ExitNode) {
+    private fun analyseIf(node: IfNode): StatNode {
+        when (node.proposition) {
+            is BoolLiteral -> {
+                if (node.proposition.value) {
+                    return node.trueStat
+                }
+                return node.falseStat
+            }
+            else -> return node
+        }
+    }
 
+    private fun analyseWhile(node: WhileNode): StatNode {
+        if (node.proposition is BoolLiteral && !node.proposition.value) {
+            return SkipNode
+        }
+        return node
+    }
+
+    override fun visitBegin(node: BeginNode) {
+        node.stat = analyseStat(node.stat)
     }
 
     override fun visitFunction(node: FuncNode) {
         node.body = analyseStat(node.body)
     }
+
+    override fun visitSeq(node: SeqNode) {
+        node.sequence = node.sequence.map { analyseStat(it) }
+    }
+
+    override fun visitWhile(node: WhileNode) {
+        node.body = analyseStat(node.body)
+    }
+
+    override fun visitIf(node: IfNode) {
+        node.falseStat = analyseStat(node.falseStat)
+        node.trueStat = analyseStat(node.trueStat)
+    }
+
+    override fun visitExit(node: ExitNode) {
+
+    }
+
 
     override fun visitFuncCall(node: FuncCallNode) {
 
@@ -138,17 +154,8 @@ class ControlFlowVisitor : ASTVisitor {
 
     }
 
-    override fun visitBegin(node: BeginNode) {
-        node.stat = analyseStat(node.stat)
-    }
-
     override fun visitFree(node: FreeNode) {
 
-    }
-
-    override fun visitIf(node: IfNode) {
-        node.falseStat = analyseStat(node.falseStat)
-        node.trueStat = analyseStat(node.trueStat)
     }
 
     override fun visitPrint(node: PrintNode) {
@@ -161,14 +168,6 @@ class ControlFlowVisitor : ASTVisitor {
 
     override fun visitReturn(node: ReturnNode) {
 
-    }
-
-    override fun visitSeq(node: SeqNode) {
-        node.sequence = node.sequence.map { analyseStat(it) }
-    }
-
-    override fun visitWhile(node: WhileNode) {
-        node.body = analyseStat(node.body)
     }
 
 

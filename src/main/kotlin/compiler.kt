@@ -1,5 +1,5 @@
 import analyser.ASTGeneratorVisitor
-import analyser.ControlFlowVisitor
+import analyser.optimisations.ControlFlowVisitor
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import analyser.exceptions.ThrowingErrorListener
