@@ -11,7 +11,7 @@ import tree.ASTVisitor
 data class StringLiteral(
     val value: String,
     val ctx: ParserRuleContext?
-) : ExprNode {
+) : ExprNode, BaseLiteral {
 
 
     override var type: Type = StringType

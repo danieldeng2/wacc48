@@ -11,7 +11,7 @@ import tree.ASTVisitor
 data class IntLiteral(
     var value: Int,
     val ctx: ParserRuleContext?
-) : ExprNode {
+) : ExprNode, BaseLiteral {
     override var type: Type = IntType
 
     override fun validate(

@@ -10,7 +10,7 @@ import tree.ASTVisitor
 data class BoolLiteral(
     var value: Boolean,
     val ctx: ParserRuleContext?
-) : ExprNode {
+) : ExprNode, BaseLiteral {
     override var type: Type = BoolType
 
     override fun validate(
