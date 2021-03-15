@@ -13,123 +13,146 @@ import tree.nodes.function.*
 import tree.nodes.statement.*
 
 class ConstantEvaluationVisitor : ASTVisitor {
+
+    private fun analyse(expr: ExprNode): ExprNode {
+        return expr
+    }
+
     override fun visitNode(node: ASTNode) {
-        TODO("Not yet implemented")
+        node.acceptVisitor(this)
     }
 
     override fun visitProgram(node: ProgNode) {
-        TODO("Not yet implemented")
+        node.functions.forEach {
+            it.acceptVisitor(this)
+        }
+        node.main.acceptVisitor(this)
     }
 
     override fun visitMain(node: MainNode) {
-        TODO("Not yet implemented")
+        node.body.acceptVisitor(this)
     }
 
     override fun visitExit(node: ExitNode) {
-        TODO("Not yet implemented")
+        node.expr = analyse(node.expr)
     }
 
     override fun visitFunction(node: FuncNode) {
-        TODO("Not yet implemented")
+        node.body.acceptVisitor(this)
     }
 
     override fun visitFuncCall(node: FuncCallNode) {
-        TODO("Not yet implemented")
+        node.argList.acceptVisitor(this)
     }
 
     override fun visitParam(node: ParamNode) {
-        TODO("Not yet implemented")
+
     }
 
     override fun visitNewPair(node: NewPairNode) {
-        TODO("Not yet implemented")
+        node.firstElem = analyse(node.firstElem)
+        node.secondElem = analyse(node.secondElem)
     }
 
     override fun visitDeclaration(node: DeclarationNode) {
-        TODO("Not yet implemented")
+        when (node.value) {
+            is ExprNode -> node.value = analyse(node.value as ExprNode)
+            else -> node.value.acceptVisitor(this)
+        }
     }
 
     override fun visitArgList(node: ArgListNode) {
-        TODO("Not yet implemented")
+        node.args = node.args.map { analyse(it) }
     }
 
     override fun visitAssignment(node: AssignmentNode) {
-        TODO("Not yet implemented")
+        when (node.value) {
+            is ExprNode -> node.value = analyse(node.value as ExprNode)
+            else -> node.value.acceptVisitor(this)
+        }
+        node.name.acceptVisitor(this)
+
     }
 
     override fun visitBinOp(node: BinOpNode) {
-        TODO("Not yet implemented")
+        node.firstExpr = analyse(node.firstExpr)
+        node.secondExpr = analyse(node.secondExpr)
     }
 
     override fun visitUnOp(node: UnOpNode) {
-        TODO("Not yet implemented")
+        node.expr = analyse(node.expr)
     }
 
     override fun visitPairElem(node: PairElemNode) {
-        TODO("Not yet implemented")
+        node.expr = analyse(node.expr)
     }
 
     override fun visitArrayElement(elem: ArrayElement) {
-        TODO("Not yet implemented")
+        elem.arrIndices = elem.arrIndices.map { analyse(it) }
     }
 
     override fun visitArrayLiteral(literal: ArrayLiteral) {
-        TODO("Not yet implemented")
+        literal.values = literal.values.map { analyse(it) }
     }
 
     override fun visitBoolLiteral(literal: BoolLiteral) {
-        TODO("Not yet implemented")
+
     }
 
     override fun visitCharLiteral(literal: CharLiteral) {
-        TODO("Not yet implemented")
+
     }
 
     override fun visitIdentifier(node: IdentifierNode) {
-        TODO("Not yet implemented")
+
     }
 
     override fun visitIntLiteral(literal: IntLiteral) {
-        TODO("Not yet implemented")
+
     }
 
     override fun visitPairLiteral(literal: PairLiteral) {
-        TODO("Not yet implemented")
+
     }
 
     override fun visitStringLiteral(literal: StringLiteral) {
-        TODO("Not yet implemented")
+
     }
 
     override fun visitBegin(node: BeginNode) {
-        TODO("Not yet implemented")
+        node.stat.acceptVisitor(this)
     }
 
     override fun visitFree(node: FreeNode) {
-        TODO("Not yet implemented")
+        node.value = analyse(node.value)
     }
 
     override fun visitIf(node: IfNode) {
-        TODO("Not yet implemented")
+        node.proposition = analyse(node.proposition)
+        node.trueStat.acceptVisitor(this)
+        node.falseStat.acceptVisitor(this)
     }
 
     override fun visitPrint(node: PrintNode) {
-        TODO("Not yet implemented")
+        node.value = analyse(node.value)
     }
 
     override fun visitRead(node: ReadNode) {
-        TODO("Not yet implemented")
+        node.value.acceptVisitor(this)
     }
 
     override fun visitReturn(node: ReturnNode) {
-        TODO("Not yet implemented")
+        node.value = analyse(node.value)
     }
 
     override fun visitSeq(node: SeqNode) {
-        TODO("Not yet implemented")
+        node.sequence.forEach {
+            it.acceptVisitor(this)
+        }
     }
 
     override fun visitWhile(node: WhileNode) {
-        TODO("Not yet implemented")
+        node.proposition = analyse(node.proposition)
+        node.body.acceptVisitor(this)
     }
 }
