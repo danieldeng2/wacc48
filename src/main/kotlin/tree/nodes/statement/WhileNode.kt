@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class WhileNode(
-    val proposition: ExprNode,
+    var proposition: ExprNode,
     var body: StatNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {

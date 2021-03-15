@@ -11,7 +11,7 @@ import tree.ASTVisitor
 
 
 data class ArrayLiteral(
-    val values: List<ExprNode>,
+    var values: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : ExprNode {
     var elemType: Type = VoidType

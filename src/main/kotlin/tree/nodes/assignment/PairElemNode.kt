@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class PairElemNode(
-    val expr: ExprNode,
+    var expr: ExprNode,
     val isFirst: Boolean,
     val ctx: ParserRuleContext?
 ) : LHSNode, RHSNode {

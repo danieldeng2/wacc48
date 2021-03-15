@@ -9,7 +9,7 @@ import tree.ASTVisitor
 
 data class AssignmentNode(
     val name: LHSNode,
-    val value: RHSNode,
+    var value: RHSNode,
     val ctx: ParserRuleContext?
 ) : StatNode {
 

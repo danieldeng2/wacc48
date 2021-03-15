@@ -10,7 +10,7 @@ import tree.nodes.function.ParamNode
 
 data class DeclarationNode(
     val name: ParamNode,
-    val value: RHSNode,
+    var value: RHSNode,
     val ctx: ParserRuleContext?
 ) : StatNode {
     lateinit var st: SymbolTable

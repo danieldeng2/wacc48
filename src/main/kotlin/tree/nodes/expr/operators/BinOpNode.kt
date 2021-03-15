@@ -13,8 +13,8 @@ import tree.ASTVisitor
 
 data class BinOpNode(
     val operator: BinaryOperator,
-    val firstExpr: ExprNode,
-    val secondExpr: ExprNode,
+    var firstExpr: ExprNode,
+    var secondExpr: ExprNode,
     val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType

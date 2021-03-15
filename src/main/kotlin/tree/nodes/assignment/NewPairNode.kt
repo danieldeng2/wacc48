@@ -10,8 +10,8 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class NewPairNode(
-    val firstElem: ExprNode,
-    val secondElem: ExprNode,
+    var firstElem: ExprNode,
+    var secondElem: ExprNode,
     val ctx: ParserRuleContext?
 ) : RHSNode {
     override var type: Type = VoidType

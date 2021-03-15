@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class ExitNode(
-    val expr: ExprNode,
+    var expr: ExprNode,
     val ctx: ParserRuleContext?
 ) : StatNode {
 

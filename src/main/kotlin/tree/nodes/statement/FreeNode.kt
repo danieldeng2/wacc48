@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class FreeNode(
-    val value: ExprNode,
+    var value: ExprNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
 

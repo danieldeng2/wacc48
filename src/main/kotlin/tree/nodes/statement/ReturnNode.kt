@@ -7,7 +7,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class ReturnNode(
-    val value: ExprNode,
+    var value: ExprNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
     lateinit var st: SymbolTable

@@ -12,7 +12,7 @@ import tree.ASTVisitor
 
 data class ArrayElement(
     val name: String,
-    val arrIndices: List<ExprNode>,
+    var arrIndices: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : ExprNode, LHSNode {
     lateinit var st: SymbolTable

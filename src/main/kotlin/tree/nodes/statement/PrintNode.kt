@@ -7,7 +7,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class PrintNode(
-    val value: ExprNode,
+    var value: ExprNode,
     val returnAfterPrint: Boolean = false,
     val ctx: ParserRuleContext?,
 ) : StatNode {

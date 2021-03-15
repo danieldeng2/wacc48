@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class IfNode(
-    val proposition: ExprNode,
+    var proposition: ExprNode,
     var trueStat: StatNode,
     var falseStat: StatNode,
     val ctx: ParserRuleContext?,
