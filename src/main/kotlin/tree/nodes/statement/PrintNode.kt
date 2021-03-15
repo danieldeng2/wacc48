@@ -1,13 +1,13 @@
 package tree.nodes.statement
 
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
-import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
 
 data class PrintNode(
-    val value: ExprNode,
+    var value: ExprNode,
     val returnAfterPrint: Boolean = false,
     val ctx: ParserRuleContext?,
 ) : StatNode {
@@ -21,8 +21,7 @@ data class PrintNode(
         value.validate(st, funTable)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translatePrint(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitPrint(this)
     }
-
 }

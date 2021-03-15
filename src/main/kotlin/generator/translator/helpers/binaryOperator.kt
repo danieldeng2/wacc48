@@ -1,6 +1,5 @@
 package generator.translator.helpers
 
-import generator.instructions.Syscall
 import generator.instructions.arithmetic.*
 import generator.instructions.branch.BEQInstr
 import generator.instructions.branch.BLInstr
@@ -91,7 +90,7 @@ fun CodeGeneratorVisitor.translatePlusMinus(node: BinOpNode, isPlus: Boolean) {
 }
 
 fun CodeGeneratorVisitor.translateLogical(node: BinOpNode, isAnd: Boolean) {
-    visitAndTranslate(node.firstExpr)
+    visitNode(node.firstExpr)
 
     ctx.text.add(
         if (isAnd)
@@ -103,7 +102,7 @@ fun CodeGeneratorVisitor.translateLogical(node: BinOpNode, isAnd: Boolean) {
     val branchFirstOp = ctx.labelCounter
 
     ctx.text.add(BEQInstr("L$branchFirstOp"))
-    visitAndTranslate(node.secondExpr)
+    visitNode(node.secondExpr)
 
     ctx.text.add(LabelInstr("L$branchFirstOp"))
 
@@ -152,10 +151,10 @@ fun CodeGeneratorVisitor.translateComparator(node: BinOpNode) {
  * registers. */
 fun CodeGeneratorVisitor.loadOperandsIntoRegister(node: BinOpNode) {
     ctx.addLibraryFunction(DivideByZeroError)
-    node.firstExpr.acceptCodeGenVisitor(this)
+    node.firstExpr.acceptVisitor(this)
 
     ctx.text.add(pushAndIncrement(ctx, Register.R0))
-    node.secondExpr.acceptCodeGenVisitor(this)
+    node.secondExpr.acceptVisitor(this)
 
     ctx.text.apply {
         add(MOVInstr(Register.R1, Register.R0))

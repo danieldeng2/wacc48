@@ -1,0 +1,31 @@
+# a function with varied inputs
+
+# Output:
+# a is 42
+# b is true
+# c is u
+# d is hello
+# e is #addrs#
+# f is #addrs#
+# answer is g
+
+# Program:
+
+begin
+  char doSomething(int a, bool b, char c, string d) is
+		int e = 1;
+		int f = 1;
+		int g = 1;
+    println a ;
+    println b ;
+    println c ;
+    println d ;
+		println e ;
+		println f ;
+		println g ;
+    return 'g'
+  end
+  char answer = call doSomething(42, true, 'u', "hello") ;
+  print "answer is " ;
+  println answer
+end

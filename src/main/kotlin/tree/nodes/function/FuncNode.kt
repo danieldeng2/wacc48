@@ -1,18 +1,18 @@
 package tree.nodes.function
 
 import analyser.exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.statement.*
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
 
 data class FuncNode(
     val identifier: String,
     val paramList: List<ParamNode>,
     val retType: Type,
-    val body: StatNode,
+    var body: StatNode,
     val ctx: ParserRuleContext?
 ) : ASTNode {
     lateinit var paramListTable: SymbolTable
@@ -62,8 +62,8 @@ data class FuncNode(
     }
 
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateFunction(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitFunction(this)
     }
 
 }

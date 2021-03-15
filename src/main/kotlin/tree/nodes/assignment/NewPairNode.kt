@@ -1,17 +1,17 @@
 package tree.nodes.assignment
 
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.PairType
 import tree.type.Type
 import tree.type.VoidType
-import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
 
 data class NewPairNode(
-    val firstElem: ExprNode,
-    val secondElem: ExprNode,
+    var firstElem: ExprNode,
+    var secondElem: ExprNode,
     val ctx: ParserRuleContext?
 ) : RHSNode {
     override var type: Type = VoidType
@@ -28,8 +28,9 @@ data class NewPairNode(
         type = PairType(firstElem.type, secondElem.type, ctx)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateNewPair(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitNewPair(this)
     }
+
 
 }

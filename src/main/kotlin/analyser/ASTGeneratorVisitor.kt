@@ -18,7 +18,6 @@ import tree.type.*
 
 
 class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
-
     override fun visitProg(ctx: WACCParser.ProgContext): ASTNode {
         val functions = ctx.func().map { visit(it) as FuncNode }.toMutableList()
 

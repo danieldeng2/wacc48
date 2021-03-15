@@ -1,12 +1,12 @@
 package generator.translator.helpers
 
-import tree.SymbolTable
 import generator.instructions.Instruction
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.arithmetic.SUBInstr
 import generator.instructions.operands.NumOp
 import generator.instructions.operands.Register
 import generator.translator.ArmConstants.OPERAND2_MAX_VALUE
+import tree.SymbolTable
 
 /** Wraps a list of instruction inside stack manipulation instructions to move
  * stack pointer [Register.SP] up or down. */

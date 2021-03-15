@@ -1,6 +1,5 @@
 package generator.translator.lib.errors
 
-import generator.instructions.Instruction
 import generator.instructions.branch.BLInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDRInstr

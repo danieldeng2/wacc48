@@ -1,9 +1,8 @@
 package generator.x86
 
-import CompilerFormatter
-import I386Formatter
-import WaccCompiler
 import WalkDirectory
+import entrypoint.I386Formatter
+import entrypoint.WaccCompiler
 import generator.reference.EmulatorResult
 import generator.reference.RefCompiler
 import generator.reference.RefEmulator

@@ -1,17 +1,17 @@
 package tree.nodes.statement
 
 import analyser.exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.BoolType
-import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
 
 data class IfNode(
-    val proposition: ExprNode,
-    val trueStat: StatNode,
-    val falseStat: StatNode,
+    var proposition: ExprNode,
+    var trueStat: StatNode,
+    var falseStat: StatNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
     lateinit var trueST: SymbolTable
@@ -35,7 +35,7 @@ data class IfNode(
         falseStat.validate(falseST, funTable)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateIf(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitIf(this)
     }
 }

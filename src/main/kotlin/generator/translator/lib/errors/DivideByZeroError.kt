@@ -2,7 +2,6 @@ package generator.translator.lib.errors
 
 import generator.instructions.FunctionEnd
 import generator.instructions.FunctionStart
-import generator.instructions.Instruction
 import generator.instructions.branch.BLEQInstr
 import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr

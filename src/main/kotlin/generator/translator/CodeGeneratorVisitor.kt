@@ -2,7 +2,6 @@ package generator.translator
 
 import generator.instructions.FunctionEnd
 import generator.instructions.FunctionStart
-import generator.instructions.Instruction
 import generator.instructions.Syscall
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BEQInstr
@@ -25,6 +24,7 @@ import generator.translator.lib.errors.CheckNullPointer
 import generator.translator.lib.print.PrintLn
 import generator.translator.lib.read.ReadChar
 import generator.translator.lib.read.ReadInt
+import tree.ASTVisitor
 import tree.nodes.ASTNode
 import tree.nodes.ProgNode
 import tree.nodes.assignment.AccessMode
@@ -38,17 +38,15 @@ import tree.nodes.expr.operators.UnOpNode
 import tree.nodes.expr.operators.UnaryOperator
 import tree.nodes.function.*
 import tree.nodes.statement.*
-import tree.type.ArrayType
 import tree.type.CharType
 import tree.type.IntType
-import tree.type.StringType
 
 /** The visitor that traverses the AST tree top down, starting from
  * [rootNode]. At each node, it generates the intermediate representation
  * of the assembly code and add it to the corresponding accumulator
  * field in [ctx] */
 
-class CodeGeneratorVisitor(private val rootNode: ASTNode) {
+class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
     val ctx = TranslatorContext()
 
     /** Translates the given AST tree [rootNode] into a list of assembly
@@ -57,40 +55,41 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
      *  @return List of intermediate ARM instructions
      */
     fun translateToArm(): List<String> {
-        visitAndTranslate(rootNode)
+        visitNode(rootNode)
         return ctx.assembleArm().map { it.toArm() }
     }
 
     fun translateTox86(): List<String> {
-        visitAndTranslate(rootNode)
+        visitNode(rootNode)
         return ctx.assemblex86().map { it.tox86() }.flatten()
+
     }
 
     /** Wrapper method to tell [node] to invoke its corresponding
      *  'translate' method to generate required assembly code
      */
-    fun visitAndTranslate(node: ASTNode) {
-        node.acceptCodeGenVisitor(this)
+    override fun visitNode(node: ASTNode) {
+        node.acceptVisitor(this)
     }
 
     /** Translate whole program by calling translate on each of its children */
-    fun translateProgram(node: ProgNode) {
+    override fun visitProgram(node: ProgNode) {
         node.functions.forEach {
-            translateFunction(it)
+            visitFunction(it)
         }
-        translateMain(node.main)
+        visitMain(node.main)
     }
 
     /** Translate the 'main' function, default to exit with status '0'
      * if not otherwise overwritten */
-    fun translateMain(node: MainNode) {
+    override fun visitMain(node: MainNode) {
         ctx.stackPtrOffset = 0
         ctx.text.apply {
             add(LabelInstr("main"))
             add(FunctionStart())
 
             newScope(node.st) {
-                visitAndTranslate(node.body)
+                visitNode(node.body)
             }
             add(MOVInstr(Register.R0, NumOp(0)))
             add(FunctionEnd())
@@ -98,9 +97,10 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     }
 
     /** Evaluates expression to get exit code, then invoke syscall 'exit'. */
-    fun translateExit(node: ExitNode) {
-        visitAndTranslate(node.expr)
+    override fun visitExit(node: ExitNode) {
+        visitNode(node.expr)
         ctx.text.add(Syscall("exit"))
+
     }
 
 
@@ -109,7 +109,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
      *
      *  Generates the appropriate instructions then 'visit' the function body.
      */
-    fun translateFunction(node: FuncNode) {
+    override fun visitFunction(node: FuncNode) {
         node.paramList.forEach {
             node.paramListTable.declareVariable(it.text)
         }
@@ -121,7 +121,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
             add(FunctionStart())
 
             startScope(node.bodyTable)
-            visitAndTranslate(node.body)
+            visitNode(node.body)
 
             add(Directive(".ltorg"))
         }
@@ -130,19 +130,25 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     /** Visit list of arguments [node.argList] and generate a Branch instruction.
      *  Moves stack pointer back to its position before this call if required.
      */
-    fun translateFuncCall(node: FuncCallNode) {
-        visitAndTranslate(node.argList)
+    override fun visitFuncCall(node: FuncCallNode) {
+        visitNode(node.argList)
 
         ctx.text.apply {
             add(BLInstr("f_${node.name}"))
 
             if (node.argListSize != 0)
-                add(ADDInstr(Register.SP, Register.SP, NumOp(node.argListSize)))
+                add(
+                    ADDInstr(
+                        Register.SP,
+                        Register.SP,
+                        NumOp(node.argListSize)
+                    )
+                )
         }
     }
 
     /** Declares the name of variable. See [SymbolTable.declareVariable] for more. */
-    fun translateParam(node: ParamNode) {
+    override fun visitParam(node: ParamNode) {
         val symbolTable = node.st
         symbolTable.declareVariable(node.text)
     }
@@ -153,7 +159,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
      *  Then store the addresses of the pair elements into the newly allocated
      *  memory.
      * */
-    fun translateNewPair(node: NewPairNode) {
+    override fun visitNewPair(node: NewPairNode) {
         ctx.text.apply {
             // Mallocs for 2 elements of pair
             storeElemInHeap(node.firstElem)
@@ -179,12 +185,18 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
      *  the LHS of the declaration to declare the variable into current scope.
      *  Then store the local variable onto allocated space on the stack.
      */
-    fun translateDeclaration(node: DeclarationNode) {
-        visitAndTranslate(node.value)
-        visitAndTranslate(node.name)
+    override fun visitDeclaration(node: DeclarationNode) {
+        visitNode(node.value)
+        visitNode(node.name)
 
         val (offset, isArg) = ctx.getOffsetOfVar(node.name.text, node.st)
-        ctx.text.add(storeLocalVar(node.name.type, offset, isArgument = isArg))
+        ctx.text.add(
+            storeLocalVar(
+                node.name.type,
+                offset,
+                isArgument = isArg
+            )
+        )
     }
 
     /** Loads the arguments in a function call onto the stack in reversed order.
@@ -192,13 +204,13 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
      *  the stack at the location pointed to by the SP, then decrement SP by
      *  the size of the loaded element.
      */
-    fun translateArgList(node: ArgListNode) {
+    override fun visitArgList(node: ArgListNode) {
 
         ctx.text.apply {
             val stackPtrTemp = ctx.stackPtrOffset
 
             node.args.asReversed().forEach {
-                visitAndTranslate(it)
+                visitNode(it)
                 add(
                     storeLocalVar(
                         varType = it.type,
@@ -214,13 +226,13 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     }
 
     /** */
-    fun translateAssignment(node: AssignmentNode) {
-        visitAndTranslate(node.value)
-        visitAndTranslate(node.name)
+    override fun visitAssignment(node: AssignmentNode) {
+        visitNode(node.value)
+        visitNode(node.name)
     }
 
     /** Select appropriate methods to generate code */
-    fun translateBinOp(node: BinOpNode) {
+    override fun visitBinOp(node: BinOpNode) {
         when (node.operator) {
             BinaryOperator.EQ -> translateEquality(node, isEqual = true)
             BinaryOperator.NEQ -> translateEquality(node, isEqual = false)
@@ -236,20 +248,20 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     }
 
     /** Select appropriate methods to generate code */
-    fun translateUnOp(node: UnOpNode) {
+    override fun visitUnOp(node: UnOpNode) {
         when (node.operator) {
             UnaryOperator.NEGATE -> translateNegate(node)
-            UnaryOperator.CHR, UnaryOperator.ORD -> visitAndTranslate(node.expr)
+            UnaryOperator.CHR, UnaryOperator.ORD -> visitNode(node.expr)
             UnaryOperator.MINUS -> translateMinus(node)
             UnaryOperator.LEN -> ctx.text.apply {
-                visitAndTranslate(node.expr)
+                visitNode(node.expr)
                 add(LDRInstr(Register.R0, MemAddr(Register.R0)))
             }
         }
     }
 
     /** Choose what operation to carry out based on [AccessMode]. */
-    fun translatePairElem(node: PairElemNode) {
+    override fun visitPairElem(node: PairElemNode) {
         ctx.addLibraryFunction(CheckNullPointer)
 
         val memOffset = if (node.isFirst) 0 else NUM_BYTE_ADDRESS
@@ -261,7 +273,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     }
 
 
-    fun translateArrayElement(elem: ArrayElement) {
+    override fun visitArrayElement(elem: ArrayElement) {
         when (elem.mode) {
             AccessMode.READ -> translateArrayRead(elem)
             else -> translateArrayAssignment(elem)
@@ -270,7 +282,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
 
     /** Allocate memory for all the elements of the array based on its type, plus
      * the required memory to store the size of the array. */
-    fun translateArrayLiteral(literal: ArrayLiteral) {
+    override fun visitArrayLiteral(literal: ArrayLiteral) {
         ctx.text.apply {
             val mallocSize =
                 literal.values.size * literal.elemType.reserveStackSize + IntType.reserveStackSize
@@ -279,7 +291,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
             add(MOVInstr(Register.R3, Register.R0))
 
             literal.values.forEachIndexed { index, arrayElem ->
-                visitAndTranslate(arrayElem)
+                visitNode(arrayElem)
                 add(
                     storeLocalVar(
                         literal.elemType,
@@ -296,7 +308,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
         }
     }
 
-    fun translateBoolLiteral(literal: BoolLiteral) {
+    override fun visitBoolLiteral(literal: BoolLiteral) {
         ctx.text.add(
             when (literal.value) {
                 true -> MOVInstr(Register.R0, NumOp(TRUE_VALUE))
@@ -305,18 +317,27 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
         )
     }
 
-    fun translateCharLiteral(literal: CharLiteral) {
+    override fun visitCharLiteral(literal: CharLiteral) {
         ctx.text.add(MOVInstr(Register.R0, CharOp(literal.value)))
     }
 
     /** Looks up variable in the symbol table and calculate offset from current
      * stack pointer position. Then choose an operation based on its [AccessMode]*/
-    fun translateIdentifier(node: IdentifierNode) {
+    override fun visitIdentifier(node: IdentifierNode) {
         val (offset, isArg) = ctx.getOffsetOfVar(node.name, node.st)
+
         ctx.text.add(
             when (node.mode) {
-                AccessMode.ASSIGN -> storeLocalVar(node.type, offset, isArgument = isArg)
-                AccessMode.READ -> loadLocalVar(node.type, offset, isArgument = isArg)
+                AccessMode.ASSIGN -> storeLocalVar(
+                    node.type,
+                    offset,
+                    isArgument = isArg
+                )
+                AccessMode.READ -> loadLocalVar(
+                    node.type,
+                    offset,
+                    isArgument = isArg
+                )
                 else -> ADDInstr(
                     Register.R0,
                     Register.SP,
@@ -326,7 +347,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
         )
     }
 
-    fun translateIntLiteral(literal: IntLiteral) {
+    override fun visitIntLiteral(literal: IntLiteral) {
         ctx.text.add(
             LDRInstr(
                 Register.R0,
@@ -335,11 +356,17 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
         )
     }
 
-    fun translatePairLiteral(literal: PairLiteral) {
+    override fun visitPairLiteral(literal: PairLiteral) {
         ctx.text.add(MOVInstr(Register.R0, NumOp(NULL_ADDRESS)))
     }
 
-    fun translateStringLiteral(literal: StringLiteral) {
+    override fun visitDeepArrayLiteral(node: DeepArrayLiteral) {
+    }
+
+    override fun visitPairMemoryLiteral(node: PairMemoryLiteral) {
+    }
+
+    override fun visitStringLiteral(literal: StringLiteral) {
         ctx.text.add(
             LDRInstr(
                 Register.R0,
@@ -349,21 +376,21 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     }
 
     /** Opens new scope. */
-    fun translateBegin(node: BeginNode) {
+    override fun visitBegin(node: BeginNode) {
         ctx.text.apply {
             newScope(node.currST) {
-                visitAndTranslate(node.stat)
+                visitNode(node.stat)
             }
         }
     }
 
     /** Visit the child expression to be freed, then generate Branch instruction
      * to invoke 'free' syscall. */
-    fun translateFree(node: FreeNode) {
+    override fun visitFree(node: FreeNode) {
         ctx.text.apply {
             ctx.addLibraryFunction(FreePair)
 
-            visitAndTranslate(node.value)
+            visitNode(node.value)
             add(BLInstr(FreePair.label))
         }
     }
@@ -378,9 +405,9 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
      *    - Otherwise continue, jumping to the 'Rest' label after the code
      *      for the true branch
      */
-    fun translateIf(node: IfNode) {
+    override fun visitIf(node: IfNode) {
         ctx.text.apply {
-            visitAndTranslate(node.proposition)
+            visitNode(node.proposition)
             add(CMPInstr(Register.R0, NumOp(0)))
 
             val falseBranchIndex = ctx.labelCounter
@@ -388,13 +415,13 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
 
             add(BEQInstr("L$falseBranchIndex"))
             newScope(node.trueST) {
-                visitAndTranslate(node.trueStat)
+                visitNode(node.trueStat)
             }
             add(BInstr("L$continueBranch"))
 
             add(LabelInstr("L$falseBranchIndex"))
             newScope(node.falseST) {
-                visitAndTranslate(node.falseStat)
+                visitNode(node.falseStat)
             }
             add(LabelInstr("L$continueBranch"))
         }
@@ -403,9 +430,9 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     /** Evaluates the expression passed to 'print'. Then select the appropriate
      *  built-in print functions [printFunc] based on the type of the expression.
      */
-    fun translatePrint(node: PrintNode) {
+    override fun visitPrint(node: PrintNode) {
         val value = node.value
-        visitAndTranslate(value)
+        visitNode(value)
 
         ctx.text.apply {
             if (value.type == CharType) {
@@ -425,9 +452,9 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
         }
     }
 
-    fun translateRead(node: ReadNode) {
+    override fun visitRead(node: ReadNode) {
         ctx.text.apply {
-            visitAndTranslate(node.value)
+            visitNode(node.value)
 
             val readFunc = when (node.value.type) {
                 IntType -> ReadInt
@@ -444,16 +471,16 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
     /** Evaluates expression, putting result in register R0.
      *  Destroys all scopes up the hierarchy by moving the stack pointer up
      *  the appropriate amount. Then POP the program counter PC. */
-    fun translateReturn(node: ReturnNode) {
+    override fun visitReturn(node: ReturnNode) {
         ctx.text.apply {
-            visitAndTranslate(node.value)
+            visitNode(node.value)
             endAllScopes(node.st)
             add(FunctionEnd())
         }
     }
 
-    fun translateSeq(node: SeqNode) {
-        node.sequence.forEach { visitAndTranslate(it) }
+    override fun visitSeq(node: SeqNode) {
+        node.sequence.forEach { visitNode(it) }
     }
 
     /** Gets 2 index for the labels for the body of the while loop and for
@@ -464,7 +491,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
      * Otherwise, the code for everything after the 'while' statement comes
      * after the conditional.
      * */
-    fun translateWhile(node: WhileNode) {
+    override fun visitWhile(node: WhileNode) {
         ctx.text.apply {
             val bodyIndex = ctx.labelCounter
             val propositionIndex = ctx.labelCounter
@@ -474,14 +501,17 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) {
             add(LabelInstr("L$bodyIndex"))
 
             newScope(node.bodyST) {
-                visitAndTranslate(node.body)
+                visitNode(node.body)
             }
 
             add(LabelInstr("L$propositionIndex"))
-            visitAndTranslate(node.proposition)
+            visitNode(node.proposition)
             add(CMPInstr(Register.R0, NumOp(1)))
             add(BEQInstr("L$bodyIndex"))
         }
+    }
+
+    fun translateDeepArrayLiteral(deepArrayLiteral: DeepArrayLiteral) {
     }
 
 }

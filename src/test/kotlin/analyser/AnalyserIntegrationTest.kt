@@ -1,10 +1,10 @@
 package analyser
 
-import ArmFormatter
-import WaccCompiler
 import WalkDirectory
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
+import entrypoint.ArmFormatter
+import entrypoint.WaccCompiler
 import org.junit.Test
 
 class AnalyserIntegrationTest {

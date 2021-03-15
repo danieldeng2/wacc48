@@ -6,6 +6,9 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
+import entrypoint.ArmFormatter
+import entrypoint.I386Formatter
+import entrypoint.WaccCompiler
 import java.io.FileWriter
 import java.nio.file.Paths
 
@@ -77,6 +80,3 @@ fun writeResult(inputName: String, output: List<String>) {
     output.forEach { writer.appendLine(it) }
     writer.close()
 }
-
-
-

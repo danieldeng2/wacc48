@@ -1,8 +1,8 @@
 package generator.arm
 
-import ArmFormatter
-import WaccCompiler
 import WalkDirectory
+import entrypoint.ArmFormatter
+import entrypoint.WaccCompiler
 import generator.reference.EmulatorResult
 import generator.reference.RefCompiler
 import generator.reference.RefEmulator
@@ -17,7 +17,7 @@ fun checkAllMatches(label: String) {
         val inputFile = File(f.path.replace(".wacc", ".input"))
         val stdin = if (inputFile.exists()) inputFile.readLines()[0] else ""
 
-        val referenceResult = referencePipeline(f, File(refASM), stdin = stdin)
+        val referenceResult = referencePipeline(f.path, refASM, stdin = stdin)
         val compilerResult =
             compilerPipeline(f, File(compilerASM), stdin = stdin)
 
@@ -64,21 +64,22 @@ private fun compilerPipeline(
     )
 }
 
-private fun referencePipeline(
-    srcFile: File,
-    asmOutputFile: File,
+
+fun referencePipeline(
+    path: String,
+    outputName: String,
     stdin: String = ""
 ): EmulatorResult {
-    val assembly = RefCompiler(srcFile).run()
+    val assembly = RefCompiler(File(path)).run()
 
     return executeAssembly(
         assembly = assembly,
         stdin = stdin,
-        file = asmOutputFile
+        file = File(outputName)
     )
 }
 
-private fun executeAssembly(
+fun executeAssembly(
     assembly: List<String>,
     file: File,
     stdin: String

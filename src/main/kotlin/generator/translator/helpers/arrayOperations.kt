@@ -1,10 +1,5 @@
 package generator.translator.helpers
 
-import tree.nodes.expr.ArrayElement
-import tree.type.ArrayType
-import tree.type.BoolType
-import tree.type.CharType
-import tree.type.Type
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
@@ -13,6 +8,11 @@ import generator.instructions.operands.*
 import generator.translator.ArmConstants.NUM_BYTE_ADDRESS
 import generator.translator.CodeGeneratorVisitor
 import generator.translator.lib.errors.CheckArrayBounds
+import tree.nodes.expr.ArrayElement
+import tree.type.ArrayType
+import tree.type.BoolType
+import tree.type.CharType
+import tree.type.Type
 
 /** An example of a line of code that calls this:
  *  ```
@@ -46,11 +46,11 @@ fun CodeGeneratorVisitor.translateArrayAssignment(elem: ArrayElement) {
         )
 
         elem.arrIndices.dropLast(1).forEach {
-            visitAndTranslate(it)
+            visitNode(it)
             checkArrayBounds(elem.type)
             add(LDRInstr(Register.R4, MemAddr(Register.R4)))
         }
-        visitAndTranslate(elem.arrIndices.last())
+        visitNode(elem.arrIndices.last())
         checkArrayBounds(elem.type)
 
         add(MOVInstr(Register.R1, Register.R4))
@@ -99,7 +99,7 @@ fun CodeGeneratorVisitor.translateArrayRead(elem: ArrayElement) {
 
         // Load and check bounds for each dereference
         elem.arrIndices.forEach {
-            visitAndTranslate(it)
+            visitNode(it)
             checkArrayBounds(elem.type)
             add(
                 loadLocalVar(

@@ -2,10 +2,8 @@ package generator.translator.lib
 
 import generator.instructions.FunctionEnd
 import generator.instructions.FunctionStart
-import generator.instructions.Instruction
 import generator.instructions.Syscall
 import generator.instructions.branch.BEQInstr
-import generator.instructions.branch.BLInstr
 import generator.instructions.compare.CMPInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDREQInstr

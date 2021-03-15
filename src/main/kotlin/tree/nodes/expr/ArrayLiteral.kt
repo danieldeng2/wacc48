@@ -1,22 +1,33 @@
 package tree.nodes.expr
 
 import analyser.exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
+import shell.MemoryTable
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.ArrayType
+import tree.type.CharType
 import tree.type.Type
 import tree.type.VoidType
-import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
 
 
 data class ArrayLiteral(
-    val values: List<ExprNode>,
-    val ctx: ParserRuleContext?
-) : ExprNode {
+    var values: List<ExprNode>,
+    val ctx: ParserRuleContext?,
+    val nameInMemTable: String? = null
+) : Literal {
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, ctx)
 
+    override fun literalToString(mt: MemoryTable?): String =
+        if (elemType is CharType)
+            values.map { (it as CharLiteral).literalToString() }.joinToString("")
+        else
+            "[" + values.joinToString(", ") { it.reduceToLiteral(mt).literalToString() } + "]"
+
+    override fun reduceToLiteral(mt: MemoryTable?): Literal =
+        this
 
     override fun validate(
         st: SymbolTable,
@@ -39,7 +50,8 @@ data class ArrayLiteral(
         }
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateArrayLiteral(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitArrayLiteral(this)
     }
+
 }

@@ -2,7 +2,6 @@ package generator.translator.lib.errors
 
 import generator.instructions.FunctionEnd
 import generator.instructions.FunctionStart
-import generator.instructions.Instruction
 import generator.instructions.branch.BLCSInstr
 import generator.instructions.branch.BLLTInstr
 import generator.instructions.compare.CMPInstr

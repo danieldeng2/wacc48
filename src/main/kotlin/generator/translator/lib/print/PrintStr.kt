@@ -4,7 +4,6 @@ import generator.instructions.FunctionEnd
 import generator.instructions.FunctionStart
 import generator.instructions.Syscall
 import generator.instructions.arithmetic.ADDInstr
-import generator.instructions.arithmetic.SUBInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.directives.LabelInstr
 import generator.instructions.load.LDRInstr

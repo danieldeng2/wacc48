@@ -1,0 +1,14 @@
+begin
+  int[] a = [1, 2, 3];
+  int[] b = [4, 5, 6];
+  int[][] c = [a, b];
+  c[0][1] = 100;
+  
+  int i = 0;
+  while i < 3
+  do 
+    print a[i];
+    i = i + 1
+  done
+end
+    

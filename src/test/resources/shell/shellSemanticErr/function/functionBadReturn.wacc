@@ -1,0 +1,16 @@
+# function return type mismatch: int <- char
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+	int f() is
+		return 'c'
+	end
+	int x = call f() ;
+	println x 
+

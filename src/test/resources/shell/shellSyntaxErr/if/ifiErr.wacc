@@ -1,0 +1,16 @@
+# if typo
+
+# Output:
+# #syntax_error#
+
+# Exit:
+# 100
+
+# Program:
+
+  ifi true
+  then
+    skip
+  else
+    skip
+  fi

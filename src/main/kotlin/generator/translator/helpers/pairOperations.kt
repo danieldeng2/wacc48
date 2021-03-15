@@ -1,11 +1,6 @@
 package generator.translator.helpers
 
 import generator.instructions.Syscall
-import tree.nodes.assignment.AccessMode
-import tree.nodes.assignment.PairElemNode
-import tree.nodes.expr.ExprNode
-import tree.nodes.expr.IdentifierNode
-import tree.type.Type
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.branch.BLInstr
 import generator.instructions.load.LDRInstr
@@ -17,12 +12,17 @@ import generator.instructions.operands.Register
 import generator.instructions.store.STRInstr
 import generator.translator.CodeGeneratorVisitor
 import generator.translator.lib.errors.CheckNullPointer
+import tree.nodes.assignment.AccessMode
+import tree.nodes.assignment.PairElemNode
+import tree.nodes.expr.ExprNode
+import tree.nodes.expr.IdentifierNode
+import tree.type.Type
 
 /** Evaluates the expression [elem], allocate memory for the result and store
  * the result of the evaluation into allocated memory.
  */
 fun CodeGeneratorVisitor.storeElemInHeap(elem: ExprNode) {
-    visitAndTranslate(elem)
+    visitNode(elem)
 
     ctx.text.addAll(
         listOf(
@@ -46,7 +46,7 @@ fun CodeGeneratorVisitor.storeElemInHeap(elem: ExprNode) {
  *
  * Pre-condition: the memory address of the pair is already in register R0. */
 fun CodeGeneratorVisitor.loadFromPosition(node: PairElemNode, memOffset: Int) {
-    visitAndTranslate(node.expr)
+    visitNode(node.expr)
 
     ctx.text.addAll(
         listOf(

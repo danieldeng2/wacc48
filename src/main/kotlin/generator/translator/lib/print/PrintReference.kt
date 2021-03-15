@@ -2,7 +2,6 @@ package generator.translator.lib.print
 
 import generator.instructions.FunctionEnd
 import generator.instructions.FunctionStart
-import generator.instructions.Instruction
 import generator.instructions.Syscall
 import generator.instructions.arithmetic.ADDInstr
 import generator.instructions.directives.LabelInstr

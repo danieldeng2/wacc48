@@ -1,17 +1,17 @@
 package tree.nodes.assignment
 
 import analyser.exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.PairType
 import tree.type.Type
 import tree.type.VoidType
-import generator.translator.CodeGeneratorVisitor
-import org.antlr.v4.runtime.ParserRuleContext
 
 data class PairElemNode(
-    val expr: ExprNode,
+    var expr: ExprNode,
     val isFirst: Boolean,
     val ctx: ParserRuleContext?
 ) : LHSNode, RHSNode {
@@ -38,8 +38,10 @@ data class PairElemNode(
         }
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translatePairElem(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitPairElem(this)
     }
+
+
 
 }

@@ -1,0 +1,11 @@
+begin
+    int inc(int x) is
+        return x + 1
+    end
+    int neg(int x) is
+        return x - 1
+    end
+
+    #still need body to fit the prog rule
+    println "this is the body"
+end
