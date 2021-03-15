@@ -4,7 +4,8 @@ import org.antlr.v4.runtime.BaseErrorListener
 import org.antlr.v4.runtime.RecognitionException
 import org.antlr.v4.runtime.Recognizer
 
-class ThrowingErrorListener : BaseErrorListener() {
+class ThrowingErrorListener(
+) : BaseErrorListener() {
     override fun syntaxError(
         recognizer: Recognizer<*, *>?,
         offendingSymbol: Any?,
@@ -13,7 +14,7 @@ class ThrowingErrorListener : BaseErrorListener() {
         msg: String?,
         e: RecognitionException?
     ) {
-        throw SyntaxException("line $line:$charPositionInLine $msg")
+        throw SyntaxException("Cannot continue with compiler.")
     }
 }
 
