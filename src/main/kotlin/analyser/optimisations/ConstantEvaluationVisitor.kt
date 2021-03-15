@@ -39,7 +39,6 @@ object ConstantEvaluationVisitor : ASTVisitor {
         val expression = analyseExpression(unExpr.expr)
         when (unExpr.operator) {
             UnaryOperator.MINUS -> {
-                print(expression.toString())
                 if (expression is IntLiteral) {
                     expression.value = -expression.value
                     return expression
@@ -51,8 +50,25 @@ object ConstantEvaluationVisitor : ASTVisitor {
                     return expression
                 }
             }
+            UnaryOperator.CHR -> {
+                if (expression is CharLiteral) {
+                    return IntLiteral(
+                        value = expression.value.toInt(),
+                        ctx = expression.ctx
+                    )
+                }
+            }
+            UnaryOperator.ORD -> {
+                if (expression is IntLiteral) {
+                    return CharLiteral(
+                        value = expression.value.toChar(),
+                        ctx = expression.ctx
+                    )
+                }
+            }
+            else -> {
+            }
         }
-
         unExpr.expr = expression
         return unExpr
     }
