@@ -2,7 +2,7 @@ package wacc48.generator.arm
 
 import WalkDirectory
 import org.antlr.v4.runtime.CharStreams
-import wacc48.architecture.ArmArchitecture
+import wacc48.generator.architecture.ArmArchitecture
 import wacc48.generator.reference.EmulatorResult
 import wacc48.generator.reference.RefCompiler
 import wacc48.generator.reference.RefEmulator

@@ -8,8 +8,8 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
-import wacc48.architecture.ArmArchitecture
-import wacc48.architecture.I386Architecture
+import wacc48.generator.architecture.ArmArchitecture
+import wacc48.generator.architecture.I386Architecture
 import wacc48.shell.WACCShell
 import java.io.File
 
@@ -30,7 +30,7 @@ class ArgParse : CliktCommand() {
     private val sourceFile by argument(help = "Path to WACC file").file(
         mustExist = true,
         canBeFile = true,
-        canBeDir = false
+        canBeDir = true
     )
 
     override fun run() {

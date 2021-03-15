@@ -1,4 +1,4 @@
-package wacc48.architecture
+package wacc48.generator.architecture
 
 import wacc48.tree.nodes.ASTNode
 
