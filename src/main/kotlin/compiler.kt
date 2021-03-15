@@ -1,4 +1,5 @@
 import analyser.ASTGeneratorVisitor
+import analyser.ControlFlowVisitor
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import analyser.exceptions.ThrowingErrorListener
@@ -28,6 +29,10 @@ fun runAnalyser(input: CharStream): ASTNode {
         st = SymbolTable(null),
         funTable = mutableMapOf()
     )
+
+    //Control Flow Analysis
+    val controlAnalyser = ControlFlowVisitor()
+    controlAnalyser.visitNode(programNode)
 
     return programNode
 }
