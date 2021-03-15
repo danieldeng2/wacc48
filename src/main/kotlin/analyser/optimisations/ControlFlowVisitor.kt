@@ -30,9 +30,9 @@ class ControlFlowVisitor : ASTVisitor {
         when (node.proposition) {
             is BoolLiteral -> {
                 if (node.proposition.value) {
-                    return node.trueStat
+                    return analyseStat(node.trueStat)
                 }
-                return node.falseStat
+                return analyseStat(node.falseStat)
             }
             else -> return node
         }
@@ -42,6 +42,7 @@ class ControlFlowVisitor : ASTVisitor {
         if (node.proposition is BoolLiteral && !node.proposition.value) {
             return SkipNode
         }
+        node.body = analyseStat(node.body)
         return node
     }
 
