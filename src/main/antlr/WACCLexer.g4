@@ -1,8 +1,8 @@
 lexer grammar WACCLexer;
 
 //skip white spaces and comments
-WS: [ \n\t\r]+ -> skip ;
-COMMENT: '#' ~[\r\n]* ( '\r' | '\n' | EOF ) -> skip ;
+WS: [ \n\t\r]+ -> channel(HIDDEN) ;
+COMMENT: '#' ~[\r\n]* ( '\r' | '\n' | EOF ) -> channel(HIDDEN) ;
 
 //reserved keywords
 BEGIN: 'begin';
@@ -93,3 +93,8 @@ SEMICOLON: ';';
 EQUAL: '=';
 
 IDENT: ('_' | [a-z] | [A-Z]) ('_' | [a-z] | [A-Z] | [0-9])* ;
+
+/** "catch all" rule for any char not matche in a token rule of your
+ *  grammar. Lexers in Intellij must return all tokens good and bad.
+ */
+ERRCHAR	: . ;
