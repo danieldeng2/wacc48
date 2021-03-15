@@ -5,8 +5,8 @@ import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.type.Typable
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class ParamNode(
     override var type: Type,
@@ -28,8 +28,8 @@ data class ParamNode(
         st[text] = type
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateParam(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitParam(this)
     }
 
 }

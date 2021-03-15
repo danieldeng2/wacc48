@@ -4,8 +4,8 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.StringType
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 
 data class StringLiteral(
@@ -22,7 +22,7 @@ data class StringLiteral(
     ) {
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateStringLiteral(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitStringLiteral(this)
     }
 }

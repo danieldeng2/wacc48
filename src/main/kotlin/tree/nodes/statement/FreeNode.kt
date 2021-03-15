@@ -5,8 +5,8 @@ import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.GenericPair
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class FreeNode(
     val value: ExprNode,
@@ -23,7 +23,7 @@ data class FreeNode(
             throw SemanticsException("Cannot free ${value.type}", ctx)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateFree(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitFree(this)
     }
 }

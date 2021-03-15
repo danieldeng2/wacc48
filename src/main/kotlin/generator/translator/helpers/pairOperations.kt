@@ -20,7 +20,7 @@ import generator.translator.lib.errors.CheckNullPointer
  * the result of the evaluation into allocated memory.
  */
 fun CodeGeneratorVisitor.storeElemInHeap(elem: ExprNode) {
-    visitAndTranslate(elem)
+    visitNode(elem)
 
     ctx.text.addAll(
         listOf(
@@ -44,7 +44,7 @@ fun CodeGeneratorVisitor.storeElemInHeap(elem: ExprNode) {
  *
  * Pre-condition: the memory address of the pair is already in register R0. */
 fun CodeGeneratorVisitor.loadFromPosition(node: PairElemNode, memOffset: Int) {
-    visitAndTranslate(node.expr)
+    visitNode(node.expr)
 
     ctx.text.addAll(
         listOf(

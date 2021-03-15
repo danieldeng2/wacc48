@@ -5,8 +5,8 @@ import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.BoolType
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class IfNode(
     val proposition: ExprNode,
@@ -35,7 +35,7 @@ data class IfNode(
         falseStat.validate(falseST, funTable)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateIf(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitIf(this)
     }
 }

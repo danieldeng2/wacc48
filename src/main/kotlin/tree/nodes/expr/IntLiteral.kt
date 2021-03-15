@@ -5,8 +5,8 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.IntType
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class IntLiteral(
     val value: Int,
@@ -23,7 +23,7 @@ data class IntLiteral(
             throw SemanticsException("IntLiteral $value is out of range", ctx)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateIntLiteral(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitIntLiteral(this)
     }
 }

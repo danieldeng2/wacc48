@@ -4,8 +4,8 @@ import analyser.exceptions.SemanticsException
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.nodes.statement.StatNode
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class AssignmentNode(
     val name: LHSNode,
@@ -28,7 +28,7 @@ data class AssignmentNode(
             )
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateAssignment(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitAssignment(this)
     }
 }

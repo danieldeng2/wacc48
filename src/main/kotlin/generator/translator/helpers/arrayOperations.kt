@@ -42,11 +42,11 @@ fun CodeGeneratorVisitor.translateArrayAssignment(elem: ArrayElement) {
         )
 
         elem.arrIndices.dropLast(1).forEach {
-            visitAndTranslate(it)
+            visitNode(it)
             checkArrayBounds(elem.type)
             add(LDRInstr(Register.R4, MemAddr(Register.R4)))
         }
-        visitAndTranslate(elem.arrIndices.last())
+        visitNode(elem.arrIndices.last())
         checkArrayBounds(elem.type)
 
         add(MOVInstr(Register.R1, Register.R4))
@@ -95,7 +95,7 @@ fun CodeGeneratorVisitor.translateArrayRead(elem: ArrayElement) {
 
         // Load and check bounds for each dereference
         elem.arrIndices.forEach {
-            visitAndTranslate(it)
+            visitNode(it)
             checkArrayBounds(elem.type)
             add(
                 loadLocalVar(
