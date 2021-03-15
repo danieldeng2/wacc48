@@ -21,11 +21,11 @@ class ArgParse : CliktCommand() {
         help = "Create executable from assembly file"
     ).flag()
 
-    private val sourceFile by argument(help = "Path to WACC file").file(
-        mustExist = true,
-        canBeFile = true,
-        canBeDir = false
-    )
+    private val app: String by option(
+        "-a",
+        "--app",
+        help = "Choose an application you'd like to run"
+    ).choice("arm", "x86", "shell").default("arm")
 
     private val sourceFile by argument(help = "Path to WACC file").file(
         mustExist = true,
