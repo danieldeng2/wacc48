@@ -26,21 +26,6 @@ class ControlFlowVisitor : ASTVisitor {
         }
     }
 
-    override fun visitNode(node: ASTNode) {
-        node.acceptVisitor(this)
-    }
-
-    override fun visitProgram(node: ProgNode) {
-        node.functions.forEach {
-            visitFunction(it)
-        }
-        visitMain(node.main)
-    }
-
-    override fun visitMain(node: MainNode) {
-        node.body = analyseStat(node.body)
-    }
-
     private fun analyseIf(node: IfNode): StatNode {
         when (node.proposition) {
             is BoolLiteral -> {
@@ -58,6 +43,21 @@ class ControlFlowVisitor : ASTVisitor {
             return SkipNode
         }
         return node
+    }
+
+    override fun visitNode(node: ASTNode) {
+        node.acceptVisitor(this)
+    }
+
+    override fun visitProgram(node: ProgNode) {
+        node.functions.forEach {
+            it.acceptVisitor(this)
+        }
+        node.main.acceptVisitor(this)
+    }
+
+    override fun visitMain(node: MainNode) {
+        node.body = analyseStat(node.body)
     }
 
     override fun visitBegin(node: BeginNode) {
@@ -84,7 +84,6 @@ class ControlFlowVisitor : ASTVisitor {
     override fun visitExit(node: ExitNode) {
 
     }
-
 
     override fun visitFuncCall(node: FuncCallNode) {
 
