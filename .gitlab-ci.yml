@@ -10,14 +10,14 @@ gradle-build:
     - ./gradlew jar
 
 gradle-test-analyser:
-  stage: gradleTest 
-  script: 
-    - ./gradlew clean test --tests 'analyser.*'
+  stage: gradleTest
+  script:
+    - ./gradlew clean test --tests 'wacc48.analyser.*'
 
 gradle-test-arm:
   stage: gradleTest
   script:
-    - ./gradlew clean test --tests 'generator.arm.*'
+    - ./gradlew clean test --tests 'wacc48.generator.arm.*'
 
 gradle-test-x86:
   image: adoptopenjdk/openjdk11:x86_64-ubuntu-jdk-11.0.10_9
@@ -26,9 +26,9 @@ gradle-test-x86:
     - apt-get update
     - apt-get install -y nasm
     - apt-get install -y build-essential
-    - ./gradlew clean test --tests 'generator.x86.*'
+    - ./gradlew clean test --tests 'wacc48.generator.x86.*'
 
 gradle-test-shell:
   stage: gradleTest
   script:
-    - ./gradlew clean test --tests 'generator.shell.*'
+    - ./gradlew clean test --tests 'wacc48.generator.wacc48.shell.*'

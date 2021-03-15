@@ -186,7 +186,7 @@ begin
 		return aiData
 	end
 	
-	# Generate the whole tree of all states. Then return the tree.
+	# Generate the whole wacc48.tree of all states. Then return the wacc48.tree.
 	pair(pair, int) generateAllPossibleStates(char aiSymbol) is
 		pair(pair, pair) board = call allocateNewBoard() ;
 		pair(pair, int) rootState = call convertFromBoardToState(board) ;
@@ -505,7 +505,7 @@ begin
 		bool _ = call findTheBestMove(pointers, stateValue, move) ;		
 		
 		println "AI is cleaning up its memory..." ;
-		# Update the state tree by using the new move.
+		# Update the state wacc48.tree by using the new move.
 		snd aiData = call deleteAllOtherChildren(pointers, move[0], move[1]) ;
 	
 		_ = call deleteThisStateOnly(stateTree) ;
@@ -622,7 +622,7 @@ begin
 		
 		println "AI is cleaning up its memory..." ;
 		
-		# Set new state tree, remove all other children created by making other moves.
+		# Set new state wacc48.tree, remove all other children created by making other moves.
 		snd aiData = call deleteAllOtherChildren(pointers, moveRow, moveColumn) ;
 		bool _ = call deleteThisStateOnly(stateTree) ;
 		return true
@@ -714,7 +714,7 @@ begin
 		fi		
 	end
 	
-	# Given a state tree, deallocate the board, the pointers and the other pairs of this state only. The childrens are preserved. Return true.
+	# Given a state wacc48.tree, deallocate the board, the pointers and the other pairs of this state only. The childrens are preserved. Return true.
 	bool deleteThisStateOnly(pair(pair, int) stateTree) is	
 		pair(pair, pair) front = fst stateTree ;
 		
