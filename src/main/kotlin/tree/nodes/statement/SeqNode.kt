@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 data class SeqNode(
-    val sequence: List<StatNode>,
+    var sequence: List<StatNode>,
     val ctx: ParserRuleContext?,
 ) : StatNode, List<StatNode> {
 

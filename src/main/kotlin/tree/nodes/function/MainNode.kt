@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import tree.ASTVisitor
 
 class MainNode(
-    val body: StatNode,
+    var body: StatNode,
     val ctx: ParserRuleContext?
 ) : ASTNode {
     lateinit var st: SymbolTable

@@ -10,8 +10,8 @@ import tree.ASTVisitor
 
 data class IfNode(
     val proposition: ExprNode,
-    val trueStat: StatNode,
-    val falseStat: StatNode,
+    var trueStat: StatNode,
+    var falseStat: StatNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
     lateinit var trueST: SymbolTable

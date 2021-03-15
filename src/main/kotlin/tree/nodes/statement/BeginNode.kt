@@ -6,7 +6,7 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 
 data class BeginNode(
-    val stat: StatNode,
+    var stat: StatNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
     lateinit var currST: SymbolTable

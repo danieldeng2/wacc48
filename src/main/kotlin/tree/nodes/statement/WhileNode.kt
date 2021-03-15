@@ -10,7 +10,7 @@ import tree.ASTVisitor
 
 data class WhileNode(
     val proposition: ExprNode,
-    val body: StatNode,
+    var body: StatNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
     lateinit var bodyST: SymbolTable
