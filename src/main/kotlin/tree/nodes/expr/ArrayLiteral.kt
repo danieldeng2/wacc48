@@ -6,12 +6,12 @@ import tree.nodes.function.FuncNode
 import tree.type.ArrayType
 import tree.type.Type
 import tree.type.VoidType
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 
 data class ArrayLiteral(
-    val values: List<ExprNode>,
+    var values: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : ExprNode {
     var elemType: Type = VoidType
@@ -39,7 +39,7 @@ data class ArrayLiteral(
         }
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateArrayLiteral(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitArrayLiteral(this)
     }
 }

@@ -4,11 +4,11 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.CharType
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) :
-    ExprNode {
+    ExprNode, BaseLiteral {
     override var type: Type = CharType
 
     override fun validate(
@@ -17,8 +17,8 @@ data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) :
     ) {
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateCharLiteral(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitCharLiteral(this)
     }
 
 }

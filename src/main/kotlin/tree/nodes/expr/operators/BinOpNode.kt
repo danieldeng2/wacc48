@@ -8,13 +8,13 @@ import tree.type.BoolType
 import tree.type.CharType
 import tree.type.IntType
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class BinOpNode(
     val operator: BinaryOperator,
-    val firstExpr: ExprNode,
-    val secondExpr: ExprNode,
+    var firstExpr: ExprNode,
+    var secondExpr: ExprNode,
     val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType
@@ -46,8 +46,8 @@ data class BinOpNode(
             )
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateBinOp(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitBinOp(this)
     }
 }
 

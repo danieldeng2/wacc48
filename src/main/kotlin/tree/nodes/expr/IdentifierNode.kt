@@ -7,8 +7,8 @@ import tree.nodes.assignment.LHSNode
 import tree.nodes.function.FuncNode
 import tree.type.Type
 import tree.type.VoidType
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class IdentifierNode(
     val name: String,
@@ -29,8 +29,8 @@ data class IdentifierNode(
         type = st[name]!!
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateIdentifier(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitIdentifier(this)
     }
 
 }

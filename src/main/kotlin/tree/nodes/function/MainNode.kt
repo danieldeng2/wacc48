@@ -4,11 +4,11 @@ import analyser.exceptions.SemanticsException
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.statement.*
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 class MainNode(
-    val body: StatNode,
+    var body: StatNode,
     val ctx: ParserRuleContext?
 ) : ASTNode {
     lateinit var st: SymbolTable
@@ -21,8 +21,8 @@ class MainNode(
             throw SemanticsException("Cannot return in global context", ctx)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateMain(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitMain(this)
     }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =

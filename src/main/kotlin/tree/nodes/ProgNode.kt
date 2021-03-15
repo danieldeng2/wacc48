@@ -5,8 +5,8 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.nodes.function.MainNode
 import tree.nodes.statement.*
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class ProgNode(
     val functions: List<FuncNode>,
@@ -40,8 +40,8 @@ data class ProgNode(
             else -> false
         }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateProgram(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitProgram(this)
     }
 
 }

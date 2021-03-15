@@ -5,12 +5,12 @@ import tree.SymbolTable
 import tree.nodes.expr.ExprNode
 import tree.nodes.function.FuncNode
 import tree.type.*
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class UnOpNode(
     val operator: UnaryOperator,
-    val expr: ExprNode,
+    var expr: ExprNode,
     val ctx: ParserRuleContext?,
 ) : ExprNode {
     override var type: Type = operator.returnType
@@ -31,8 +31,8 @@ data class UnOpNode(
     }
 
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateUnOp(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitUnOp(this)
     }
 
 }

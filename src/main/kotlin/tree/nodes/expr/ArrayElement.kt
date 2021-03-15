@@ -7,12 +7,12 @@ import tree.nodes.assignment.LHSNode
 import tree.nodes.function.FuncNode
 import tree.type.ArrayType
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class ArrayElement(
     val name: String,
-    val arrIndices: List<ExprNode>,
+    var arrIndices: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : ExprNode, LHSNode {
     lateinit var st: SymbolTable
@@ -45,7 +45,7 @@ data class ArrayElement(
         type = identityType
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateArrayElement(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitArrayElement(this)
     }
 }

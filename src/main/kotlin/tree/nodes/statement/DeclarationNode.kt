@@ -1,8 +1,8 @@
 package tree.nodes.statement
 
 import analyser.exceptions.SemanticsException
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.assignment.RHSNode
 import tree.nodes.function.FuncNode
@@ -10,7 +10,7 @@ import tree.nodes.function.ParamNode
 
 data class DeclarationNode(
     val name: ParamNode,
-    val value: RHSNode,
+    var value: RHSNode,
     val ctx: ParserRuleContext?
 ) : StatNode {
     lateinit var st: SymbolTable
@@ -27,8 +27,8 @@ data class DeclarationNode(
             throw SemanticsException("Type mismatch in declaration $name", ctx)
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateDeclaration(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitDeclaration(this)
     }
 
 }

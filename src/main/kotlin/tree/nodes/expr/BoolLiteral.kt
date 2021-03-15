@@ -4,13 +4,13 @@ import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.BoolType
 import tree.type.Type
-import generator.translator.CodeGeneratorVisitor
 import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 
 data class BoolLiteral(
-    val value: Boolean,
+    var value: Boolean,
     val ctx: ParserRuleContext?
-) : ExprNode {
+) : ExprNode, BaseLiteral {
     override var type: Type = BoolType
 
     override fun validate(
@@ -19,7 +19,7 @@ data class BoolLiteral(
     ) {
     }
 
-    override fun acceptCodeGenVisitor(visitor: CodeGeneratorVisitor) {
-        visitor.translateBoolLiteral(this)
+    override fun acceptVisitor(visitor: ASTVisitor) {
+        visitor.visitBoolLiteral(this)
     }
 }

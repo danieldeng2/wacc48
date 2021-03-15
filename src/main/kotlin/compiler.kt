@@ -1,7 +1,9 @@
 import analyser.ASTGeneratorVisitor
+import analyser.optimisations.ControlFlowVisitor
 import analyser.exceptions.SemanticsException
 import analyser.exceptions.SyntaxException
 import analyser.exceptions.ThrowingErrorListener
+import analyser.optimisations.ConstantEvaluationVisitor
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import generator.translator.CodeGeneratorVisitor
@@ -28,6 +30,12 @@ fun runAnalyser(input: CharStream): ASTNode {
         st = SymbolTable(null),
         funTable = mutableMapOf()
     )
+
+    //Control Flow Analysis
+    ControlFlowVisitor.visitNode(programNode)
+
+    //Constant Evaluation Analysis
+    ConstantEvaluationVisitor.visitNode(programNode)
 
     return programNode
 }
