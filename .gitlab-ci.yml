@@ -9,8 +9,18 @@ gradle-build:
   script: 
     - ./gradlew jar
 
-gradle-test:
+gradle-test-analyser:
   stage: gradleTest 
   script: 
-    - ./gradlew clean test
+    - ./gradlew clean test --tests 'analyser.*'
 
+gradle-test-arm:
+  stage: gradleTest
+  script:
+    - ./gradlew clean test --tests 'generator.arm.*'
+
+gradle-test-x86:
+  stage: gradleTest
+  script:
+    - apt-get install -y nasm
+    - ./gradlew clean test --tests 'generator.x86.*'
