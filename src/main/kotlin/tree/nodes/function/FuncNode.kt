@@ -1,12 +1,12 @@
 package tree.nodes.function
 
 import analyser.exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.statement.*
 import tree.type.Type
-import org.antlr.v4.runtime.ParserRuleContext
-import tree.ASTVisitor
 
 data class FuncNode(
     val identifier: String,

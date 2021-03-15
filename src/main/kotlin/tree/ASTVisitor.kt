@@ -48,8 +48,11 @@ interface ASTVisitor {
     fun visitCharLiteral(literal: CharLiteral)
 
     fun visitIdentifier(node: IdentifierNode)
+
     fun visitIntLiteral(literal: IntLiteral)
     fun visitPairLiteral(literal: PairLiteral)
+    fun visitDeepArrayLiteral(node: DeepArrayLiteral)
+    fun visitPairMemoryLiteral(node: PairMemoryLiteral)
     fun visitStringLiteral(literal: StringLiteral)
 
     fun visitBegin(node: BeginNode)
@@ -63,8 +66,6 @@ interface ASTVisitor {
     fun visitRead(node: ReadNode)
 
     fun visitReturn(node: ReturnNode)
-
     fun visitSeq(node: SeqNode)
-
     fun visitWhile(node: WhileNode)
 }

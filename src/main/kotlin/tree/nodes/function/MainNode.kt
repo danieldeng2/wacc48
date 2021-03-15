@@ -1,11 +1,11 @@
 package tree.nodes.function
 
 import analyser.exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.ASTNode
 import tree.nodes.statement.*
-import org.antlr.v4.runtime.ParserRuleContext
-import tree.ASTVisitor
 
 class MainNode(
     var body: StatNode,

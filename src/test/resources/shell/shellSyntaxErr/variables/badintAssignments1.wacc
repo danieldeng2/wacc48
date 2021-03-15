@@ -1,0 +1,11 @@
+# bad integer assignment - whitespace should delimit ints
+
+# Output:
+# #syntax_error#
+
+# Exit:
+# 100
+
+# Program:
+
+  int x = 22 0

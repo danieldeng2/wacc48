@@ -152,6 +152,14 @@ object ControlFlowVisitor : ASTVisitor {
 
     }
 
+    override fun visitDeepArrayLiteral(node: DeepArrayLiteral) {
+
+    }
+
+    override fun visitPairMemoryLiteral(node: PairMemoryLiteral) {
+        TODO("Not yet implemented")
+    }
+
     override fun visitStringLiteral(literal: StringLiteral) {
 
     }

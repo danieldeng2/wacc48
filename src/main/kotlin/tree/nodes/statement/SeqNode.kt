@@ -55,4 +55,5 @@ data class SeqNode(
     override fun acceptVisitor(visitor: ASTVisitor) {
         visitor.visitSeq(this)
     }
+
 }

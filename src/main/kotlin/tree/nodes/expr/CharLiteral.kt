@@ -5,11 +5,13 @@ import tree.nodes.function.FuncNode
 import tree.type.CharType
 import tree.type.Type
 import org.antlr.v4.runtime.ParserRuleContext
+import shell.MemoryTable
 import tree.ASTVisitor
 
-data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) :
-    ExprNode, BaseLiteral {
+data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) : Literal {
     override var type: Type = CharType
+
+    override fun literalToString(mt: MemoryTable?): String = value.toString()
 
     override fun validate(
         st: SymbolTable,
@@ -20,5 +22,5 @@ data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) :
     override fun acceptVisitor(visitor: ASTVisitor) {
         visitor.visitCharLiteral(this)
     }
-
 }
+

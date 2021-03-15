@@ -31,5 +31,6 @@ data class WhileNode(
     override fun acceptVisitor(visitor: ASTVisitor) {
         visitor.visitWhile(this)
     }
+
 }
 

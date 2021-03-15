@@ -5,8 +5,24 @@ import java.io.FileWriter
 import java.nio.file.Path
 
 fun main(args: Array<String>) {
+    if (args[0] == "-s") {
+        val shell: WACCShell
+        if (args.size == 3) {
+            if (args[1] == "-p")
+                shell = WACCShell(programPath = Path.of(args[2]))
+            else {
+                println("Shell usage: ./shell -p <WACC File>")
+                return
+            }
+        } else {
+            shell = WACCShell()
+        }
+        shell.runInteractiveShell()
+        return
+    }
+
     if (args.isEmpty() || !File(args[0]).exists()) {
-        println("Usage: compile <WACC Source>")
+        println("Usage: ./compile <WACC Source>")
         return
     }
 
@@ -23,6 +39,3 @@ private fun writeResult(inputName: String, output: List<String>) {
     output.forEach { writer.appendLine(it) }
     writer.close()
 }
-
-
-

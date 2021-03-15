@@ -26,4 +26,5 @@ data class FreeNode(
     override fun acceptVisitor(visitor: ASTVisitor) {
         visitor.visitFree(this)
     }
+
 }

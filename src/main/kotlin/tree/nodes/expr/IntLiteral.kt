@@ -1,18 +1,22 @@
 package tree.nodes.expr
 
 import analyser.exceptions.SemanticsException
+import org.antlr.v4.runtime.ParserRuleContext
+import shell.MemoryTable
+import tree.ASTVisitor
 import tree.SymbolTable
 import tree.nodes.function.FuncNode
 import tree.type.IntType
 import tree.type.Type
-import org.antlr.v4.runtime.ParserRuleContext
-import tree.ASTVisitor
 
 data class IntLiteral(
     var value: Int,
     val ctx: ParserRuleContext?
-) : ExprNode, BaseLiteral {
+) : Literal {
+
     override var type: Type = IntType
+
+    override fun literalToString(mt: MemoryTable?): String = value.toString()
 
     override fun validate(
         st: SymbolTable,

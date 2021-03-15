@@ -160,7 +160,12 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
             add(popAndDecrement(ctx, Register.R1, Register.R2))
 
             add(STRInstr(Register.R2, MemAddr(Register.R0)))
-            add(STRInstr(Register.R1, MemAddr(Register.R0, NumOp(NUM_BYTE_ADDRESS))))
+            add(
+                STRInstr(
+                    Register.R1,
+                    MemAddr(Register.R0, NumOp(NUM_BYTE_ADDRESS))
+                )
+            )
         }
     }
 
@@ -265,8 +270,9 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
             add(
                 MOVInstr(
                     Register.R0,
-                    NumOp(literal.values.size * literal.elemType.reserveStackSize
-                            + IntType.reserveStackSize
+                    NumOp(
+                        literal.values.size * literal.elemType.reserveStackSize
+                                + IntType.reserveStackSize
                     )
                 )
             )
@@ -332,6 +338,12 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
 
     override fun visitPairLiteral(literal: PairLiteral) {
         ctx.text.add(MOVInstr(Register.R0, NumOp(NULL_ADDRESS)))
+    }
+
+    override fun visitDeepArrayLiteral(node: DeepArrayLiteral) {
+    }
+
+    override fun visitPairMemoryLiteral(node: PairMemoryLiteral) {
     }
 
     override fun visitStringLiteral(literal: StringLiteral) {
@@ -480,6 +492,9 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
             add(CMPInstr(Register.R0, NumOp(1)))
             add(BEQInstr("L$bodyIndex"))
         }
+    }
+
+    fun translateDeepArrayLiteral(deepArrayLiteral: DeepArrayLiteral) {
     }
 
 }

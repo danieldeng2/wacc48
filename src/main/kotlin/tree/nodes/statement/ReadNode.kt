@@ -18,7 +18,6 @@ data class ReadNode(
 ) : StatNode {
     private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
 
-
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>

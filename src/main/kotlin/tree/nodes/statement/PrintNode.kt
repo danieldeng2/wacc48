@@ -24,5 +24,4 @@ data class PrintNode(
     override fun acceptVisitor(visitor: ASTVisitor) {
         visitor.visitPrint(this)
     }
-
 }
