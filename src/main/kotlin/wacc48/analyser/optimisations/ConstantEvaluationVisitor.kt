@@ -1,6 +1,5 @@
 package wacc48.analyser.optimisations
 //
-//import wacc48.analyser.exceptions.SemanticsException
 //import wacc48.tree.ASTVisitor
 //import wacc48.tree.nodes.ASTNode
 //import wacc48.tree.nodes.ProgNode
@@ -14,6 +13,7 @@ package wacc48.analyser.optimisations
 //import wacc48.tree.nodes.expr.operators.UnaryOperator
 //import wacc48.tree.nodes.function.*
 //import wacc48.tree.nodes.statement.*
+//import java.lang.IllegalStateException
 //
 //object ConstantEvaluationVisitor : ASTVisitor {
 //
@@ -95,7 +95,7 @@ package wacc48.analyser.optimisations
 //            is IntLiteral -> expr.value
 //            is CharLiteral -> expr.value.toInt()
 //            is BoolLiteral -> expr.value.compareTo(false)
-//            else -> issues.addSemantic(("Invalid literal in binary expression", null)
+//            else -> throw IllegalStateException("Invalid literal in binary expression")
 //        }
 //
 //    }
@@ -239,7 +239,6 @@ package wacc48.analyser.optimisations
 //    }
 //
 //    override fun visitPairMemoryLiteral(node: PairMemoryLiteral) {
-//        TODO("Not yet implemented")
 //    }
 //
 //    override fun visitStringLiteral(literal: StringLiteral) {
