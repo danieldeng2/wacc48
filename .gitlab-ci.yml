@@ -32,4 +32,4 @@ gradle-test-x86:
 gradle-test-shell:
   stage: gradleTest
   script:
-    - ./gradlew clean test --tests 'wacc48.generator.wacc48.shell.*'
+    - ./gradlew clean test --tests 'wacc48.shell.*'
