@@ -9,11 +9,27 @@ data class PairType(
     val ctx: ParserRuleContext?
 ) : GenericPair {
 
-
     override val reserveStackSize: Int = 4
 
     override fun equals(other: Any?): Boolean {
-        return other is GenericPair
+        //return other is GenericPair
+        if (this === other)
+            return true
+        if (other !is GenericPair)
+            return false
+        if (other is EmptyPair)
+            return true
+
+        other as PairType
+        if (other.firstType != firstType)
+            if (!(firstType is GenericPair && other.firstType is GenericPair))
+                return false
+
+        if (other.secondType != secondType)
+            if (!(secondType is GenericPair && other.secondType is GenericPair))
+                return false
+
+        return true
     }
 
     override fun hashCode(): Int {
