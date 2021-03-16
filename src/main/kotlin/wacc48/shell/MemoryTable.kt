@@ -1,6 +1,5 @@
 package wacc48.shell
 
-import wacc48.analyser.exceptions.SemanticsException
 import wacc48.tree.nodes.expr.Literal
 import wacc48.tree.nodes.expr.PairLiteral
 import wacc48.tree.type.Type
@@ -11,8 +10,8 @@ class MemoryTable(val parent: MemoryTable?) {
 
     operator fun set(id: String, type: Type, literal: Literal) {
         if (literal.type != type)
-            throw SemanticsException(
-                "Setting mismatching type(${map[id]?.first}) and literal(${literal.type}) in memory table", null
+            throw ShellSemanticException(
+                "Setting mismatching type(${map[id]?.first}) and literal(${literal.type}) in memory table"
             )
         map[id] = Pair(type, literal)
         isDeclared.add(id)
@@ -20,7 +19,7 @@ class MemoryTable(val parent: MemoryTable?) {
 
     operator fun set(id: String, type: Type) {
         if (map[id] != null)
-            throw SemanticsException("Setting new type for already existing id in memory table", null)
+            throw ShellSemanticException("Setting new type for already existing id in memory table")
         map[id] = Pair(type, null)
     }
 
@@ -31,8 +30,8 @@ class MemoryTable(val parent: MemoryTable?) {
                     throw ShellNullDereferenceError("cannot use null pair literal to assign to ${map[id]?.first}")
                 }
                 print(map[id]?.first)
-                throw SemanticsException(
-                    "Setting mismatching type(${map[id]?.first}) and literal(${literal.type}) in memory table", null
+                throw ShellSemanticException(
+                    "Setting mismatching type(${map[id]?.first}) and literal(${literal.type}) in memory table"
                 )
             }
             map[id] = Pair(literal.type, literal)

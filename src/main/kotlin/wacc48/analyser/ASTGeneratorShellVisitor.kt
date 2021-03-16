@@ -1,12 +1,23 @@
 package wacc48.analyser
 
+import org.apache.commons.text.StringEscapeUtils
 import wacc48.antlr.WACCShellParser
 import wacc48.antlr.WACCShellParserBaseVisitor
-import wacc48.analyser.exceptions.SyntaxException
-import org.apache.commons.text.StringEscapeUtils
 import wacc48.tree.nodes.ASTNode
-import wacc48.tree.nodes.assignment.*
-import wacc48.tree.nodes.expr.*
+import wacc48.tree.nodes.assignment.AssignmentNode
+import wacc48.tree.nodes.assignment.LHSNode
+import wacc48.tree.nodes.assignment.NewPairNode
+import wacc48.tree.nodes.assignment.PairElemNode
+import wacc48.tree.nodes.assignment.RHSNode
+import wacc48.tree.nodes.expr.ArrayElement
+import wacc48.tree.nodes.expr.ArrayLiteral
+import wacc48.tree.nodes.expr.BoolLiteral
+import wacc48.tree.nodes.expr.CharLiteral
+import wacc48.tree.nodes.expr.ExprNode
+import wacc48.tree.nodes.expr.IdentifierNode
+import wacc48.tree.nodes.expr.IntLiteral
+import wacc48.tree.nodes.expr.PairLiteral
+import wacc48.tree.nodes.expr.StringLiteral
 import wacc48.tree.nodes.expr.operators.BinOpNode
 import wacc48.tree.nodes.expr.operators.BinaryOperator
 import wacc48.tree.nodes.expr.operators.UnOpNode
@@ -15,8 +26,26 @@ import wacc48.tree.nodes.function.ArgListNode
 import wacc48.tree.nodes.function.FuncCallNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.nodes.function.ParamNode
-import wacc48.tree.nodes.statement.*
-import wacc48.tree.type.*
+import wacc48.tree.nodes.statement.BeginNode
+import wacc48.tree.nodes.statement.DeclarationNode
+import wacc48.tree.nodes.statement.ExitNode
+import wacc48.tree.nodes.statement.FreeNode
+import wacc48.tree.nodes.statement.IfNode
+import wacc48.tree.nodes.statement.PrintNode
+import wacc48.tree.nodes.statement.ReadNode
+import wacc48.tree.nodes.statement.ReturnNode
+import wacc48.tree.nodes.statement.SeqNode
+import wacc48.tree.nodes.statement.SkipNode
+import wacc48.tree.nodes.statement.StatNode
+import wacc48.tree.nodes.statement.WhileNode
+import wacc48.tree.type.ArrayType
+import wacc48.tree.type.BoolType
+import wacc48.tree.type.CharType
+import wacc48.tree.type.EmptyPair
+import wacc48.tree.type.IntType
+import wacc48.tree.type.PairType
+import wacc48.tree.type.StringType
+import wacc48.tree.type.Type
 
 class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
     var inFuncNodeCtx = false
@@ -223,15 +252,22 @@ class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
         PairLiteral
 
 
-    override fun visitIntLiteral(ctx: WACCShellParser.IntLiteralContext): ASTNode =
-        IntLiteral(
-            value = try {
-                ctx.text.toInt()
-            } catch (e: NumberFormatException) {
-                throw SyntaxException("Integer ${ctx.text} out of bounds")
-            },
+    override fun visitIntLiteral(ctx: WACCShellParser.IntLiteralContext): ASTNode {
+        var isOutOfBounds = false
+
+        val parsedInt = try {
+            ctx.text.toInt()
+        } catch (e: NumberFormatException) {
+            isOutOfBounds = true
+            0
+        }
+
+        return IntLiteral(
+            value = parsedInt,
+            isOutOfBounds = isOutOfBounds,
             ctx = ctx
         )
+    }
 
     override fun visitCharLiteral(ctx: WACCShellParser.CharLiteralContext): ASTNode =
         CharLiteral(

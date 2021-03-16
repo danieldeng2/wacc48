@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.expr
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.shell.MemoryTable
 import wacc48.shell.checkIndexBounds
 import wacc48.tree.ASTVisitor
@@ -11,6 +12,7 @@ import wacc48.tree.nodes.assignment.LHSNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.ArrayType
 import wacc48.tree.type.Type
+import wacc48.tree.type.VoidType
 
 data class ArrayElement(
     val name: String,
@@ -19,7 +21,7 @@ data class ArrayElement(
 ) : ExprNode, LHSNode {
     lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
-    override lateinit var type: Type
+    override var type: Type = VoidType
 
     override fun reduceToLiteral(mt: MemoryTable?): Literal {
         return if (arrIndices.size > 1) { //Deep array access
@@ -62,24 +64,30 @@ data class ArrayElement(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
         this.st = st
-        if (!st.containsInAnyScope(name))
-            throw SemanticsException("Cannot find array $name", ctx)
-        arrIndices.forEach { it.validate(st, funTable) }
+        if (!st.containsInAnyScope(name)) {
+            issues.addSemantic("Cannot find array $name", ctx)
+            return
+        }
+        arrIndices.forEach { it.validate(st, funTable, issues) }
         var identityType = st[name]!!
-        if (identityType !is ArrayType)
-            throw SemanticsException("$name is not an array", null)
+        if (identityType !is ArrayType) {
+            issues.addSemantic("$name is not an array", null)
+            return
+        }
 
         for (i in arrIndices.indices) {
             try {
                 identityType = (identityType as ArrayType).elementType
             } catch (e: ClassCastException) {
-                throw SemanticsException(
+                issues.addSemantic(
                     "Invalid de-referencing of array $name",
                     ctx
                 )
+                return
             }
         }
         type = identityType

@@ -1,8 +1,6 @@
 package wacc48.shell
 
 import WalkDirectory
-import wacc48.analyser.exceptions.SemanticsException
-import wacc48.analyser.exceptions.SyntaxException
 import org.junit.Test
 import java.io.File
 
@@ -20,7 +18,7 @@ class ShellParsingTest {
             try {
                 runFileInShell(it, evaluateCode = false)
                 error("This program contains syntax error")
-            } catch (e: SyntaxException) {
+            } catch (e: ShellSyntaxException) {
                 //Test passes
             }
         }
@@ -32,7 +30,7 @@ class ShellParsingTest {
             try {
                 runFileInShell(it, evaluateCode = false)
                 error("This program contains semantic error")
-            } catch (e: SemanticsException) {
+            } catch (e: ShellSemanticException) {
                 //Test passes
             }
         }
@@ -72,7 +70,7 @@ class ShellParsingTest {
                 evaluateCode = false,
             )
             error("This program contains semantic error")
-        } catch (e: SemanticsException) {
+        } catch (e: ShellSemanticException) {
             //Test passes
         }
     }

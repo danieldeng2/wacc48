@@ -1,13 +1,32 @@
 package wacc48.tree.nodes.expr.operators
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
-import wacc48.shell.*
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
+import wacc48.shell.MemoryTable
+import wacc48.shell.ShellDivideByZeroException
+import wacc48.shell.ShellIntegerOverflowException
+import wacc48.shell.ShellRunTimeException
+import wacc48.shell.detectIntegerOverflow
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
-import wacc48.tree.nodes.expr.*
+import wacc48.tree.nodes.expr.ArrayLiteral
+import wacc48.tree.nodes.expr.BoolLiteral
+import wacc48.tree.nodes.expr.CharLiteral
+import wacc48.tree.nodes.expr.ExprNode
+import wacc48.tree.nodes.expr.IdentifierNode
+import wacc48.tree.nodes.expr.IntLiteral
+import wacc48.tree.nodes.expr.Literal
+import wacc48.tree.nodes.expr.PairLiteral
+import wacc48.tree.nodes.expr.PairMemoryLiteral
+import wacc48.tree.nodes.expr.StringLiteral
 import wacc48.tree.nodes.function.FuncNode
-import wacc48.tree.type.*
+import wacc48.tree.type.ArrayType
+import wacc48.tree.type.BoolType
+import wacc48.tree.type.CharType
+import wacc48.tree.type.IntType
+import wacc48.tree.type.StringType
+import wacc48.tree.type.Type
 
 data class BinOpNode(
     val operator: BinaryOperator,
@@ -165,25 +184,27 @@ data class BinOpNode(
             BinaryOperator.PLUS -> {
                 if (firstIntExpr.value + secondIntExpr.value > Int.MAX_VALUE)
                     throw ShellIntegerOverflowException("addition overflow")
-                IntLiteral(firstIntExpr.value + secondIntExpr.value, null)
+                IntLiteral(firstIntExpr.value + secondIntExpr.value, false, null)
             }
             BinaryOperator.MINUS -> IntLiteral(
                 firstIntExpr.value - secondIntExpr.value,
+                false,
                 null
             )
             BinaryOperator.MULTIPLY -> IntLiteral(
                 firstIntExpr.value * secondIntExpr.value,
+                false,
                 null
             )
             BinaryOperator.DIVIDE -> {
                 if (secondIntExpr.value == 0)
                     throw ShellDivideByZeroException("divide by zero not allowed")
-                IntLiteral(firstIntExpr.value / secondIntExpr.value, null)
+                IntLiteral(firstIntExpr.value / secondIntExpr.value, false, null)
             }
             else -> {
                 if (secondIntExpr.value == 0)
                     throw ShellDivideByZeroException("mod by zero not allowed")
-                IntLiteral(firstIntExpr.value % secondIntExpr.value, null)
+                IntLiteral(firstIntExpr.value % secondIntExpr.value, false, null)
             }
         }
     }
@@ -247,24 +268,25 @@ data class BinOpNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
 
-        firstExpr.validate(st, funTable)
-        secondExpr.validate(st, funTable)
+        firstExpr.validate(st, funTable, issues)
+        secondExpr.validate(st, funTable, issues)
 
         val expected = operator.expectedExprTypes
 
         if (expected.isNotEmpty()) {
             if (firstExpr.type !in expected)
-                throw SemanticsException(
+                issues.addSemantic(
                     "Type-mismatched on operator $operator: arg 1 has type " +
                             "${firstExpr.type}, required 1 of type(s) $expected",
                     ctx
                 )
         }
         if (firstExpr.type != secondExpr.type)
-            throw SemanticsException(
+            issues.addSemantic(
                 "Type-mismatched on operator $operator: arg 1 has type " +
                         "${firstExpr.type}, arg 2 of type(s) ${secondExpr.type}",
                 ctx

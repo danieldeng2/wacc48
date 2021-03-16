@@ -1,5 +1,6 @@
 package wacc48.tree.nodes.expr
 
+import wacc48.analyser.exceptions.Issue
 import wacc48.shell.MemoryTable
 import wacc48.shell.ShellRunTimeException
 import wacc48.tree.ASTVisitor
@@ -33,7 +34,8 @@ class DeepArrayLiteral(var values: List<String>, elemType: Type) : Literal {
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
     }
 

@@ -1,5 +1,6 @@
 package wacc48.tree.nodes.expr
 
+import wacc48.analyser.exceptions.Issue
 import wacc48.shell.MemoryTable
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
@@ -15,7 +16,8 @@ object PairLiteral : Literal {
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
     }
 
@@ -39,7 +41,8 @@ class PairMemoryLiteral(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
     }
 

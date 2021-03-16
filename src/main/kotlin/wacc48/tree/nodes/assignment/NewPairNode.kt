@@ -1,6 +1,7 @@
 package wacc48.tree.nodes.assignment
 
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.expr.ExprNode
@@ -19,11 +20,12 @@ data class NewPairNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
 
-        firstElem.validate(st, funTable)
-        secondElem.validate(st, funTable)
+        firstElem.validate(st, funTable, issues)
+        secondElem.validate(st, funTable, issues)
 
         type = PairType(firstElem.type, secondElem.type, ctx)
     }

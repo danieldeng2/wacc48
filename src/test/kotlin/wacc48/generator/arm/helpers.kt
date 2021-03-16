@@ -53,7 +53,7 @@ private fun compilerPipeline(
     asmOutputFile: File,
     stdin: String = ""
 ): EmulatorResult {
-    val pNode = runAnalyser(CharStreams.fromFileName(srcFile.path))
+    val pNode = runAnalyser(CharStreams.fromFileName(srcFile.path), mutableListOf())
     val architecture = ArmArchitecture.compile(pNode)
 
     return executeAssembly(

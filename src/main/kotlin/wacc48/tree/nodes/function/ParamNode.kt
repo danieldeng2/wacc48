@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.function
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.ASTNode
@@ -17,14 +18,17 @@ data class ParamNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
         this.st = st
-        if (st.containsInCurrentScope(text))
-            throw SemanticsException(
+        if (st.containsInCurrentScope(text)) {
+            issues.addSemantic(
                 "Illegal re-declaration of parameter $text",
                 ctx
             )
+            return
+        }
         st[text] = type
     }
 

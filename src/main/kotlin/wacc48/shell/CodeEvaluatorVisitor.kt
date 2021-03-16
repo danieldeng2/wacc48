@@ -105,7 +105,7 @@ class CodeEvaluatorVisitor(
             mt.set(it.text, arg.type, arg)
         }
 
-        (node.functionNode.body)
+        visitNode(node.functionNode.body)
         returnFromFuncCall = false
 
         endMemoryTableScope()
@@ -372,7 +372,7 @@ class CodeEvaluatorVisitor(
         while (readInt == null) {
             readInt = readLine()?.toInt()
         }
-        return IntLiteral(readInt, null)
+        return IntLiteral(readInt, false, null)
     }
 
     /** Evaluates return value and returns as literal */

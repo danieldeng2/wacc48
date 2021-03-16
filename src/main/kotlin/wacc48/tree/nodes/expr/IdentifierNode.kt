@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.expr
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.shell.MemoryTable
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
@@ -25,11 +26,14 @@ data class IdentifierNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
         this.st = st
-        if (!st.containsInAnyScope(name))
-            throw SemanticsException("Unknown identifier $name", ctx)
+        if (!st.containsInAnyScope(name)) {
+            issues.addSemantic("Unknown identifier $name", ctx)
+            return
+        }
 
         type = st[name]!!
     }

@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.statement
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
@@ -19,16 +20,20 @@ data class DeclarationNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
         this.st = st
-        name.validate(st, funTable)
-        value.validate(st, funTable)
+        name.validate(st, funTable, issues)
+        value.validate(st, funTable, issues)
 
         //Assume type matches if this in a function body in the wacc48.shell
         if (!(value is FuncCallNode && value.inShellAndFuncNodeCtx)) {
             if (value.type != name.type)
-                throw SemanticsException("Type mismatch in declaration $name", ctx)
+                issues.addSemantic(
+                    "Type mismatch in declaration of ${name.text}, expected ${name.type}, actual ${value.type}",
+                    ctx
+                )
         }
     }
 

@@ -1,11 +1,19 @@
 package wacc48.tree.nodes.function
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
+import wacc48.analyser.exceptions.addSyntax
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.ASTNode
-import wacc48.tree.nodes.statement.*
+import wacc48.tree.nodes.statement.BeginNode
+import wacc48.tree.nodes.statement.ExitNode
+import wacc48.tree.nodes.statement.IfNode
+import wacc48.tree.nodes.statement.ReturnNode
+import wacc48.tree.nodes.statement.SeqNode
+import wacc48.tree.nodes.statement.StatNode
+import wacc48.tree.nodes.statement.WhileNode
 import wacc48.tree.type.Type
 
 data class FuncNode(
@@ -18,9 +26,9 @@ data class FuncNode(
     lateinit var paramListTable: SymbolTable
     lateinit var bodyTable: SymbolTable
 
-    fun validatePrototype(ft: MutableMap<String, FuncNode>) {
+    fun validatePrototype(ft: MutableMap<String, FuncNode>, issues: MutableList<Issue>) {
         if (identifier in ft)
-            throw SemanticsException(
+            issues.addSemantic(
                 "Illegal re-declaration of function $identifier",
                 ctx
             )
@@ -29,31 +37,37 @@ data class FuncNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
         this.paramListTable = SymbolTable(st, isParamListST = true)
         this.bodyTable = SymbolTable(paramListTable)
 
-        paramList.asReversed().forEach {
-            it.validate(paramListTable, funTable)
+        if (!allPathsTerminated(body)) {
+            issues.addSyntax("Function $identifier must end with either a return or exit", ctx)
+            return
         }
-        body.validate(bodyTable, funTable)
 
-        validateReturnType(body)
+        paramList.asReversed().forEach {
+            it.validate(paramListTable, funTable, issues)
+        }
+        body.validate(bodyTable, funTable, issues)
+
+        validateReturnType(body, issues)
     }
 
-    private fun validateReturnType(body: StatNode) {
+    private fun validateReturnType(body: StatNode, issues: MutableList<Issue>) {
         when (body) {
-            is SeqNode -> body.forEach { validateReturnType(it) }
-            is BeginNode -> validateReturnType(body.stat)
+            is SeqNode -> body.forEach { validateReturnType(it, issues) }
+            is BeginNode -> validateReturnType(body.stat, issues)
             is IfNode -> {
-                validateReturnType(body.trueStat)
-                validateReturnType(body.falseStat)
+                validateReturnType(body.trueStat, issues)
+                validateReturnType(body.falseStat, issues)
             }
-            is WhileNode -> validateReturnType(body.body)
+            is WhileNode -> validateReturnType(body.body, issues)
             is ReturnNode -> {
                 if (body.value.type != retType)
-                    throw SemanticsException(
+                    issues.addSemantic(
                         "The expected return type of Function $identifier is: $retType," +
                                 " actual return type: ${body.value.type}", ctx
                     )
@@ -66,4 +80,14 @@ data class FuncNode(
         visitor.visitFunction(this)
     }
 
+    fun allPathsTerminated(body: StatNode): Boolean =
+        when (body) {
+            is SeqNode -> allPathsTerminated(body.last())
+            is BeginNode -> allPathsTerminated(body.stat)
+            is IfNode -> allPathsTerminated(body.trueStat)
+                    && allPathsTerminated(body.falseStat)
+            is ReturnNode -> true
+            is ExitNode -> true
+            else -> false
+        }
 }

@@ -1,14 +1,27 @@
 package wacc48.tree.nodes.expr.operators
 
-import wacc48.analyser.exceptions.SyntaxException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSyntax
 import wacc48.shell.MemoryTable
 import wacc48.shell.detectIntegerOverflow
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
-import wacc48.tree.nodes.expr.*
+import wacc48.tree.nodes.expr.ArrayLiteral
+import wacc48.tree.nodes.expr.BoolLiteral
+import wacc48.tree.nodes.expr.CharLiteral
+import wacc48.tree.nodes.expr.ExprNode
+import wacc48.tree.nodes.expr.IntLiteral
+import wacc48.tree.nodes.expr.Literal
+import wacc48.tree.nodes.expr.StringLiteral
 import wacc48.tree.nodes.function.FuncNode
-import wacc48.tree.type.*
+import wacc48.tree.type.ArrayType
+import wacc48.tree.type.BoolType
+import wacc48.tree.type.CharType
+import wacc48.tree.type.IntType
+import wacc48.tree.type.StringType
+import wacc48.tree.type.Type
+import wacc48.tree.type.VoidType
 
 data class UnOpNode(
     val operator: UnaryOperator,
@@ -28,7 +41,7 @@ data class UnOpNode(
     private fun reduceMinusToLiteral(mt: MemoryTable?): Literal {
         val intExpr = expr.reduceToLiteral(mt) as IntLiteral
         detectIntegerOverflow(0, intExpr.value, BinaryOperator.MINUS)
-        return IntLiteral(-intExpr.value, null)
+        return IntLiteral(-intExpr.value, false, null)
     }
 
     private fun reduceNegateToLiteral(mt: MemoryTable?): Literal {
@@ -37,18 +50,18 @@ data class UnOpNode(
     }
 
     private fun reduceLenToLiteral(mt: MemoryTable?): Literal {
-        if (expr.type is StringType) {
+        return if (expr.type is StringType) {
             val strExpr = expr.reduceToLiteral(mt) as StringLiteral
-            return IntLiteral(strExpr.value.length, null)
+            IntLiteral(strExpr.value.length, false, null)
         } else { //Array type
             val arrExpr = expr.reduceToLiteral(mt) as ArrayLiteral
-            return IntLiteral(arrExpr.values.size, null)
+            IntLiteral(arrExpr.values.size, false, null)
         }
     }
 
     private fun reduceOrdToLiteral(mt: MemoryTable?): Literal {
         val charExpr = expr.reduceToLiteral(mt) as CharLiteral
-        return IntLiteral(charExpr.value.toInt(), null)
+        return IntLiteral(charExpr.value.toInt(), false, null)
     }
 
     private fun reduceChrToLiteral(mt: MemoryTable?): Literal {
@@ -58,15 +71,17 @@ data class UnOpNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
 
-        expr.validate(st, funTable)
+        expr.validate(st, funTable, issues)
 
         if (expr.type !in operator.expectedExprTypes)
-            throw SyntaxException(
+            issues.addSyntax(
                 "Expression type for $operator " +
-                        "does not match required type $type"
+                        "does not match required type $type",
+                ctx
             )
     }
 

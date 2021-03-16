@@ -19,4 +19,8 @@ data class ArrayType(val elementType: Type, val ctx: ParserRuleContext?) : Type 
     override fun hashCode(): Int {
         return elementType.hashCode()
     }
+
+    override fun toString(): String {
+        return "${elementType}[]"
+    }
 }

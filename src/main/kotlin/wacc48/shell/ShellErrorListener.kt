@@ -3,7 +3,7 @@ package wacc48.shell
 import org.antlr.v4.runtime.BaseErrorListener
 import org.antlr.v4.runtime.RecognitionException
 import org.antlr.v4.runtime.Recognizer
-import wacc48.analyser.exceptions.SyntaxException
+import wacc48.analyser.exceptions.ParserException
 
 class ShellErrorListener : BaseErrorListener() {
     override fun syntaxError(
@@ -25,8 +25,12 @@ class ShellErrorListener : BaseErrorListener() {
             underline += " "
         underline += "^\n"
 
-        throw SyntaxException(underline + "Syntax error: line $line:$charPositionInLine $msg")
+        throw ShellSyntaxException(underline + "Syntax error: line $line:$charPositionInLine $msg")
     }
 }
 
 class IncompleteRuleException(message: String) : Exception(message)
+
+class ShellSyntaxException(s: String) : Exception(s)
+
+class ShellSemanticException(s: String) : Exception(s)

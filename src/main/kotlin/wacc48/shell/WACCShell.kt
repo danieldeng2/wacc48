@@ -5,14 +5,15 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.ParserRuleContext
 import wacc48.analyser.ASTGeneratorShellVisitor
-import wacc48.analyser.exceptions.SemanticsException
-import wacc48.analyser.exceptions.SyntaxException
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.IssueType
+import wacc48.analyser.exceptions.addSyntax
 import wacc48.antlr.WACCLexer
 import wacc48.antlr.WACCShellParser
+import wacc48.checkAnalyserIssues
 import wacc48.runAnalyser
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.ASTNode
-import wacc48.tree.nodes.checkFunctionTerminates
 import wacc48.tree.nodes.function.FuncNode
 import java.io.BufferedReader
 import java.io.PrintStream
@@ -33,10 +34,10 @@ class WACCShell(
         var st = SymbolTable(null)
         val ft: MutableMap<String, FuncNode> = mutableMapOf()
         val mt = MemoryTable(null)
-
+        var issues: MutableList<Issue> = mutableListOf()
         val evalVisitor = CodeEvaluatorVisitor(mt, input, output, testMode)
 
-        parseAndRunProgramFile(st, ft, evalVisitor)
+        parseAndRunProgramFile(issues, st, ft, evalVisitor)
 
         printIntro()
 
@@ -56,31 +57,65 @@ class WACCShell(
 
             //Semantic Analysis
             val node: ASTNode = parserContext.accept(ASTGeneratorShellVisitor())
-            try {
-                if (node is FuncNode) {
-                    checkFunctionTerminates(node)
-                    node.validatePrototype(ft)
+            issues = mutableListOf()
+            
+            if (node is FuncNode) {
+                if (!node.allPathsTerminated(node.body)) {
+                    issues.addSyntax("Function ${node.identifier} must end with either a return or exit", node.ctx)
                 }
-                val stCopy = st.clone()
-                node.validate(stCopy, ft)
-                st = stCopy
-            } catch (e: SyntaxException) {
-                output.println("Syntax Error: ${e.message}")
+                node.validatePrototype(ft, issues)
+
+                //check for issues
+                val syntaxIssues = issues.filter { it.type == IssueType.SYNTAX }
+                if (syntaxIssues.isNotEmpty()) {
+                    output.println("Syntax Error: ${syntaxIssues[0].msg}")
+                    if (testMode) {
+                        input.close()
+                        throw ShellSyntaxException("Syntax Error: ${syntaxIssues[0].msg}")
+                    }
+                    currLine = readNewLine()
+                    continue
+                }
+
+                val semanticIssues = issues.filter { it.type == IssueType.SEMANTICS }
+                if (semanticIssues.isNotEmpty()) {
+                    output.println("Semantic Error: ${semanticIssues[0].msg}")
+                    if (testMode) {
+                        input.close()
+                        throw ShellSemanticException("Semantic Error: ${semanticIssues[0].msg}")
+                    }
+                    currLine = readNewLine()
+                    continue
+                }
+            }
+            val stCopy = st.clone()
+            node.validate(stCopy, ft, issues)
+
+            //check for issues
+            val syntaxIssues = issues.filter { it.type == IssueType.SYNTAX }
+            if (syntaxIssues.isNotEmpty()) {
+                output.println("Syntax Error: ${syntaxIssues[0].msg}")
                 if (testMode) {
                     input.close()
-                    throw e
-                }
-                currLine = readNewLine()
-                continue
-            } catch (e: SemanticsException) {
-                output.println("Semantics Error: ${e.message}")
-                if (testMode) {
-                    input.close()
-                    throw e
+                    throw ShellSyntaxException("Syntax Error: ${syntaxIssues[0].msg}")
                 }
                 currLine = readNewLine()
                 continue
             }
+
+            val semanticIssues = issues.filter { it.type == IssueType.SEMANTICS }
+            if (semanticIssues.isNotEmpty()) {
+                output.println("Semantic Error: ${semanticIssues[0].msg}")
+                if (testMode) {
+                    input.close()
+                    throw ShellSemanticException("Semantic Error: ${semanticIssues[0].msg}")
+                }
+                currLine = readNewLine()
+                continue
+            }
+
+            //confirm changes to symbol table since valid command
+            st = stCopy
 
             if (evaluateCode) {
                 evalVisitor.visitNode(node)
@@ -122,7 +157,7 @@ class WACCShell(
 
                 //Attempt to match any rule using current built up input from stdin
                 return parser.command()
-            } catch (e: SyntaxException) {
+            } catch (e: ShellSyntaxException) {
                 output.println("${e.message}")
                 if (testMode) {
                     input.close()
@@ -138,6 +173,7 @@ class WACCShell(
     }
 
     private fun parseAndRunProgramFile(
+        issues: MutableList<Issue>,
         st: SymbolTable,
         ft: MutableMap<String, FuncNode>,
         evalVisitor: CodeEvaluatorVisitor
@@ -150,7 +186,9 @@ class WACCShell(
             return
         }
 
-        val node = runAnalyser(CharStreams.fromPath(programPath), st, ft)
+        val node = runAnalyser(CharStreams.fromPath(programPath), issues, st, ft)
+        checkAnalyserIssues(issues)
+
         if (evaluateCode)
             evalVisitor.visitNode(node)
     }

@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.statement
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.expr.ExprNode
@@ -19,20 +20,21 @@ data class IfNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
         this.trueST = SymbolTable(st)
         this.falseST = SymbolTable(st)
 
         if (proposition.type != BoolType)
-            throw SemanticsException(
+            issues.addSemantic(
                 "If statement proposition must be boolean",
                 ctx
             )
 
-        proposition.validate(st, funTable)
-        trueStat.validate(trueST, funTable)
-        falseStat.validate(falseST, funTable)
+        proposition.validate(st, funTable, issues)
+        trueStat.validate(trueST, funTable, issues)
+        falseStat.validate(falseST, funTable, issues)
     }
 
     override fun acceptVisitor(visitor: ASTVisitor) {

@@ -20,4 +20,6 @@ data class PairType(
         return 1
     }
 
+    override fun toString(): String =
+        "Pair<$firstType , $secondType>"
 }

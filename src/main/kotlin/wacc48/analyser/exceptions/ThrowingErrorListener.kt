@@ -4,8 +4,7 @@ import org.antlr.v4.runtime.BaseErrorListener
 import org.antlr.v4.runtime.RecognitionException
 import org.antlr.v4.runtime.Recognizer
 
-class ThrowingErrorListener(
-) : BaseErrorListener() {
+class ThrowingErrorListener : BaseErrorListener() {
     override fun syntaxError(
         recognizer: Recognizer<*, *>?,
         offendingSymbol: Any?,
@@ -14,8 +13,8 @@ class ThrowingErrorListener(
         msg: String?,
         e: RecognitionException?
     ) {
-        throw SyntaxException("Cannot continue with compiler.")
+        throw ParserException("Cannot continue with compiler.")
     }
 }
 
-class SyntaxException(message: String) : Exception(message)
+class ParserException(message: String) : Exception(message)

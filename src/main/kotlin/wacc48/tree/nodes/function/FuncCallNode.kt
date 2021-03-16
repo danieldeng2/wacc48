@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.function
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.assignment.RHSNode
@@ -20,31 +21,37 @@ data class FuncCallNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
         var functionIsDeclared = !inShellAndFuncNodeCtx
         if (name !in funTable) {
-            if (!inShellAndFuncNodeCtx)
-                throw SemanticsException("Cannot find function $name", ctx)
-            else
+            if (!inShellAndFuncNodeCtx) {
+                issues.addSemantic("Cannot find function $name", ctx)
+                return
+            } else
                 functionIsDeclared = false
         }
         if (functionIsDeclared) {
             this.functionNode = funTable[name]!!
         }
 
-        argList.validate(st, funTable)
+        argList.validate(st, funTable, issues)
 
         if (functionIsDeclared) {
             val args = argList.args
             val params = functionNode.paramList
 
-            if (args.size != params.size)
-                throw SemanticsException("Number of arguments do not match parameter: $name", ctx)
+            if (args.size != params.size) {
+                issues.addSemantic("Number of arguments do not match parameter: $name", ctx)
+                return
+            }
 
             for (i in args.indices) {
-                if (args[i].type != params[i].type)
-                    throw SemanticsException("argument ${i + 1} of $name has wrong type", ctx)
+                if (args[i].type != params[i].type) {
+                    issues.addSemantic("argument ${i + 1} of $name has wrong type", ctx)
+                    return
+                }
             }
 
             type = functionNode.retType

@@ -1,11 +1,17 @@
 package wacc48.tree.nodes.function
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.ASTNode
-import wacc48.tree.nodes.statement.*
+import wacc48.tree.nodes.statement.BeginNode
+import wacc48.tree.nodes.statement.IfNode
+import wacc48.tree.nodes.statement.ReturnNode
+import wacc48.tree.nodes.statement.SeqNode
+import wacc48.tree.nodes.statement.StatNode
+import wacc48.tree.nodes.statement.WhileNode
 
 class MainNode(
     var body: StatNode,
@@ -13,12 +19,15 @@ class MainNode(
 ) : ASTNode {
     lateinit var st: SymbolTable
 
-    override fun validate(st: SymbolTable, funTable: MutableMap<String, FuncNode>) {
+    override fun validate(
+        st: SymbolTable, funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
+    ) {
         this.st = st
-        body.validate(st, funTable)
+        body.validate(st, funTable, issues)
 
         if (hasGlobalReturn(body))
-            throw SemanticsException("Cannot return in global context", ctx)
+            issues.addSemantic("Cannot return in global context", ctx)
     }
 
     override fun acceptVisitor(visitor: ASTVisitor) {

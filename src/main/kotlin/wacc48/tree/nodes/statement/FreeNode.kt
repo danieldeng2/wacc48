@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.statement
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.expr.ExprNode
@@ -15,12 +16,13 @@ data class FreeNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
-        value.validate(st, funTable)
+        value.validate(st, funTable, issues)
 
         if (value.type !is GenericPair)
-            throw SemanticsException("Cannot free ${value.type}", ctx)
+            issues.addSemantic("Cannot free ${value.type}", ctx)
     }
 
     override fun acceptVisitor(visitor: ASTVisitor) {

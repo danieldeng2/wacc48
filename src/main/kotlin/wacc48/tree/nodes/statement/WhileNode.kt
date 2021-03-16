@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.statement
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.expr.ExprNode
@@ -17,15 +18,16 @@ data class WhileNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
         this.bodyST = SymbolTable(st)
-        proposition.validate(st, funTable)
+        proposition.validate(st, funTable, issues)
 
         if (proposition.type != BoolType)
-            throw SemanticsException("While statement proposition must be boolean", ctx)
+            issues.addSemantic("While statement proposition must be boolean", ctx)
 
-        body.validate(bodyST, funTable)
+        body.validate(bodyST, funTable, issues)
     }
 
     override fun acceptVisitor(visitor: ASTVisitor) {

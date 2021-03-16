@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.expr
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.shell.MemoryTable
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
@@ -31,20 +32,21 @@ data class ArrayLiteral(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
 
         if (values.isNotEmpty()) {
-            values[0].validate(st, funTable)
+            values[0].validate(st, funTable, issues)
             elemType = values[0].type
             type = ArrayType(elemType, ctx)
         }
 
         values.forEach {
-            it.validate(st, funTable)
+            it.validate(st, funTable, issues)
             if (it.type != elemType)
-                throw SemanticsException(
-                    "Array elements are of different type: $this",
+                issues.addSemantic(
+                    "Array elements has type ${it.type} and $elemType",
                     ctx
                 )
         }

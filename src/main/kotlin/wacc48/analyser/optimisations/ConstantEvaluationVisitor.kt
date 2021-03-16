@@ -95,7 +95,7 @@ package wacc48.analyser.optimisations
 //            is IntLiteral -> expr.value
 //            is CharLiteral -> expr.value.toInt()
 //            is BoolLiteral -> expr.value.compareTo(false)
-//            else -> throw SemanticsException("Invalid literal in binary expression", null)
+//            else -> issues.addSemantic(("Invalid literal in binary expression", null)
 //        }
 //
 //    }

@@ -1,7 +1,8 @@
 package wacc48.tree.nodes.statement
 
-import wacc48.analyser.exceptions.SemanticsException
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc48.analyser.exceptions.Issue
+import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
 import wacc48.tree.nodes.assignment.AccessMode
@@ -20,13 +21,14 @@ data class ReadNode(
 
     override fun validate(
         st: SymbolTable,
-        funTable: MutableMap<String, FuncNode>
+        funTable: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
     ) {
 
         value.mode = AccessMode.ADDRESS
-        value.validate(st, funTable)
+        value.validate(st, funTable, issues)
         if (value.type !in expectedExprTypes)
-            throw SemanticsException("Cannot read from type ${value.type}", ctx)
+            issues.addSemantic("Cannot read from type ${value.type}", ctx)
     }
 
     override fun acceptVisitor(visitor: ASTVisitor) {

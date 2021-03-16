@@ -59,7 +59,7 @@ private fun runTestFile(f: File): Pair<EmulatorResult, EmulatorResult> {
     val inputFile = File(f.path.replace(".wacc", ".input"))
     val stdin = if (inputFile.exists()) inputFile.readLines()[0] else ""
 
-    val astNode = runAnalyser(CharStreams.fromFileName(f.path))
+    val astNode = runAnalyser(CharStreams.fromFileName(f.path), mutableListOf())
 
     val instructionsx86 = I386Architecture.compile(astNode)
     val instructionsArm = RefCompiler(f).run()
