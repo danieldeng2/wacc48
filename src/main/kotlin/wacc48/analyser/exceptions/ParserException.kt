@@ -13,7 +13,7 @@ class ThrowingErrorListener : BaseErrorListener() {
         msg: String?,
         e: RecognitionException?
     ) {
-        throw ParserException("Cannot continue with compiler.")
+        throw ParserException("Line ${line}:${charPositionInLine} $msg")
     }
 }
 
