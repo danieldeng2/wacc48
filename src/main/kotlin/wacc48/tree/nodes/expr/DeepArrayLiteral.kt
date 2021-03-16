@@ -21,7 +21,7 @@ class DeepArrayLiteral(var values: List<String>, elemType: Type) : Literal {
 
     override fun literalToString(mt: MemoryTable?): String =
         if (elemType is CharType)
-            values.map { (mt?.getLiteral(it) as CharLiteral).literalToString() }.joinToString("")
+            values.joinToString("") { (mt?.getLiteral(it) as CharLiteral).literalToString() }
         else
             "[" + values.joinToString(", ") {
                 mt?.getLiteral(it)?.literalToString(mt)
