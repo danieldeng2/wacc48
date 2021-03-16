@@ -1,5 +1,0 @@
-#!/usr/bin/bash
-
-java -jar build/libs/wacc-1.0-SNAPSHOT.jar --app shell .
-
-exit $?

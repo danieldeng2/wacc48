@@ -39,8 +39,6 @@ class WACCShell(
 
         parseAndRunProgramFile(issues, st, ft, evalVisitor)
 
-        printIntro()
-
         var currLine: String? = readNewLine()
 
         while (currLine != null && currLine.trim() != "quit" && currLine.trim() != "return") {
@@ -177,18 +175,6 @@ class WACCShell(
 
         if (evaluateCode)
             evalVisitor.visitNode(node)
-    }
-
-    private fun printIntro() {
-        if (!testMode) {
-            output.println(">>> WACC Interactive Shell <<<")
-            output.println("Instructions: ")
-            output.println("\tExit wacc48.shell: use Ctrl-d (EOF) or 'quit' in normal scope")
-            output.println("\tCancel multiline command: use Ctrl-d")
-            output.println("\t'>>>' is the prompt for a new command")
-            output.println("\t'...' is the prompt to continue the current command (multiple lines)")
-            output.println("\tUse ./interpret -p <PATH TO .wacc FILE> to import functions and program body")
-        }
     }
 
     private fun readNewLine(): String? = getLine(prompt)
