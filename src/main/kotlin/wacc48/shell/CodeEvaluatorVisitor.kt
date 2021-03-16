@@ -1,14 +1,9 @@
 package wacc48.shell
 
-import wacc48.generator.instructions.operands.*
-import wacc48.generator.translator.helpers.*
 import wacc48.tree.ASTVisitor
 import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.ProgNode
-import wacc48.tree.nodes.assignment.AccessMode
-import wacc48.tree.nodes.assignment.AssignmentNode
-import wacc48.tree.nodes.assignment.NewPairNode
-import wacc48.tree.nodes.assignment.PairElemNode
+import wacc48.tree.nodes.assignment.*
 import wacc48.tree.nodes.expr.*
 import wacc48.tree.nodes.expr.operators.BinOpNode
 import wacc48.tree.nodes.expr.operators.UnOpNode
@@ -37,13 +32,7 @@ class CodeEvaluatorVisitor(
 
     fun printEvalLiteralStack(prompt: String) {
         evalLiteralStack.forEach {
-            output.println(
-                "$prompt${
-                    it.literalToString(
-                        mt
-                    )
-                }"
-            )
+            output.println("$prompt${it.literalToString(mt)}")
         }
         evalLiteralStack.clear()
     }
@@ -80,7 +69,7 @@ class CodeEvaluatorVisitor(
     }
 
     /** Adds the parameters to the function represented by [node] to a list of
-     * 'declared' variables. See more in [SymbolTable.declareVariable].
+     * 'declared' variables.
      *
      *  No need to evaluate the body as its just declaring the function
      */
@@ -102,7 +91,7 @@ class CodeEvaluatorVisitor(
         //now put these evaluated args into the new memory table with correct names
         node.functionNode.paramList.forEach {
             val arg = argListStack.pop()
-            mt.set(it.text, arg.type, arg)
+            mt[it.text, arg.type] = arg
         }
 
         visitNode(node.functionNode.body)
@@ -111,7 +100,7 @@ class CodeEvaluatorVisitor(
         endMemoryTableScope()
     }
 
-    /** Declares the name of variable. See [SymbolTable.declareVariable] for more. */
+    /** Declares the name of variable.*/
     override fun visitParam(node: ParamNode) {
         node.st.declareVariable(node.text)
         mt[node.text] = node.type
@@ -146,81 +135,98 @@ class CodeEvaluatorVisitor(
 
     override fun visitAssignment(node: AssignmentNode) {
         when (node.name) {
-            is IdentifierNode -> {
-                visitNode(node.value)
-                mt[node.name.name] = evalLiteralStack.pop()
-            }
-            is ArrayElement -> {
-                //ArrayRef is the name of the array we are assigning stuff to
-                val arrayRef =
-                    if (node.name.arrIndices.size > 1) node.name.getArrayRef(mt) else node.name.name
+            is IdentifierNode -> visitIdentifierAssignment(node)
+            is ArrayElement -> visitArrayElemAssignment(node)
+            is PairElemNode -> visitPairElemAssignment(node)
+        }
+    }
 
-                if (mt.getLiteral(arrayRef) is DeepArrayLiteral) { //Assigning to multidimensional arrayliteral
-                    val arrayInMemory =
-                        mt.getLiteral(arrayRef) as DeepArrayLiteral
-                    val index = (node.name.arrIndices.last()
-                        .reduceToLiteral(mt) as IntLiteral).value
-                    val arrayCopy = arrayInMemory.values.toMutableList().apply {
-                        checkIndexBounds(index, size)
-                        removeAt(index)
-                        if (node.value is IdentifierNode) {
-                            add(index, node.value.name)
-                        } else if (node.value is ArrayElement) {
-                            add(index, node.value.getArrayRef(mt))
-                        } else if (node.value is PairElemNode) {
-                            visitNode(node.value)
-                            val arrFromPair = evalLiteralStack.pop()
-                            if (arrFromPair is ArrayLiteral) {
-                                add(
-                                    index,
-                                    arrFromPair.nameInMemTable
-                                        ?: throw ShellRunTimeException(
-                                            "Missing reference of array to memory table. " +
-                                                    "Cannot assign new array from pair"
-                                        )
-                                )
-                            } else if (arrFromPair is DeepArrayLiteral)
-                                add(
-                                    index,
-                                    arrFromPair.nameInMemTable
-                                        ?: throw ShellRunTimeException(
-                                            "Missing reference of array to memory table. " +
-                                                    "Cannot assign new array from pair"
-                                        )
-                                )
+    private fun visitPairElemAssignment(node: AssignmentNode) {
+        val pairElemNode = node.name as PairElemNode
+
+        if (mt.getLiteral((pairElemNode.expr as IdentifierNode).name) !is PairMemoryLiteral)
+            throw ShellNullDereferenceError("cannot write into null pair literal")
+
+        val pairMemLiteral = (mt.getLiteral((pairElemNode.expr as IdentifierNode).name) as PairMemoryLiteral)
+
+        visitNode(node.value)
+
+        if (pairElemNode.isFirst) {
+            pairMemLiteral.firstLiteral = evalLiteralStack.pop()
+        } else {
+            pairMemLiteral.secondLiteral = evalLiteralStack.pop()
+        }
+    }
+
+    private fun visitIdentifierAssignment(node: AssignmentNode) {
+        visitNode(node.value)
+        mt[(node.name as IdentifierNode).name] = evalLiteralStack.pop()
+    }
+
+    private fun visitArrayElemAssignment(node: AssignmentNode) {
+        //ArrayRef is the name of the array we are assigning stuff to
+        val arrElem = node.name as ArrayElement
+        //get the identifier of the referenced array so we can access it through the memory table
+        val arrayRef = if (arrElem.arrIndices.size > 1) arrElem.getArrayRef(mt) else arrElem.name
+        //different procedures depending on whether its multidimensional array or one dimensional
+        if (mt.getLiteral(arrayRef) is DeepArrayLiteral) {
+            visitMultidimArrayAssignment(arrayRef, arrElem, node.value)
+        } else {
+            visitOneDimArrayAssignment(arrayRef, arrElem, node.value)
+        }
+    }
+
+    //for assigning a value to a one dimensional array in the memory table
+    private fun visitOneDimArrayAssignment(arrayRef: String, arrElem: ArrayElement, value: RHSNode) {
+        //copy the values of the array and change the element we need to, then put this into memory
+        val arrayInMemory = mt.getLiteral(arrayRef) as ArrayLiteral
+        val index = (arrElem.arrIndices.last()
+            .reduceToLiteral(mt) as IntLiteral).value
+        val arrayCopy = arrayInMemory.values.toMutableList().apply {
+            checkIndexBounds(index, size)
+            removeAt(index)
+            visitNode(value)
+            add(index, evalLiteralStack.pop())
+        }
+        arrayInMemory.values = arrayCopy
+    }
+
+    private fun visitMultidimArrayAssignment(arrayRef: String, arrElem: ArrayElement, value: RHSNode) {
+        val arrayInMemory = mt.getLiteral(arrayRef) as DeepArrayLiteral
+        val index = (arrElem.arrIndices.last().reduceToLiteral(mt) as IntLiteral).value
+
+        val arrayCopy = arrayInMemory.values.toMutableList().apply {
+            checkIndexBounds(index, size)
+            removeAt(index)
+            when (value) {
+                is IdentifierNode -> add(index, value.name)
+                is ArrayElement -> add(index, value.getArrayRef(mt))
+                is PairElemNode -> {
+                    visitNode(value)
+                    //duplication here is unavoidable
+                    when (val arrFromPair = evalLiteralStack.pop()) {
+                        is ArrayLiteral -> {
+                            add(
+                                index,
+                                arrFromPair.nameInMemTable
+                                    ?: throw ShellRunTimeException(
+                                        "Missing reference of array to memory table. Cannot assign new array from pair"
+                                    )
+                            )
                         }
+                        is DeepArrayLiteral -> add(
+                            index,
+                            arrFromPair.nameInMemTable
+                                ?: throw ShellRunTimeException(
+                                    "Missing reference of array to memory table. Cannot assign new array from pair"
+                                )
+                        )
                     }
-                    arrayInMemory.values = arrayCopy
-                } else {
-                    //When assigning to one dimensional array:
-                    //copy the values of the array and change the element we need to, then put this into memory
-                    val arrayInMemory = mt.getLiteral(arrayRef) as ArrayLiteral
-                    val index = (node.name.arrIndices.last()
-                        .reduceToLiteral(mt) as IntLiteral).value
-                    val arrayCopy = arrayInMemory.values.toMutableList().apply {
-                        checkIndexBounds(index, size)
-                        removeAt(index)
-                        visitNode(node.value)
-                        add(index, evalLiteralStack.pop())
-                    }
-                    arrayInMemory.values = arrayCopy
-                }
-            }
-            is PairElemNode -> { //node is a PairElem
-                if (mt.getLiteral((node.name.expr as IdentifierNode).name) !is PairMemoryLiteral)
-                    throw ShellNullDereferenceError("cannot write into null pair literal")
-
-                val pairMemLiteral =
-                    (mt.getLiteral((node.name.expr as IdentifierNode).name) as PairMemoryLiteral)
-                if (node.name.isFirst) {
-                    visitNode(node.value)
-                    pairMemLiteral.firstLiteral = evalLiteralStack.pop()
-                } else {
-                    visitNode(node.value)
-                    pairMemLiteral.secondLiteral = evalLiteralStack.pop()
                 }
             }
         }
+
+        arrayInMemory.values = arrayCopy
     }
 
     override fun visitBinOp(node: BinOpNode) {
@@ -231,26 +237,22 @@ class CodeEvaluatorVisitor(
         evalLiteralStack.add(node.reduceToLiteral(mt))
     }
 
-    /** Choose what operation to carry out based on [AccessMode]. */
     override fun visitPairElem(node: PairElemNode) {
         if (node.mode == AccessMode.READ) {
             when (node.expr) {
                 is IdentifierNode -> {
-                    when (val literal =
-                        mt.getLiteral((node.expr as IdentifierNode).name)) {
+                    when (val literal = mt.getLiteral((node.expr as IdentifierNode).name)) {
                         is PairLiteral -> evalLiteralStack.add(literal)
                         is PairMemoryLiteral ->
                             if (node.isFirst)
                                 evalLiteralStack.add(literal.firstLiteral)
                             else
                                 evalLiteralStack.add(literal.secondLiteral)
-                        else -> {
-                        }
+                        else -> {}
                     }
                 }
                 is ArrayElement -> visitNode(node.expr)
-                else -> {
-                }
+                else -> {}
             }
         }
     }

@@ -29,7 +29,6 @@ class MemoryTable(val parent: MemoryTable?) {
                 if (literal is PairLiteral) {
                     throw ShellNullDereferenceError("cannot use null pair literal to assign to ${map[id]?.first}")
                 }
-                print(map[id]?.first)
                 throw ShellSemanticException(
                     "Setting mismatching type(${map[id]?.first}) and literal(${literal.type}) in memory table"
                 )

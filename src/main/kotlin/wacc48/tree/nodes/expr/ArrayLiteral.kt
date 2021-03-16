@@ -23,7 +23,7 @@ data class ArrayLiteral(
 
     override fun literalToString(mt: MemoryTable?): String =
         if (elemType is CharType)
-            values.map { (it as CharLiteral).literalToString() }.joinToString("")
+            values.joinToString("") { (it as CharLiteral).literalToString() }
         else
             "[" + values.joinToString(", ") { it.reduceToLiteral(mt).literalToString() } + "]"
 

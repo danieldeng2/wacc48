@@ -64,26 +64,7 @@ class WACCShell(
                     issues.addSyntax("Function ${node.identifier} must end with either a return or exit", node.ctx)
                 }
                 node.validatePrototype(ft, issues)
-
-                //check for issues
-                val syntaxIssues = issues.filter { it.type == IssueType.SYNTAX }
-                if (syntaxIssues.isNotEmpty()) {
-                    output.println("Syntax Error: ${syntaxIssues[0].msg}")
-                    if (testMode) {
-                        input.close()
-                        throw ShellSyntaxException("Syntax Error: ${syntaxIssues[0].msg}")
-                    }
-                    currLine = readNewLine()
-                    continue
-                }
-
-                val semanticIssues = issues.filter { it.type == IssueType.SEMANTICS }
-                if (semanticIssues.isNotEmpty()) {
-                    output.println("Semantic Error: ${semanticIssues[0].msg}")
-                    if (testMode) {
-                        input.close()
-                        throw ShellSemanticException("Semantic Error: ${semanticIssues[0].msg}")
-                    }
+                if (checkShellIssues(issues)) {
                     currLine = readNewLine()
                     continue
                 }
@@ -91,25 +72,7 @@ class WACCShell(
             val stCopy = st.clone()
             node.validate(stCopy, ft, issues)
 
-            //check for issues
-            val syntaxIssues = issues.filter { it.type == IssueType.SYNTAX }
-            if (syntaxIssues.isNotEmpty()) {
-                output.println("Syntax Error: ${syntaxIssues[0].msg}")
-                if (testMode) {
-                    input.close()
-                    throw ShellSyntaxException("Syntax Error: ${syntaxIssues[0].msg}")
-                }
-                currLine = readNewLine()
-                continue
-            }
-
-            val semanticIssues = issues.filter { it.type == IssueType.SEMANTICS }
-            if (semanticIssues.isNotEmpty()) {
-                output.println("Semantic Error: ${semanticIssues[0].msg}")
-                if (testMode) {
-                    input.close()
-                    throw ShellSemanticException("Semantic Error: ${semanticIssues[0].msg}")
-                }
+            if (checkShellIssues(issues)) {
                 currLine = readNewLine()
                 continue
             }
@@ -133,6 +96,29 @@ class WACCShell(
         input.close()
         output.println("Exit code: ${evalVisitor.exitCode ?: 0}")
         return
+    }
+
+    private fun checkShellIssues(issues: List<Issue>): Boolean {
+        return checkIssuesForType(IssueType.SYNTAX, issues)
+                || checkIssuesForType(IssueType.SEMANTICS, issues)
+    }
+
+    private fun checkIssuesForType(type: IssueType, issues: List<Issue>): Boolean {
+        val typeIssues = issues.filter { it.type == type }
+        if (typeIssues.isNotEmpty()) {
+            val typeStr = if (type == IssueType.SEMANTICS) "Semantic" else "Syntax"
+            output.println("$typeStr Error: ${typeIssues[0].msg}")
+            if (testMode) {
+                input.close()
+                when (type) {
+                    IssueType.SYNTAX -> throw ShellSyntaxException("$typeStr Error: ${typeIssues[0].msg}")
+                    IssueType.SEMANTICS -> throw ShellSemanticException("$typeStr Error: ${typeIssues[0].msg}")
+                }
+
+            }
+            return true
+        }
+        return false
     }
 
     /** Parse lines from stdin until a valid rule is found, or return null if
