@@ -1,0 +1,61 @@
+<idea-plugin>
+    <id>com.github.danieldeng2.waccplugin</id>
+    <name>WACC Language</name>
+    <vendor>danieldeng2</vendor>
+
+    <!-- Product and plugin compatibility requirements -->
+    <!-- https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <fileType name="WACC File" implementationClass="com.github.danieldeng2.waccplugin.language.WaccFileType"
+                  language="WACC" extensions="wacc"/>
+
+        <lang.parserDefinition language="WACC"
+                               implementationClass="com.github.danieldeng2.waccplugin.language.WaccParserDefinition"/>
+
+        <lang.syntaxHighlighterFactory language="WACC"
+                                       implementationClass="com.github.danieldeng2.waccplugin.annotator.WaccSyntaxHighlighterFactory"/>
+
+
+        <lang.braceMatcher language="WACC"
+                           implementationClass="com.github.danieldeng2.waccplugin.completion.WaccBraceMatcher"/>
+
+        <lang.commenter language="WACC"
+                        implementationClass="com.github.danieldeng2.waccplugin.completion.WaccCommenter"/>
+
+
+        <externalAnnotator language="WACC"
+                           implementationClass="com.github.danieldeng2.waccplugin.annotator.WaccExternalAnnotator"/>
+
+        <defaultLiveTemplates file="/templates/WACC.xml"/>
+
+        <liveTemplateContext implementation="com.github.danieldeng2.waccplugin.completion.WaccContext"/>
+
+        <configurationType
+                implementation="com.github.danieldeng2.waccplugin.runConfiguration.WaccRunConfigurationType"/>
+
+        <runLineMarkerContributor language="WACC"
+                                  implementationClass="com.github.danieldeng2.waccplugin.runConfiguration.WaccRunLineMarkerProvider"/>
+
+        <runConfigurationProducer
+                implementation="com.github.danieldeng2.waccplugin.runConfiguration.WaccRunConfigurationProducer"/>
+
+        <toolWindow id="WACC"
+                    anchor="bottom"
+                    icon="AllIcons.Toolwindows.ToolWindowRun"
+                    secondary="false"
+                    canCloseContents="true"
+                    factoryClass="com.github.danieldeng2.waccplugin.action.WaccShellToolWindow"/>
+    </extensions>
+
+    <actions>
+        <action id="com.github.danieldeng2.waccplugin.action.WaccShellAction"
+                class="com.github.danieldeng2.waccplugin.action.WaccShellAction" text="WACC Shell"
+                icon="AllIcons.Toolwindows.ToolWindowRun"
+                description="Launch interactive WACC shell">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>

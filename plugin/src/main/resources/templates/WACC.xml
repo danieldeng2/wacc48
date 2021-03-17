@@ -1,0 +1,125 @@
+<templateSet group="WACC">
+  <template name="while" value="while $PROPOSITION$ do&#10;    $END$&#10;done" description="While statement" toReformat="false" toShortenFQNames="true">
+    <variable name="PROPOSITION" expression="" defaultValue="true" alwaysStopAt="true" />
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="if" value="if $PROPOSITION$ then&#10;    $TRUE$&#10;else&#10;    $END$&#10;fi" description="If statement" toReformat="false" toShortenFQNames="true">
+    <variable name="PROPOSITION" expression="" defaultValue="true" alwaysStopAt="true" />
+    <variable name="TRUE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="function" value="$TYPE$ $NAME$($PARAMS$) is&#10;    $END$&#10;end" description="Function definition" toReformat="false" toShortenFQNames="true">
+    <variable name="TYPE" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="PARAMS" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="begin" value="begin&#10;    $END$&#10;end" description="Begin block" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="print" value="print &quot;$VALUE$&quot;$END$" description="Print statement" toReformat="false" toShortenFQNames="true">
+    <variable name="VALUE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="call" value="call $NAME$($PARAMS$)$END$" description="Function call" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="PARAMS" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="println" value="println &quot;$VALUE$&quot;$END$" description="Println statement" toReformat="false" toShortenFQNames="true">
+    <variable name="VALUE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="skip" value="skip$END$" description="Skip statement" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="free" value="free $END$" description="Free statement" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="return" value="return $END$" description="Return statement" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="exit" value="exit $end$" description="Exit statement" toReformat="false" toShortenFQNames="true">
+    <variable name="end" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="newpair" value="newpair($FIRST$,$SECOND$)$END$" description="NewPair declaration" toReformat="false" toShortenFQNames="true">
+    <variable name="FIRST" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="SECOND" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="int" value="int" description="Int type" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="read" value="read " description="Read statement" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="bool" value="bool" description="Boolean type" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="char" value="char" description="Character type" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="string" value="string" description="String Type" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="len" value="len " description="Length" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="chr" value="chr " description="Chr operator" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="true" value="true" description="True literal" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="false" value="false" description="False literal" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+  <template name="null" value="null" description="Null literal" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="WACC" value="true"/>
+    </context>
+  </template>
+</templateSet>
