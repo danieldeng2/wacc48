@@ -123,6 +123,7 @@ class WACCShell(
      * no viable rules can be extracted from what has been entered in stdin. */
     private fun parseStdinRule(currLine: String): ParserRuleContext? {
         var stdinBuffer = currLine
+        var endOfInput = false
 
         do {
             try {
@@ -130,14 +131,20 @@ class WACCShell(
                 // Lexical Analysis
                 val lexer = WACCLexer(inputStream)
                 lexer.removeErrorListeners()
-                lexer.addErrorListener(ShellErrorListener())
+                if (!testMode)
+                    lexer.addErrorListener(ShellErrorListener(endOfInput))
+                else
+                    lexer.addErrorListener(ShellErrorListener())
 
                 val tokens = CommonTokenStream(lexer)
 
                 //Syntax Analysis
                 val parser = WACCShellParser(tokens)
                 parser.removeErrorListeners()
-                parser.addErrorListener(ShellErrorListener())
+                if (!testMode)
+                    parser.addErrorListener(ShellErrorListener(endOfInput))
+                else
+                    parser.addErrorListener(ShellErrorListener())
 
                 //Attempt to match any rule using current built up input from stdin
                 return parser.command()
@@ -153,8 +160,9 @@ class WACCShell(
             /*If the parse is incomplete, there is still a chance it will be
                 * later on*/
             val nextLine = readNextLine()
-            if (nextLine == null || nextLine.trim() == "") return null
-            stdinBuffer += "\n" + readNextLine()
+            if (nextLine == null || nextLine.trim() == "")
+                endOfInput = true
+            stdinBuffer += "\n" + nextLine
         } while (true)
     }
 

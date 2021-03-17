@@ -3,9 +3,8 @@ package wacc48.shell
 import org.antlr.v4.runtime.BaseErrorListener
 import org.antlr.v4.runtime.RecognitionException
 import org.antlr.v4.runtime.Recognizer
-import wacc48.analyser.exceptions.ParserException
 
-class ShellErrorListener : BaseErrorListener() {
+class ShellErrorListener(val endOfInput: Boolean = false) : BaseErrorListener() {
     override fun syntaxError(
         recognizer: Recognizer<*, *>?,
         offendingSymbol: Any?,
@@ -14,8 +13,8 @@ class ShellErrorListener : BaseErrorListener() {
         msg: String?,
         e: RecognitionException?
     ) {
-        if (msg!!.startsWith("mismatched input '<EOF>'") ||
-            "missing '.*' at '<EOF>'".toRegex().containsMatchIn(msg)
+        if (!endOfInput && (msg!!.startsWith("mismatched input '<EOF>'") ||
+            "missing '.*' at '<EOF>'".toRegex().containsMatchIn(msg))
         ) {
             throw IncompleteRuleException("line $line:$charPositionInLine $msg")
         }
