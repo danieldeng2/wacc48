@@ -42,7 +42,7 @@ Deletes the `build` directory for a clean build.
 
 Runs unit and integration tests written for the project.
 
-#### `./shell`
+#### `./run`
 
 Run an interactive wacc shell.
 
