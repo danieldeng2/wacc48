@@ -30,10 +30,10 @@ class Shell : CliktCommand() {
 
     private val welcomeMessage = """
     >>> WACC Interactive Shell <<<
-    Instructions: "
+    Instructions: 
         Exit wacc48.shell: use Ctrl-d (EOF) or 'quit' in normal scope
-        Cancel multiline command: use Ctrl-d"
-        '>>>' is the prompt for a new command"
+        Cancel multiline command: use Ctrl-d
+        '>>>' is the prompt for a new command
         '...' is the prompt to continue the current command (multiple lines)
     """.trimIndent()
 
