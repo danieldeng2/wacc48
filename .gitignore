@@ -6,6 +6,7 @@ src/main/java/antlr
 *.interp
 *.s
 src/main/gen
+src/main/antlr/gen
 
 #ignore reference ruby files
 src/test/resources/refCompile

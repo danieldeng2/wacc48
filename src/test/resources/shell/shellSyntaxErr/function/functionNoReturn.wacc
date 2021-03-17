@@ -1,0 +1,16 @@
+# function body missing return or exit statement
+# Output:
+# #syntax_error#
+
+# Exit:
+# 100
+
+# Program:
+
+  int f() is
+    bool b = true 
+  end
+
+  int x = call f();
+  println x
+

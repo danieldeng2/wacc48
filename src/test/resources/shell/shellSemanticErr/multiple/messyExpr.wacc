@@ -1,0 +1,14 @@
+# long expression with multiple type mismatches
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+
+  int x = ((1 + true) * (2 - false)) || 17 ;
+  exit x
+
