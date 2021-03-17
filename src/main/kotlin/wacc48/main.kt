@@ -32,7 +32,7 @@ class Shell : CliktCommand() {
     >>> WACC Interactive Shell <<<
     Instructions: 
         Exit wacc48.shell: use Ctrl-d (EOF) or 'quit' in normal scope
-        Cancel multiline command: use Ctrl-d
+        Cancel multiline command: use Ctrl-d or enter empty line
         '>>>' is the prompt for a new command
         '...' is the prompt to continue the current command (multiple lines)
     """.trimIndent()
