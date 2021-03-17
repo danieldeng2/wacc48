@@ -1,0 +1,28 @@
+# Default detekt configuration:
+# https://github.com/detekt/detekt/blob/master/detekt-core/src/main/resources/default-detekt-config.yml
+
+formatting:
+  Indentation:
+    continuationIndentSize: 8
+  ParameterListWrapping:
+    active: false
+
+complexity:
+  LongMethod:
+    active: false
+
+performance:
+  SpreadOperator:
+    active: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+  SwallowedException:
+    active: false
+
+style:
+  ReturnCount:
+    active: false
+  UnusedPrivateMember:
+    active: false
