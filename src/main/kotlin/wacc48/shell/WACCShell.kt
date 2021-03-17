@@ -152,6 +152,8 @@ class WACCShell(
             }
             /*If the parse is incomplete, there is still a chance it will be
                 * later on*/
+            val nextLine = readNextLine()
+            if (nextLine == null || nextLine.trim() == "") return null
             stdinBuffer += "\n" + readNextLine()
         } while (true)
     }
