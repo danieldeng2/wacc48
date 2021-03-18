@@ -20,7 +20,11 @@ object ControlFlowVisitor : ASTVisitor {
             is WhileNode -> analyseWhile(node)
             is SeqNode -> {
                 node.sequence = node.sequence.map { analyseStat(it) }
-                return node
+                node
+            }
+            is BeginNode -> {
+                node.stat = analyseStat(node.stat)
+                node
             }
             else -> node
         }
@@ -63,25 +67,24 @@ object ControlFlowVisitor : ASTVisitor {
         node.body = analyseStat(node.body)
     }
 
-    override fun visitBegin(node: BeginNode) {
-        node.stat = analyseStat(node.stat)
-    }
-
     override fun visitFunction(node: FuncNode) {
         node.body = analyseStat(node.body)
     }
 
+    override fun visitBegin(node: BeginNode) {
+
+    }
+
     override fun visitSeq(node: SeqNode) {
-        node.sequence = node.sequence.map { analyseStat(it) }
+
     }
 
     override fun visitWhile(node: WhileNode) {
-        node.body = analyseStat(node.body)
+
     }
 
     override fun visitIf(node: IfNode) {
-        node.falseStat = analyseStat(node.falseStat)
-        node.trueStat = analyseStat(node.trueStat)
+
     }
 
     override fun visitExit(node: ExitNode) {
@@ -157,7 +160,7 @@ object ControlFlowVisitor : ASTVisitor {
     }
 
     override fun visitPairMemoryLiteral(node: PairMemoryLiteral) {
-        TODO("Not yet implemented")
+
     }
 
     override fun visitStringLiteral(literal: StringLiteral) {
