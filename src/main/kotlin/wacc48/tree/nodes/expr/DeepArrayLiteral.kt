@@ -17,7 +17,7 @@ import wacc48.tree.type.VoidType
 class DeepArrayLiteral(var values: List<String>, elemType: Type) : Literal {
 
     var elemType: Type = VoidType
-    override var type: Type = ArrayType(elemType, null)
+    override var type: Type = ArrayType(elemType)
     var nameInMemTable: String? = null
 
     override fun literalToString(mt: MemoryTable?): String =

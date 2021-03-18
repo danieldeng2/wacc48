@@ -38,7 +38,7 @@ fun CodeGeneratorVisitor.translateArrayAssignment(elem: ArrayElement) {
 
         add(
             loadLocalVar(
-                varType = ArrayType(elem.type, null),
+                varType = ArrayType(elem.type),
                 stackOffset = offset,
                 rd = Register.R4,
                 isArgument = isArg
