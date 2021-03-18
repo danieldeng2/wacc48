@@ -1,8 +1,6 @@
 package wacc48.tree.type
 
-import org.antlr.v4.runtime.ParserRuleContext
-
-data class ArrayType(val elementType: Type, val ctx: ParserRuleContext?) : Type {
+data class ArrayType(val elementType: Type) : Type {
     override val reserveStackSize: Int = 4
 
     override fun equals(other: Any?): Boolean {

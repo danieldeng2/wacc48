@@ -19,7 +19,6 @@ import wacc48.tree.nodes.expr.IntLiteral
 import wacc48.tree.nodes.expr.PairLiteral
 import wacc48.tree.nodes.expr.StringLiteral
 import wacc48.tree.nodes.expr.operators.BinOpNode
-import wacc48.tree.nodes.expr.operators.BinaryOperator
 import wacc48.tree.nodes.expr.operators.UnOpNode
 import wacc48.tree.nodes.expr.operators.operation.lookupBinary
 import wacc48.tree.nodes.expr.operators.operation.lookupUnary
@@ -323,8 +322,7 @@ class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
     private fun findType(ctx: WACCShellParser.TypeContext): Type =
         when {
             ctx.type() != null -> ArrayType(
-                elementType = findType(ctx.type()),
-                ctx = ctx
+                elementType = findType(ctx.type())
             )
             ctx.baseType() != null -> findBaseType(ctx.baseType())
             else -> PairType(
@@ -345,8 +343,7 @@ class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
     private fun findPairElemType(ctx: WACCShellParser.PairElemTypeContext): Type =
         when {
             ctx.type() != null -> ArrayType(
-                elementType = findType(ctx.type()),
-                ctx = ctx
+                elementType = findType(ctx.type())
             )
             ctx.baseType() != null -> findBaseType(ctx.baseType())
             else -> EmptyPair

@@ -20,7 +20,7 @@ data class ArrayLiteral(
     val nameInMemTable: String? = null
 ) : Literal {
     var elemType: Type = VoidType
-    override var type: Type = ArrayType(elemType, ctx)
+    override var type: Type = ArrayType(elemType)
 
     override fun literalToString(mt: MemoryTable?): String =
         if (elemType is CharType)
@@ -43,7 +43,7 @@ data class ArrayLiteral(
         if (values.isNotEmpty()) {
             values[0].validate(st, funTable, issues)
             elemType = values[0].type
-            type = ArrayType(elemType, ctx)
+            type = ArrayType(elemType)
         }
 
         values.forEach {

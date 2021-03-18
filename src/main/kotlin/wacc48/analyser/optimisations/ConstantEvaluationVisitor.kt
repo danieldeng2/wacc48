@@ -102,93 +102,25 @@ object ConstantEvaluationVisitor : ASTBaseVisitor<Unit>() {
 
     private fun optimiseBinOp(
         binExpr: BinOpNode,
-        firstLiteral: Int,
-        secondLiteral: Int,
+        firstInt: Int,
+        secondInt: Int,
         firstExprResult: ExprNode,
         secondExprResult: ExprNode
     ): ExprNode {
-        optimisations++
-        return when (binExpr.operator) {
-            BinaryOperator.PLUS -> IntLiteral(
-                value = firstLiteral + secondLiteral,
-                ctx = binExpr.ctx,
-                isOutOfBounds = outOfBoundsError(firstLiteral.toLong() + secondLiteral.toLong())
-            )
-            BinaryOperator.MINUS -> IntLiteral(
-                value = firstLiteral - secondLiteral,
-                ctx = binExpr.ctx,
-                isOutOfBounds = outOfBoundsError(firstLiteral.toLong() - secondLiteral.toLong())
-            )
-            BinaryOperator.MULTIPLY -> IntLiteral(
-                value = firstLiteral * secondLiteral,
-                ctx = binExpr.ctx,
-                isOutOfBounds = outOfBoundsError(firstLiteral.toLong() * secondLiteral.toLong())
-            )
-            BinaryOperator.DIVIDE -> {
-                if (secondLiteral == 0) {
-                    optimisations--
-                    return unOptimiseExpression(
-                        binExpr,
-                        firstExprResult,
-                        secondExprResult
-                    )
-                } else {
-                    IntLiteral(
-                        value = firstLiteral / secondLiteral,
-                        ctx = binExpr.ctx,
-                        isOutOfBounds = outOfBoundsError(firstLiteral.toLong() / secondLiteral.toLong())
-                    )
-                }
+        if (binExpr.operation == DivideOperation
+            || binExpr.operation == ModulusOperation
+        ) {
+            if (secondInt == 0) {
+                return unOptimiseExpression(
+                    binExpr,
+                    firstExprResult,
+                    secondExprResult
+                )
             }
-            BinaryOperator.MODULUS -> {
-                if (secondLiteral == 0) {
-                    optimisations--
-                    return unOptimiseExpression(
-                        binExpr,
-                        firstExprResult,
-                        secondExprResult
-                    )
-                } else {
-                    IntLiteral(
-                        value = firstLiteral % secondLiteral,
-                        ctx = binExpr.ctx,
-                        isOutOfBounds = outOfBoundsError((firstLiteral.toLong() % secondLiteral.toLong()))
-                    )
-                }
-            }
-            BinaryOperator.GT -> BoolLiteral(
-                value = firstLiteral > secondLiteral,
-                ctx = binExpr.ctx
-            )
-            BinaryOperator.LT -> BoolLiteral(
-                value = firstLiteral < secondLiteral,
-                ctx = binExpr.ctx
-            )
-            BinaryOperator.GE -> BoolLiteral(
-                value = firstLiteral >= secondLiteral,
-                ctx = binExpr.ctx
-            )
-            BinaryOperator.LE -> BoolLiteral(
-                value = firstLiteral <= secondLiteral,
-                ctx = binExpr.ctx
-            )
-            BinaryOperator.EQ -> BoolLiteral(
-                value = firstLiteral == secondLiteral,
-                ctx = binExpr.ctx
-            )
-            BinaryOperator.NEQ -> BoolLiteral(
-                value = firstLiteral != secondLiteral,
-                ctx = binExpr.ctx
-            )
-            BinaryOperator.AND -> BoolLiteral(
-                value = firstLiteral == 1 && secondLiteral == 1,
-                ctx = binExpr.ctx
-            )
-            BinaryOperator.OR -> BoolLiteral(
-                value = firstLiteral == 1 || secondLiteral == 1,
-                ctx = binExpr.ctx
-            )
         }
+        optimisations++
+
+        return binExpr.operation.reduceIntegers(firstInt, secondInt)
     }
 
     private fun unOptimiseExpression(
@@ -208,7 +140,7 @@ object ConstantEvaluationVisitor : ASTBaseVisitor<Unit>() {
     ): BoolLiteral {
         optimisations++
         var result = firstExprResult.value == secondExprResult.value
-        if (binExpr.operator == BinaryOperator.NEQ) {
+        if (binExpr.operation == NotEqualsOperation) {
             result = !result
         }
         return BoolLiteral(
@@ -229,48 +161,14 @@ object ConstantEvaluationVisitor : ASTBaseVisitor<Unit>() {
 
     private fun analyseUnOp(unExpr: UnOpNode): ExprNode {
         val expression = analyseExpression(unExpr.expr)
-        when (unExpr.operator) {
-            UnaryOperator.MINUS -> {
-                if (expression is IntLiteral) {
-                    optimisations++
-                    return IntLiteral(
-                        value = -expression.value,
-                        ctx = expression.ctx,
-                        isOutOfBounds = outOfBoundsError((-(expression.value.toLong())))
-                    )
-                }
-            }
-            UnaryOperator.NEGATE -> {
-                if (expression is BoolLiteral) {
-                    optimisations++
-                    expression.value = !expression.value
-                    return expression
-                }
-            }
-            UnaryOperator.CHR -> {
-                if (expression is CharLiteral) {
-                    optimisations++
-                    return IntLiteral(
-                        value = expression.value.toInt(),
-                        ctx = expression.ctx,
-                        isOutOfBounds = false
-                    )
-                }
-            }
-            UnaryOperator.ORD -> {
-                if (expression is IntLiteral) {
-                    optimisations++
-                    return CharLiteral(
-                        value = expression.value.toChar(),
-                        ctx = expression.ctx
-                    )
-                }
-            }
-            else -> {
-            }
+        if (expression !is BaseLiteral) {
+            unExpr.expr = expression
+            return unExpr
         }
-        unExpr.expr = expression
-        return unExpr
+
+        optimisations++
+
+        return unExpr.operation.reduceSingular(expression)
     }
 
     override fun visitExit(node: ExitNode) {
@@ -350,10 +248,4 @@ object ConstantEvaluationVisitor : ASTBaseVisitor<Unit>() {
     override fun visitFree(node: FreeNode) {
         node.value = analyseExpression(node.value)
     }
-
-    private fun outOfBoundsError(number: Long): Boolean {
-        return number > Integer.MAX_VALUE || number < Integer.MIN_VALUE
-    }
-
-
 }
