@@ -13,7 +13,7 @@ import wacc48.tree.nodes.function.ParamNode
 
 data class DeclarationNode(
     val name: ParamNode,
-    val value: RHSNode,
+    var value: RHSNode,
     val ctx: ParserRuleContext?
 ) : StatNode {
     lateinit var st: SymbolTable
@@ -28,7 +28,7 @@ data class DeclarationNode(
         value.validate(st, funTable, issues)
 
         //Assume type matches if this in a function body in the wacc48.shell
-        if (!(value is FuncCallNode && value.inShellAndFuncNodeCtx)) {
+        if (!(value is FuncCallNode && (value as FuncCallNode).inShellAndFuncNodeCtx)) {
             if (value.type != name.type)
                 issues.addSemantic(
                     "Type mismatch in declaration of ${name.text}, expected ${name.type}, actual ${value.type}",
