@@ -23,7 +23,7 @@ object ModulusOperation : BinaryOperation {
         if (secondVal == 0)
             throw ShellDivideByZeroException("mod by zero not allowed")
 
-        return IntLiteral(firstVal / secondVal, false, null)
+        return IntLiteral(firstVal % secondVal, false, null)
     }
 
     override fun reduceIntegers(firstInt: Int, secondInt: Int) = IntLiteral(
