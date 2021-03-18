@@ -11,7 +11,7 @@ import wacc48.tree.type.BoolType
 import wacc48.tree.type.Type
 
 data class BoolLiteral(
-    val value: Boolean,
+    var value: Boolean,
     val ctx: ParserRuleContext?
 ) : BaseLiteral {
 

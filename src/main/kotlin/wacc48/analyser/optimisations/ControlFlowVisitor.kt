@@ -16,7 +16,7 @@ import wacc48.tree.nodes.statement.*
 object ControlFlowVisitor : ASTBaseVisitor<Unit>() {
     var optimisations = 0
 
-    fun optimise(node: ASTNode) : Int {
+    fun optimise(node: ASTNode): Int {
         optimisations = 0
         visitNode(node)
         return optimisations
@@ -55,8 +55,7 @@ object ControlFlowVisitor : ASTBaseVisitor<Unit>() {
 
     private fun analyseWhile(node: WhileNode): StatNode {
         val proposition = node.proposition
-        if (proposition is BoolLiteral && !proposition.value
-        ) {
+        if (proposition is BoolLiteral && !proposition.value) {
             optimisations++
             return SkipNode
         }
@@ -71,118 +70,5 @@ object ControlFlowVisitor : ASTBaseVisitor<Unit>() {
     override fun visitFunction(node: FuncNode) {
         node.body = analyseStat(node.body)
     }
-
-    override fun visitBegin(node: BeginNode) {
-
-    }
-
-    override fun visitSeq(node: SeqNode) {
-
-    }
-
-    override fun visitWhile(node: WhileNode) {
-
-    }
-
-    override fun visitIf(node: IfNode) {
-
-    }
-
-    override fun visitExit(node: ExitNode) {
-
-    }
-
-    override fun visitFuncCall(node: FuncCallNode) {
-
-    }
-
-    override fun visitParam(node: ParamNode) {
-
-    }
-
-    override fun visitNewPair(node: NewPairNode) {
-
-    }
-
-    override fun visitDeclaration(node: DeclarationNode) {
-
-    }
-
-    override fun visitArgList(node: ArgListNode) {
-
-    }
-
-    override fun visitAssignment(node: AssignmentNode) {
-
-    }
-
-    override fun visitBinOp(node: BinOpNode) {
-
-    }
-
-    override fun visitUnOp(node: UnOpNode) {
-
-    }
-
-    override fun visitPairElem(node: PairElemNode) {
-
-    }
-
-    override fun visitArrayElement(elem: ArrayElement) {
-
-    }
-
-    override fun visitArrayLiteral(literal: ArrayLiteral) {
-
-    }
-
-    override fun visitBoolLiteral(literal: BoolLiteral) {
-
-    }
-
-    override fun visitCharLiteral(literal: CharLiteral) {
-
-    }
-
-    override fun visitIdentifier(node: IdentifierNode) {
-
-    }
-
-    override fun visitIntLiteral(literal: IntLiteral) {
-
-    }
-
-    override fun visitPairLiteral(literal: PairLiteral) {
-
-    }
-
-    override fun visitDeepArrayLiteral(node: DeepArrayLiteral) {
-
-    }
-
-    override fun visitPairMemoryLiteral(node: PairMemoryLiteral) {
-
-    }
-
-    override fun visitStringLiteral(literal: StringLiteral) {
-
-    }
-
-    override fun visitFree(node: FreeNode) {
-
-    }
-
-    override fun visitPrint(node: PrintNode) {
-
-    }
-
-    override fun visitRead(node: ReadNode) {
-
-    }
-
-    override fun visitReturn(node: ReturnNode) {
-
-    }
-
 
 }

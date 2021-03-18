@@ -12,7 +12,7 @@ import wacc48.tree.nodes.statement.StatNode
 
 data class AssignmentNode(
     val name: LHSNode,
-    val value: RHSNode,
+    var value: RHSNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
     override val children: List<ASTNode>

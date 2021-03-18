@@ -13,7 +13,7 @@ import wacc48.tree.type.Type
 import wacc48.tree.type.VoidType
 
 data class PairElemNode(
-    val expr: ExprNode,
+    var expr: ExprNode,
     val isFirst: Boolean,
     val ctx: ParserRuleContext?
 ) : LHSNode, RHSNode {

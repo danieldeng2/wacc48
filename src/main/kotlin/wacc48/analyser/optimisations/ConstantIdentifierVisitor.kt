@@ -39,7 +39,7 @@ object ConstantIdentifierVisitor :  ASTBaseVisitor<Unit>() {
         }
 
         newScope()
-        node.main.acceptVisitor(this)
+        visitNode(node.main)
         constantVars[node.main] = declaredVars.filterKeys { !assignedVars.contains(it) }
     }
 

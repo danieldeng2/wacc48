@@ -15,7 +15,7 @@ import wacc48.tree.type.VoidType
 
 
 data class ArrayLiteral(
-    val values: List<ExprNode>,
+    var values: List<ExprNode>,
     val ctx: ParserRuleContext?,
     val nameInMemTable: String? = null
 ) : Literal {

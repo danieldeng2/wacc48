@@ -12,8 +12,8 @@ import wacc48.tree.type.Type
 import wacc48.tree.type.VoidType
 
 data class NewPairNode(
-    val firstElem: ExprNode,
-    val secondElem: ExprNode,
+    var firstElem: ExprNode,
+    var secondElem: ExprNode,
     val ctx: ParserRuleContext?
 ) : RHSNode {
     override var type: Type = VoidType

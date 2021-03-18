@@ -14,7 +14,7 @@ import wacc48.tree.nodes.statement.StatNode
 import wacc48.tree.nodes.statement.WhileNode
 
 class MainNode(
-    val body: StatNode,
+    var body: StatNode,
     val ctx: ParserRuleContext?
 ) : ASTNode {
     lateinit var st: SymbolTable

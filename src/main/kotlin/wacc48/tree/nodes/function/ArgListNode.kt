@@ -8,7 +8,7 @@ import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.expr.ExprNode
 
 data class ArgListNode(
-    val args: List<ExprNode>,
+    var args: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : ASTNode {
 

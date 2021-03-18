@@ -22,7 +22,7 @@ object PropagationVisitor : ASTBaseVisitor<Unit>() {
         optimisations = 0
         constants = funcConstants.value
         propagatedConstants
-        funcConstants.key.acceptVisitor(this)
+        visitNode(funcConstants.key)
         return optimisations
     }
 
@@ -39,7 +39,7 @@ object PropagationVisitor : ASTBaseVisitor<Unit>() {
                 }
             }
             is ArrayElement -> {
-                expr.acceptVisitor(this)
+                visitNode(expr)
                 expr
             }
             is BinOpNode -> {
@@ -55,20 +55,8 @@ object PropagationVisitor : ASTBaseVisitor<Unit>() {
         }
     }
 
-    override fun visitMain(node: MainNode) {
-        node.body.acceptVisitor(this)
-    }
-
     override fun visitExit(node: ExitNode) {
         node.expr = propagate(node.expr)
-    }
-
-    override fun visitFunction(node: FuncNode) {
-        node.body.acceptVisitor(this)
-    }
-
-    override fun visitFuncCall(node: FuncCallNode) {
-        node.argList.acceptVisitor(this)
     }
 
     override fun visitNewPair(node: NewPairNode) {
@@ -77,9 +65,9 @@ object PropagationVisitor : ASTBaseVisitor<Unit>() {
     }
 
     override fun visitDeclaration(node: DeclarationNode) {
-        when(node.value){
-            is ExprNode -> node.value = propagate(node.value as ExprNode)
-            else -> node.value.acceptVisitor(this)
+        when(val valueToAssign = node.value){
+            is ExprNode -> node.value = propagate(valueToAssign)
+            else -> visitNode(valueToAssign)
         }
     }
 
@@ -92,16 +80,12 @@ object PropagationVisitor : ASTBaseVisitor<Unit>() {
     override fun visitAssignment(node: AssignmentNode) {
         when(node.value){
             is ExprNode -> node.value = propagate(node.value as ExprNode)
-            else -> node.value.acceptVisitor(this)
+            else -> visitNode(node.value)
         }
     }
 
     override fun visitPairElem(node: PairElemNode) {
         node.expr = propagate(node.expr)
-    }
-
-    override fun visitArrayElement(elem: ArrayElement) {
-
     }
 
     override fun visitArrayLiteral(literal: ArrayLiteral) {
@@ -110,18 +94,14 @@ object PropagationVisitor : ASTBaseVisitor<Unit>() {
         }
     }
 
-    override fun visitBegin(node: BeginNode) {
-        node.stat.acceptVisitor(this)
-    }
-
     override fun visitFree(node: FreeNode) {
         node.value = propagate(node.value)
     }
 
     override fun visitIf(node: IfNode) {
         node.proposition = propagate(node.proposition)
-        node.trueStat.acceptVisitor(this)
-        node.falseStat.acceptVisitor(this)
+        visitNode(node.trueStat)
+        visitNode(node.falseStat)
     }
 
     override fun visitPrint(node: PrintNode) {
@@ -132,14 +112,8 @@ object PropagationVisitor : ASTBaseVisitor<Unit>() {
         node.value = propagate(node.value)
     }
 
-    override fun visitSeq(node: SeqNode) {
-        node.sequence.forEach {
-            it.acceptVisitor(this)
-        }
-    }
-
     override fun visitWhile(node: WhileNode) {
-        node.body.acceptVisitor(this)
+        visitNode(node.body)
         node.proposition = propagate(node.proposition)
     }
 }

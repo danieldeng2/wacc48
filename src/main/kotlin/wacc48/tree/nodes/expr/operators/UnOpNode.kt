@@ -14,7 +14,7 @@ import wacc48.tree.type.*
 
 data class UnOpNode(
     val operator: UnaryOperator,
-    val expr: ExprNode,
+    var expr: ExprNode,
     val ctx: ParserRuleContext?,
 ) : ExprNode {
     override var type: Type = operator.returnType

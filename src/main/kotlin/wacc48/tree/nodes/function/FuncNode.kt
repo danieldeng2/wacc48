@@ -20,7 +20,7 @@ data class FuncNode(
     val identifier: String,
     val paramList: List<ParamNode>,
     val retType: Type,
-    val body: StatNode,
+    var body: StatNode,
     val ctx: ParserRuleContext?
 ) : ASTNode {
     lateinit var paramListTable: SymbolTable

@@ -17,21 +17,22 @@ object DeadCodeVisitor : ASTBaseVisitor<Unit>() {
     private var optimisations = 0
     private var inactiveVariables = emptySet<String>()
 
-    fun optimise(node: ASTNode, inactiveVariables: Set<String>) : Int {
+    fun optimise(node: ASTNode, inactiveVariables: Set<String>): Int {
         optimisations = 0
         this.inactiveVariables = inactiveVariables
-        node.acceptVisitor(this)
+        visitNode(node)
         return optimisations
     }
 
     override fun defaultResult() {}
 
-    private fun eliminate(node : StatNode) : StatNode {
-        return when(node){
+    private fun eliminate(node: StatNode): StatNode {
+        return when (node) {
             is AssignmentNode -> {
                 if (node.name is IdentifierNode &&
-                    inactiveVariables.contains(node.name.name)) {
-                        optimisations++
+                    inactiveVariables.contains(node.name.name)
+                ) {
+                    optimisations++
                     SkipNode
                 } else {
                     node
@@ -42,7 +43,7 @@ object DeadCodeVisitor : ASTBaseVisitor<Unit>() {
                 node
             }
             is DeclarationNode -> {
-                if(inactiveVariables.contains(node.name.text)) {
+                if (inactiveVariables.contains(node.name.text)) {
                     optimisations++
                     SkipNode
                 } else {
@@ -56,7 +57,8 @@ object DeadCodeVisitor : ASTBaseVisitor<Unit>() {
             }
             is ReadNode -> {
                 if (node.value is IdentifierNode &&
-                    inactiveVariables.contains(node.value.name)) {
+                    inactiveVariables.contains(node.value.name)
+                ) {
                     optimisations++
                     SkipNode
                 } else {
@@ -73,13 +75,6 @@ object DeadCodeVisitor : ASTBaseVisitor<Unit>() {
             }
             else -> node
         }
-    }
-
-    override fun visitProgram(node: ProgNode) {
-        node.functions.forEach {
-            it.acceptVisitor(this)
-        }
-        node.main.acceptVisitor(this)
     }
 
     override fun visitMain(node: MainNode) {

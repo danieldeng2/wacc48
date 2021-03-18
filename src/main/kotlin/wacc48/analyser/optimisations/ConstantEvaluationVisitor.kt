@@ -319,19 +319,9 @@ object ConstantEvaluationVisitor : ASTBaseVisitor<Unit>() {
         node.value = analyseExpression(node.value)
     }
 
-    override fun visitSeq(node: SeqNode) {
-        node.sequence.forEach {
-            visitNode(it)
-        }
-    }
-
     override fun visitWhile(node: WhileNode) {
         node.proposition = analyseExpression(node.proposition)
         visitNode(node.body)
-    }
-
-    override fun visitBegin(node: BeginNode) {
-        visitNode(node.stat)
     }
 
     override fun visitFree(node: FreeNode) {
