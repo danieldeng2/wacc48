@@ -13,11 +13,19 @@ import wacc48.tree.nodes.function.*
 import wacc48.tree.nodes.statement.*
 
 class PropagationVisitor(private val constants : Map<String,BaseLiteral>) : ASTVisitor {
+    var optimisations = 0
+
+    fun optimise(node: ASTNode) : Int {
+        optimisations = 0
+        node.acceptVisitor(this)
+        return optimisations
+    }
 
     private fun propagate(expr: ExprNode): ExprNode {
         return when(expr) {
             is IdentifierNode -> {
                 if (constants.contains(expr.name)) {
+                    optimisations++
                     constants[expr.name]!!
                 } else {
                     expr

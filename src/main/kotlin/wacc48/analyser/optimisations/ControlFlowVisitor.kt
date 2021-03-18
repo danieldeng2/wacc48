@@ -13,6 +13,13 @@ import wacc48.tree.nodes.function.*
 import wacc48.tree.nodes.statement.*
 
 object ControlFlowVisitor : ASTVisitor {
+    var optimisations = 0
+
+    fun optimise(node: ASTNode) : Int {
+        optimisations = 0
+        node.acceptVisitor(this)
+        return optimisations
+    }
 
     private fun analyseStat(node: StatNode): StatNode {
         return when (node) {
@@ -33,6 +40,7 @@ object ControlFlowVisitor : ASTVisitor {
     private fun analyseIf(node: IfNode): StatNode {
         val proposition = node.proposition
         if (proposition is BoolLiteral) {
+            optimisations++
             if (proposition.value) {
                 return analyseStat(node.trueStat)
             }
@@ -46,6 +54,7 @@ object ControlFlowVisitor : ASTVisitor {
         val proposition = node.proposition
         if (proposition is BoolLiteral && !proposition.value
         ) {
+            optimisations++
             return SkipNode
         }
         node.body = analyseStat(node.body)

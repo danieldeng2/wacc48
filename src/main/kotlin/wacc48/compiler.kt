@@ -48,23 +48,13 @@ fun runAnalyser(
         issues = issues
     )
 
-    if (issues.isEmpty()) {
-        // Constant Evaluation Analysis
-        ConstantEvaluationVisitor.visitNode(programNode)
-
-        // Control Flow Analysis
-        ControlFlowVisitor.visitNode(programNode)
-
-        // Constant Propagation
-        val funcConstants = ConstantIdentifierVisitor.identifyConstants(programNode)
-
-        funcConstants.forEach{ func ->
-            PropagationVisitor(func.value).visitNode(func.key)
-        }
-    }
+    if (issues.isEmpty())
+        runOptimiser(programNode)
 
     return programNode
 }
+
+
 
 fun runAnalyserCatchError(sourceFile: File): ProgNode {
     val issues = mutableListOf<Issue>()
@@ -82,6 +72,23 @@ fun runAnalyserCatchError(sourceFile: File): ProgNode {
     return programNode as ProgNode
 }
 
+fun runOptimiser(programNode: ASTNode) {
+    do {
+        var optimisations = 0
+        // Constant Evaluation Analysis
+        optimisations += ConstantEvaluationVisitor.optimise(programNode)
+
+        // Control Flow Analysis
+        optimisations += ControlFlowVisitor.optimise(programNode)
+
+        // Constant Propagation
+        val funcConstants = ConstantIdentifierVisitor.identifyConstants(programNode)
+
+        funcConstants.forEach{ func ->
+            optimisations += PropagationVisitor(func.value).optimise(func.key)
+        }
+    } while (optimisations > 0)
+}
 
 fun checkAnalyserIssues(issues: MutableList<Issue>) {
     val syntaxIssues = issues.filter { it.type == IssueType.SYNTAX }

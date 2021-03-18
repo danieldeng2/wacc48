@@ -15,6 +15,13 @@ import wacc48.tree.nodes.function.*
 import wacc48.tree.nodes.statement.*
 
 object ConstantEvaluationVisitor : ASTVisitor {
+    var optimisations = 0
+
+    fun optimise(node: ASTNode) : Int {
+        optimisations = 0
+        node.acceptVisitor(this)
+        return optimisations
+    }
 
     private fun analyseExpression(expr: ExprNode): ExprNode {
         return when (expr) {
@@ -61,6 +68,7 @@ object ConstantEvaluationVisitor : ASTVisitor {
         firstExprResult: ExprNode,
         secondExprResult: ExprNode
     ): ExprNode {
+        optimisations++
         return when (binExpr.operator) {
             BinaryOperator.PLUS -> IntLiteral(
                 value = firstLiteral + secondLiteral,
@@ -79,6 +87,7 @@ object ConstantEvaluationVisitor : ASTVisitor {
             )
             BinaryOperator.DIVIDE -> {
                 if (secondLiteral == 0) {
+                    optimisations--
                     return unOptimiseExpression(binExpr, firstExprResult, secondExprResult)
                 } else {
                     IntLiteral(
@@ -90,6 +99,7 @@ object ConstantEvaluationVisitor : ASTVisitor {
             }
             BinaryOperator.MODULUS -> {
                 if (secondLiteral == 0) {
+                    optimisations--
                     return unOptimiseExpression(binExpr, firstExprResult, secondExprResult)
                 } else {
                     IntLiteral(
@@ -149,6 +159,7 @@ object ConstantEvaluationVisitor : ASTVisitor {
         secondExprResult: StringLiteral,
         binExpr: BinOpNode
     ): BoolLiteral {
+        optimisations++
         var result = firstExprResult.value == secondExprResult.value
         if (binExpr.operator == BinaryOperator.NEQ) {
             result = !result
@@ -174,6 +185,7 @@ object ConstantEvaluationVisitor : ASTVisitor {
         when (unExpr.operator) {
             UnaryOperator.MINUS -> {
                 if (expression is IntLiteral) {
+                    optimisations++
                     return IntLiteral(
                         value = -expression.value,
                         ctx = expression.ctx,
@@ -183,12 +195,14 @@ object ConstantEvaluationVisitor : ASTVisitor {
             }
             UnaryOperator.NEGATE -> {
                 if (expression is BoolLiteral) {
+                    optimisations++
                     expression.value = !expression.value
                     return expression
                 }
             }
             UnaryOperator.CHR -> {
                 if (expression is CharLiteral) {
+                    optimisations++
                     return IntLiteral(
                         value = expression.value.toInt(),
                         ctx = expression.ctx,
@@ -198,6 +212,7 @@ object ConstantEvaluationVisitor : ASTVisitor {
             }
             UnaryOperator.ORD -> {
                 if (expression is IntLiteral) {
+                    optimisations++
                     return CharLiteral(
                         value = expression.value.toChar(),
                         ctx = expression.ctx
