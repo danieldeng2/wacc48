@@ -1,5 +1,6 @@
 package wacc48.analyser.optimisations
 
+import wacc48.tree.ASTBaseVisitor
 import wacc48.tree.ASTVisitor
 import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.ProgNode
@@ -12,7 +13,7 @@ import wacc48.tree.nodes.expr.operators.UnOpNode
 import wacc48.tree.nodes.function.*
 import wacc48.tree.nodes.statement.*
 
-object DeadCodeVisitor : ASTVisitor {
+object DeadCodeVisitor : ASTBaseVisitor<Unit>() {
     private var optimisations = 0
     private var inactiveVariables = emptySet<String>()
 
@@ -22,6 +23,8 @@ object DeadCodeVisitor : ASTVisitor {
         node.acceptVisitor(this)
         return optimisations
     }
+
+    override fun defaultResult() {}
 
     private fun eliminate(node : StatNode) : StatNode {
         return when(node){
@@ -72,10 +75,6 @@ object DeadCodeVisitor : ASTVisitor {
         }
     }
 
-    override fun visitNode(node: ASTNode) {
-        node.acceptVisitor(this)
-    }
-
     override fun visitProgram(node: ProgNode) {
         node.functions.forEach {
             it.acceptVisitor(this)
@@ -89,117 +88,5 @@ object DeadCodeVisitor : ASTVisitor {
 
     override fun visitFunction(node: FuncNode) {
         node.body = eliminate(node.body)
-    }
-
-    override fun visitExit(node: ExitNode) {
-
-    }
-
-    override fun visitFuncCall(node: FuncCallNode) {
-
-    }
-
-    override fun visitParam(node: ParamNode) {
-
-    }
-
-    override fun visitNewPair(node: NewPairNode) {
-
-    }
-
-    override fun visitDeclaration(node: DeclarationNode) {
-
-    }
-
-    override fun visitArgList(node: ArgListNode) {
-
-    }
-
-    override fun visitAssignment(node: AssignmentNode) {
-
-    }
-
-    override fun visitBinOp(node: BinOpNode) {
-
-    }
-
-    override fun visitUnOp(node: UnOpNode) {
-
-    }
-
-    override fun visitPairElem(node: PairElemNode) {
-
-    }
-
-    override fun visitArrayElement(elem: ArrayElement) {
-
-    }
-
-    override fun visitArrayLiteral(literal: ArrayLiteral) {
-
-    }
-
-    override fun visitBoolLiteral(literal: BoolLiteral) {
-
-    }
-
-    override fun visitCharLiteral(literal: CharLiteral) {
-
-    }
-
-    override fun visitIdentifier(node: IdentifierNode) {
-
-    }
-
-    override fun visitIntLiteral(literal: IntLiteral) {
-
-    }
-
-    override fun visitPairLiteral(literal: PairLiteral) {
-
-    }
-
-    override fun visitDeepArrayLiteral(node: DeepArrayLiteral) {
-
-    }
-
-    override fun visitPairMemoryLiteral(node: PairMemoryLiteral) {
-
-    }
-
-    override fun visitStringLiteral(literal: StringLiteral) {
-
-    }
-
-    override fun visitBegin(node: BeginNode) {
-
-    }
-
-    override fun visitFree(node: FreeNode) {
-
-    }
-
-    override fun visitIf(node: IfNode) {
-
-    }
-
-    override fun visitPrint(node: PrintNode) {
-
-    }
-
-    override fun visitRead(node: ReadNode) {
-
-    }
-
-    override fun visitReturn(node: ReturnNode) {
-
-    }
-
-    override fun visitSeq(node: SeqNode) {
-
-    }
-
-    override fun visitWhile(node: WhileNode) {
-
     }
 }

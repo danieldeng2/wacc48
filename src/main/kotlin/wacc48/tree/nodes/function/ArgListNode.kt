@@ -8,9 +8,13 @@ import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.expr.ExprNode
 
 data class ArgListNode(
-    var args: List<ExprNode>,
+    val args: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : ASTNode {
+
+    override val children: List<ASTNode>
+        get() = args
+
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>,
@@ -21,7 +25,7 @@ data class ArgListNode(
         }
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitArgList(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitArgList(this)
     }
 }

@@ -1,5 +1,6 @@
 package wacc48.analyser.optimisations
 
+import wacc48.tree.ASTBaseVisitor
 import wacc48.tree.ASTVisitor
 import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.ProgNode
@@ -12,7 +13,7 @@ import wacc48.tree.nodes.expr.operators.UnOpNode
 import wacc48.tree.nodes.function.*
 import wacc48.tree.nodes.statement.*
 
-object PropagationVisitor : ASTVisitor {
+object PropagationVisitor : ASTBaseVisitor<Unit>() {
     private var optimisations = 0
     private var constants : Map<String,BaseLiteral> = mutableMapOf()
     private val propagatedConstants = mutableSetOf<String>()
@@ -24,6 +25,8 @@ object PropagationVisitor : ASTVisitor {
         funcConstants.key.acceptVisitor(this)
         return optimisations
     }
+
+    override fun defaultResult() {}
 
     private fun propagate(expr: ExprNode): ExprNode {
         return when(expr) {
@@ -52,14 +55,6 @@ object PropagationVisitor : ASTVisitor {
         }
     }
 
-    override fun visitNode(node: ASTNode) {
-        node.acceptVisitor(this)
-    }
-
-    override fun visitProgram(node: ProgNode) {
-
-    }
-
     override fun visitMain(node: MainNode) {
         node.body.acceptVisitor(this)
     }
@@ -74,10 +69,6 @@ object PropagationVisitor : ASTVisitor {
 
     override fun visitFuncCall(node: FuncCallNode) {
         node.argList.acceptVisitor(this)
-    }
-
-    override fun visitParam(node: ParamNode) {
-
     }
 
     override fun visitNewPair(node: NewPairNode) {
@@ -105,14 +96,6 @@ object PropagationVisitor : ASTVisitor {
         }
     }
 
-    override fun visitBinOp(node: BinOpNode) {
-
-    }
-
-    override fun visitUnOp(node: UnOpNode) {
-
-    }
-
     override fun visitPairElem(node: PairElemNode) {
         node.expr = propagate(node.expr)
     }
@@ -125,38 +108,6 @@ object PropagationVisitor : ASTVisitor {
         literal.values = literal.values.map {
             propagate(it)
         }
-    }
-
-    override fun visitBoolLiteral(literal: BoolLiteral) {
-
-    }
-
-    override fun visitCharLiteral(literal: CharLiteral) {
-
-    }
-
-    override fun visitIdentifier(node: IdentifierNode) {
-
-    }
-
-    override fun visitIntLiteral(literal: IntLiteral) {
-
-    }
-
-    override fun visitPairLiteral(literal: PairLiteral) {
-
-    }
-
-    override fun visitDeepArrayLiteral(node: DeepArrayLiteral) {
-
-    }
-
-    override fun visitPairMemoryLiteral(node: PairMemoryLiteral) {
-
-    }
-
-    override fun visitStringLiteral(literal: StringLiteral) {
-
     }
 
     override fun visitBegin(node: BeginNode) {
@@ -175,10 +126,6 @@ object PropagationVisitor : ASTVisitor {
 
     override fun visitPrint(node: PrintNode) {
         node.value = propagate(node.value)
-    }
-
-    override fun visitRead(node: ReadNode) {
-
     }
 
     override fun visitReturn(node: ReturnNode) {

@@ -16,6 +16,9 @@ data class ParamNode(
 ) : ASTNode, Typable {
     lateinit var st: SymbolTable
 
+    override val children: List<ASTNode>
+        get() = emptyList()
+
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>,
@@ -32,8 +35,8 @@ data class ParamNode(
         st[text] = type
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitParam(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitParam(this)
     }
 
 }

@@ -14,10 +14,13 @@ import wacc48.tree.nodes.statement.StatNode
 import wacc48.tree.nodes.statement.WhileNode
 
 class MainNode(
-    var body: StatNode,
+    val body: StatNode,
     val ctx: ParserRuleContext?
 ) : ASTNode {
     lateinit var st: SymbolTable
+
+    override val children: List<ASTNode>
+        get() = listOf(body)
 
     override fun validate(
         st: SymbolTable, funTable: MutableMap<String, FuncNode>,
@@ -30,8 +33,8 @@ class MainNode(
             issues.addSemantic("Cannot return in global context", ctx)
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitMain(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitMain(this)
     }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =

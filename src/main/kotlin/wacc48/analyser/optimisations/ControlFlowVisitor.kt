@@ -1,5 +1,6 @@
 package wacc48.analyser.optimisations
 
+import wacc48.tree.ASTBaseVisitor
 import wacc48.tree.ASTVisitor
 import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.ProgNode
@@ -12,14 +13,16 @@ import wacc48.tree.nodes.expr.operators.UnOpNode
 import wacc48.tree.nodes.function.*
 import wacc48.tree.nodes.statement.*
 
-object ControlFlowVisitor : ASTVisitor {
+object ControlFlowVisitor : ASTBaseVisitor<Unit>() {
     var optimisations = 0
 
     fun optimise(node: ASTNode) : Int {
         optimisations = 0
-        node.acceptVisitor(this)
+        visitNode(node)
         return optimisations
     }
+
+    override fun defaultResult() {}
 
     private fun analyseStat(node: StatNode): StatNode {
         return when (node) {
@@ -59,17 +62,6 @@ object ControlFlowVisitor : ASTVisitor {
         }
         node.body = analyseStat(node.body)
         return node
-    }
-
-    override fun visitNode(node: ASTNode) {
-        node.acceptVisitor(this)
-    }
-
-    override fun visitProgram(node: ProgNode) {
-        node.functions.forEach {
-            it.acceptVisitor(this)
-        }
-        node.main.acceptVisitor(this)
     }
 
     override fun visitMain(node: MainNode) {

@@ -11,61 +11,66 @@ import wacc48.tree.nodes.expr.operators.UnOpNode
 import wacc48.tree.nodes.function.*
 import wacc48.tree.nodes.statement.*
 
-interface ASTVisitor {
+interface ASTVisitor<T> {
     /** Wrapper method to tell [node] to invoke its corresponding
      *  'visit' method
      */
-    fun visitNode(node: ASTNode)
+    
+    fun defaultResult(): T
+    
+    fun visitNode(node: ASTNode): T
 
-    fun visitProgram(node: ProgNode)
+    fun visitChildren(node : ASTNode): T
 
-    fun visitMain(node: MainNode)
+    fun visitProgram(node: ProgNode): T
 
-    fun visitExit(node: ExitNode)
+    fun visitMain(node: MainNode): T
 
-    fun visitFunction(node: FuncNode)
+    fun visitExit(node: ExitNode): T
 
-    fun visitFuncCall(node: FuncCallNode)
+    fun visitFunction(node: FuncNode): T
 
-    fun visitParam(node: ParamNode)
+    fun visitFuncCall(node: FuncCallNode): T
 
-    fun visitNewPair(node: NewPairNode)
+    fun visitParam(node: ParamNode): T
 
-    fun visitDeclaration(node: DeclarationNode)
+    fun visitNewPair(node: NewPairNode): T
 
-    fun visitArgList(node: ArgListNode)
+    fun visitDeclaration(node: DeclarationNode): T
 
-    fun visitAssignment(node: AssignmentNode)
+    fun visitArgList(node: ArgListNode): T
 
-    fun visitBinOp(node: BinOpNode)
-    fun visitUnOp(node: UnOpNode)
+    fun visitAssignment(node: AssignmentNode): T
 
-    fun visitPairElem(node: PairElemNode)
-    fun visitArrayElement(elem: ArrayElement)
+    fun visitBinOp(node: BinOpNode): T
+    fun visitUnOp(node: UnOpNode): T
 
-    fun visitArrayLiteral(literal: ArrayLiteral)
-    fun visitBoolLiteral(literal: BoolLiteral)
-    fun visitCharLiteral(literal: CharLiteral)
+    fun visitPairElem(node: PairElemNode): T
+    fun visitArrayElement(elem: ArrayElement): T
 
-    fun visitIdentifier(node: IdentifierNode)
+    fun visitArrayLiteral(literal: ArrayLiteral): T
+    fun visitBoolLiteral(literal: BoolLiteral): T
+    fun visitCharLiteral(literal: CharLiteral): T
 
-    fun visitIntLiteral(literal: IntLiteral)
-    fun visitPairLiteral(literal: PairLiteral)
-    fun visitDeepArrayLiteral(node: DeepArrayLiteral)
-    fun visitPairMemoryLiteral(node: PairMemoryLiteral)
-    fun visitStringLiteral(literal: StringLiteral)
+    fun visitIdentifier(node: IdentifierNode): T
 
-    fun visitBegin(node: BeginNode)
+    fun visitIntLiteral(literal: IntLiteral): T
+    fun visitPairLiteral(literal: PairLiteral): T
+    fun visitDeepArrayLiteral(node: DeepArrayLiteral): T
+    fun visitPairMemoryLiteral(node: PairMemoryLiteral): T
+    fun visitStringLiteral(literal: StringLiteral): T
 
-    fun visitFree(node: FreeNode)
+    fun visitBegin(node: BeginNode): T
 
-    fun visitIf(node: IfNode)
+    fun visitFree(node: FreeNode): T
 
-    fun visitPrint(node: PrintNode)
+    fun visitIf(node: IfNode): T
 
-    fun visitRead(node: ReadNode)
+    fun visitPrint(node: PrintNode): T
 
-    fun visitReturn(node: ReturnNode)
-    fun visitSeq(node: SeqNode)
-    fun visitWhile(node: WhileNode)
+    fun visitRead(node: ReadNode): T
+
+    fun visitReturn(node: ReturnNode): T
+    fun visitSeq(node: SeqNode): T
+    fun visitWhile(node: WhileNode): T
 }

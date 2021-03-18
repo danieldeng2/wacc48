@@ -5,6 +5,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.shell.MemoryTable
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.StringType
 import wacc48.tree.type.Type
@@ -30,6 +31,9 @@ data class StringLiteral(
             .replace("\\\\", "\\")
     }
 
+    override val children: List<ASTNode>
+        get() = emptyList()
+
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>,
@@ -37,8 +41,8 @@ data class StringLiteral(
     ) {
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitStringLiteral(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitStringLiteral(this)
     }
 
 }

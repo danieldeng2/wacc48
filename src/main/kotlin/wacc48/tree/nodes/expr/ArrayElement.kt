@@ -7,6 +7,7 @@ import wacc48.shell.MemoryTable
 import wacc48.shell.checkIndexBounds
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.assignment.AccessMode
 import wacc48.tree.nodes.assignment.LHSNode
 import wacc48.tree.nodes.function.FuncNode
@@ -16,11 +17,15 @@ import wacc48.tree.type.VoidType
 
 data class ArrayElement(
     val name: String,
-    var arrIndices: List<ExprNode>,
+    val arrIndices: List<ExprNode>,
     val ctx: ParserRuleContext?
 ) : ExprNode, LHSNode {
     lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
+
+    override val children: List<ASTNode>
+        get() = arrIndices
+
     override var type: Type = VoidType
 
     override fun reduceToLiteral(mt: MemoryTable?): Literal {
@@ -93,8 +98,8 @@ data class ArrayElement(
         type = identityType
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitArrayElement(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitArrayElement(this)
     }
 
 }

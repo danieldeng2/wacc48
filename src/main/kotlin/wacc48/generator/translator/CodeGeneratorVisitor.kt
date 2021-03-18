@@ -24,6 +24,7 @@ import wacc48.generator.translator.lib.errors.CheckNullPointer
 import wacc48.generator.translator.lib.print.PrintLn
 import wacc48.generator.translator.lib.read.ReadChar
 import wacc48.generator.translator.lib.read.ReadInt
+import wacc48.tree.ASTBaseVisitor
 import wacc48.tree.ASTVisitor
 import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.ProgNode
@@ -46,7 +47,8 @@ import wacc48.tree.type.IntType
  * of the assembly code and add it to the corresponding accumulator
  * field in [ctx] */
 
-class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
+class CodeGeneratorVisitor(private val rootNode: ASTNode) :
+    ASTBaseVisitor<Unit>() {
     val ctx = TranslatorContext()
 
     /** Translates the given AST wacc48.tree [rootNode] into a list of assembly
@@ -65,12 +67,7 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) : ASTVisitor {
 
     }
 
-    /** Wrapper method to tell [node] to invoke its corresponding
-     *  'translate' method to generate required assembly code
-     */
-    override fun visitNode(node: ASTNode) {
-        node.acceptVisitor(this)
-    }
+    override fun defaultResult() {}
 
     /** Translate whole program by calling translate on each of its children */
     override fun visitProgram(node: ProgNode) {

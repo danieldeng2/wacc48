@@ -3,35 +3,18 @@ package wacc48.tree.nodes.expr.operators
 import org.antlr.v4.runtime.ParserRuleContext
 import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.addSemantic
-import wacc48.shell.MemoryTable
-import wacc48.shell.ShellDivideByZeroException
-import wacc48.shell.ShellIntegerOverflowException
-import wacc48.shell.ShellRunTimeException
-import wacc48.shell.detectIntegerOverflow
+import wacc48.shell.*
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
-import wacc48.tree.nodes.expr.ArrayLiteral
-import wacc48.tree.nodes.expr.BoolLiteral
-import wacc48.tree.nodes.expr.CharLiteral
-import wacc48.tree.nodes.expr.ExprNode
-import wacc48.tree.nodes.expr.IdentifierNode
-import wacc48.tree.nodes.expr.IntLiteral
-import wacc48.tree.nodes.expr.Literal
-import wacc48.tree.nodes.expr.PairLiteral
-import wacc48.tree.nodes.expr.PairMemoryLiteral
-import wacc48.tree.nodes.expr.StringLiteral
+import wacc48.tree.nodes.ASTNode
+import wacc48.tree.nodes.expr.*
 import wacc48.tree.nodes.function.FuncNode
-import wacc48.tree.type.ArrayType
-import wacc48.tree.type.BoolType
-import wacc48.tree.type.CharType
-import wacc48.tree.type.IntType
-import wacc48.tree.type.StringType
-import wacc48.tree.type.Type
+import wacc48.tree.type.*
 
 data class BinOpNode(
     val operator: BinaryOperator,
-    var firstExpr: ExprNode,
-    var secondExpr: ExprNode,
+    val firstExpr: ExprNode,
+    val secondExpr: ExprNode,
     val ctx: ParserRuleContext?
 ) : ExprNode {
     override var type: Type = operator.returnType
@@ -49,6 +32,9 @@ data class BinOpNode(
             else -> reduceComparatorToLiteral(mt)
         }
 
+    override val children: List<ASTNode>
+        get() = listOf(firstExpr, secondExpr)
+
     private fun reduceEqualityToLiteral(mt: MemoryTable?): Literal {
         if (firstExpr.type != secondExpr.type)
             throw ShellRunTimeException("Cannot compare type ${firstExpr.type} with type ${secondExpr.type}")
@@ -57,12 +43,12 @@ data class BinOpNode(
             return when (operator) {
                 BinaryOperator.EQ ->
                     BoolLiteral(
-                        (firstExpr as ArrayLiteral).literalToString() == (secondExpr as ArrayLiteral).literalToString(),
+                        firstExpr.literalToString() == (secondExpr as ArrayLiteral).literalToString(),
                         null
                     )
                 else ->
                     BoolLiteral(
-                        (firstExpr as ArrayLiteral).literalToString() != (secondExpr as ArrayLiteral).literalToString(),
+                        firstExpr.literalToString() != (secondExpr as ArrayLiteral).literalToString(),
                         null
                     )
             }
@@ -141,9 +127,9 @@ data class BinOpNode(
             }
             else -> { //Pair type
                 val firstPair =
-                    if (firstExpr is IdentifierNode) mt?.getLiteral((firstExpr as IdentifierNode).name) else PairLiteral
+                    if (firstExpr is IdentifierNode) mt?.getLiteral(firstExpr.name) else PairLiteral
                 val secondPair =
-                    if (secondExpr is IdentifierNode) mt?.getLiteral((secondExpr as IdentifierNode).name) else PairLiteral
+                    if (secondExpr is IdentifierNode) mt?.getLiteral(secondExpr.name) else PairLiteral
                 return when (operator) {
                     BinaryOperator.EQ ->
                         if (firstPair is PairMemoryLiteral && secondPair is PairMemoryLiteral)
@@ -184,7 +170,11 @@ data class BinOpNode(
             BinaryOperator.PLUS -> {
                 if (firstIntExpr.value + secondIntExpr.value > Int.MAX_VALUE)
                     throw ShellIntegerOverflowException("addition overflow")
-                IntLiteral(firstIntExpr.value + secondIntExpr.value, false, null)
+                IntLiteral(
+                    firstIntExpr.value + secondIntExpr.value,
+                    false,
+                    null
+                )
             }
             BinaryOperator.MINUS -> IntLiteral(
                 firstIntExpr.value - secondIntExpr.value,
@@ -199,12 +189,20 @@ data class BinOpNode(
             BinaryOperator.DIVIDE -> {
                 if (secondIntExpr.value == 0)
                     throw ShellDivideByZeroException("divide by zero not allowed")
-                IntLiteral(firstIntExpr.value / secondIntExpr.value, false, null)
+                IntLiteral(
+                    firstIntExpr.value / secondIntExpr.value,
+                    false,
+                    null
+                )
             }
             else -> {
                 if (secondIntExpr.value == 0)
                     throw ShellDivideByZeroException("mod by zero not allowed")
-                IntLiteral(firstIntExpr.value % secondIntExpr.value, false, null)
+                IntLiteral(
+                    firstIntExpr.value % secondIntExpr.value,
+                    false,
+                    null
+                )
             }
         }
     }
@@ -293,8 +291,8 @@ data class BinOpNode(
             )
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitBinOp(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitBinOp(this)
     }
 
 }

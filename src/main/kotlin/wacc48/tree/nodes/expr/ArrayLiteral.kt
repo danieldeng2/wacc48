@@ -6,6 +6,7 @@ import wacc48.analyser.exceptions.addSemantic
 import wacc48.shell.MemoryTable
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.ArrayType
 import wacc48.tree.type.CharType
@@ -14,7 +15,7 @@ import wacc48.tree.type.VoidType
 
 
 data class ArrayLiteral(
-    var values: List<ExprNode>,
+    val values: List<ExprNode>,
     val ctx: ParserRuleContext?,
     val nameInMemTable: String? = null
 ) : Literal {
@@ -29,6 +30,9 @@ data class ArrayLiteral(
 
     override fun reduceToLiteral(mt: MemoryTable?): Literal =
         this
+
+    override val children: List<ASTNode>
+        get() = values
 
     override fun validate(
         st: SymbolTable,
@@ -52,8 +56,8 @@ data class ArrayLiteral(
         }
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitArrayLiteral(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitArrayLiteral(this)
     }
 
 }

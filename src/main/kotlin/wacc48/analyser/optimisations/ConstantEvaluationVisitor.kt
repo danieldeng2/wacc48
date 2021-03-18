@@ -1,8 +1,7 @@
 package wacc48.analyser.optimisations
 
-import wacc48.tree.ASTVisitor
+import wacc48.tree.ASTBaseVisitor
 import wacc48.tree.nodes.ASTNode
-import wacc48.tree.nodes.ProgNode
 import wacc48.tree.nodes.assignment.AssignmentNode
 import wacc48.tree.nodes.assignment.NewPairNode
 import wacc48.tree.nodes.assignment.PairElemNode
@@ -11,17 +10,20 @@ import wacc48.tree.nodes.expr.operators.BinOpNode
 import wacc48.tree.nodes.expr.operators.BinaryOperator
 import wacc48.tree.nodes.expr.operators.UnOpNode
 import wacc48.tree.nodes.expr.operators.UnaryOperator
-import wacc48.tree.nodes.function.*
+import wacc48.tree.nodes.function.ArgListNode
 import wacc48.tree.nodes.statement.*
 
-object ConstantEvaluationVisitor : ASTVisitor {
+object ConstantEvaluationVisitor : ASTBaseVisitor<Unit>() {
+
     var optimisations = 0
 
-    fun optimise(node: ASTNode) : Int {
+    fun optimise(node: ASTNode): Int {
         optimisations = 0
-        node.acceptVisitor(this)
+        visitNode(node)
         return optimisations
     }
+
+    override fun defaultResult() {}
 
     private fun analyseExpression(expr: ExprNode): ExprNode {
         return when (expr) {
@@ -44,7 +46,11 @@ object ConstantEvaluationVisitor : ASTVisitor {
         val secondExprResult = analyseExpression(binExpr.secondExpr)
 
         if (firstExprResult !is BaseLiteral || secondExprResult !is BaseLiteral) {
-            return unOptimiseExpression(binExpr, firstExprResult, secondExprResult)
+            return unOptimiseExpression(
+                binExpr,
+                firstExprResult,
+                secondExprResult
+            )
         }
 
         if (firstExprResult is StringLiteral && secondExprResult is StringLiteral) {
@@ -54,11 +60,21 @@ object ConstantEvaluationVisitor : ASTVisitor {
         val firstLiteral = analyseBaseLiteral(firstExprResult)
         val secondLiteral = analyseBaseLiteral(secondExprResult)
 
-        if (firstLiteral !is Int || secondLiteral !is Int){
-            return unOptimiseExpression(binExpr, firstExprResult, secondExprResult)
+        if (firstLiteral !is Int || secondLiteral !is Int) {
+            return unOptimiseExpression(
+                binExpr,
+                firstExprResult,
+                secondExprResult
+            )
         }
 
-        return optimiseBinOp(binExpr, firstLiteral, secondLiteral, firstExprResult, secondExprResult)
+        return optimiseBinOp(
+            binExpr,
+            firstLiteral,
+            secondLiteral,
+            firstExprResult,
+            secondExprResult
+        )
     }
 
     private fun optimiseBinOp(
@@ -88,7 +104,11 @@ object ConstantEvaluationVisitor : ASTVisitor {
             BinaryOperator.DIVIDE -> {
                 if (secondLiteral == 0) {
                     optimisations--
-                    return unOptimiseExpression(binExpr, firstExprResult, secondExprResult)
+                    return unOptimiseExpression(
+                        binExpr,
+                        firstExprResult,
+                        secondExprResult
+                    )
                 } else {
                     IntLiteral(
                         value = firstLiteral / secondLiteral,
@@ -100,7 +120,11 @@ object ConstantEvaluationVisitor : ASTVisitor {
             BinaryOperator.MODULUS -> {
                 if (secondLiteral == 0) {
                     optimisations--
-                    return unOptimiseExpression(binExpr, firstExprResult, secondExprResult)
+                    return unOptimiseExpression(
+                        binExpr,
+                        firstExprResult,
+                        secondExprResult
+                    )
                 } else {
                     IntLiteral(
                         value = firstLiteral % secondLiteral,
@@ -226,35 +250,8 @@ object ConstantEvaluationVisitor : ASTVisitor {
         return unExpr
     }
 
-    override fun visitNode(node: ASTNode) {
-        node.acceptVisitor(this)
-    }
-
-    override fun visitProgram(node: ProgNode) {
-        node.functions.forEach {
-            it.acceptVisitor(this)
-        }
-        node.main.acceptVisitor(this)
-    }
-
-    override fun visitMain(node: MainNode) {
-        node.body.acceptVisitor(this)
-    }
-
     override fun visitExit(node: ExitNode) {
         node.expr = analyseExpression(node.expr)
-    }
-
-    override fun visitFunction(node: FuncNode) {
-        node.body.acceptVisitor(this)
-    }
-
-    override fun visitFuncCall(node: FuncCallNode) {
-        node.argList.acceptVisitor(this)
-    }
-
-    override fun visitParam(node: ParamNode) {
-
     }
 
     override fun visitNewPair(node: NewPairNode) {
@@ -264,8 +261,9 @@ object ConstantEvaluationVisitor : ASTVisitor {
 
     override fun visitDeclaration(node: DeclarationNode) {
         when (node.value) {
-            is ExprNode -> node.value = analyseExpression(node.value as ExprNode)
-            else -> node.value.acceptVisitor(this)
+            is ExprNode -> node.value =
+                analyseExpression(node.value as ExprNode)
+            else -> visitNode(node.value)
         }
     }
 
@@ -275,11 +273,11 @@ object ConstantEvaluationVisitor : ASTVisitor {
 
     override fun visitAssignment(node: AssignmentNode) {
         when (node.value) {
-            is ExprNode -> node.value = analyseExpression(node.value as ExprNode)
-            else -> node.value.acceptVisitor(this)
+            is ExprNode -> node.value =
+                analyseExpression(node.value as ExprNode)
+            else -> visitNode(node.value)
         }
-        node.name.acceptVisitor(this)
-
+        visitNode(node.name)
     }
 
     override fun visitBinOp(node: BinOpNode) {
@@ -305,8 +303,8 @@ object ConstantEvaluationVisitor : ASTVisitor {
 
     override fun visitIf(node: IfNode) {
         node.proposition = analyseExpression(node.proposition)
-        node.trueStat.acceptVisitor(this)
-        node.falseStat.acceptVisitor(this)
+        visitNode(node.trueStat)
+        visitNode(node.falseStat)
     }
 
     override fun visitPrint(node: PrintNode) {
@@ -314,7 +312,7 @@ object ConstantEvaluationVisitor : ASTVisitor {
     }
 
     override fun visitRead(node: ReadNode) {
-        node.value.acceptVisitor(this)
+        visitNode(node.value)
     }
 
     override fun visitReturn(node: ReturnNode) {
@@ -323,54 +321,26 @@ object ConstantEvaluationVisitor : ASTVisitor {
 
     override fun visitSeq(node: SeqNode) {
         node.sequence.forEach {
-            it.acceptVisitor(this)
+            visitNode(it)
         }
     }
 
     override fun visitWhile(node: WhileNode) {
         node.proposition = analyseExpression(node.proposition)
-        node.body.acceptVisitor(this)
+        visitNode(node.body)
     }
 
     override fun visitBegin(node: BeginNode) {
-        node.stat.acceptVisitor(this)
+        visitNode(node.stat)
     }
 
     override fun visitFree(node: FreeNode) {
         node.value = analyseExpression(node.value)
     }
 
-    private fun outOfBoundsError(number: Long) : Boolean {
+    private fun outOfBoundsError(number: Long): Boolean {
         return number > Integer.MAX_VALUE || number < Integer.MIN_VALUE
     }
 
-    override fun visitBoolLiteral(literal: BoolLiteral) {
 
-    }
-
-    override fun visitCharLiteral(literal: CharLiteral) {
-
-    }
-
-    override fun visitIdentifier(node: IdentifierNode) {
-
-    }
-
-    override fun visitIntLiteral(literal: IntLiteral) {
-
-    }
-
-    override fun visitPairLiteral(literal: PairLiteral) {
-
-    }
-
-    override fun visitDeepArrayLiteral(node: DeepArrayLiteral) {
-    }
-
-    override fun visitPairMemoryLiteral(node: PairMemoryLiteral) {
-    }
-
-    override fun visitStringLiteral(literal: StringLiteral) {
-
-    }
 }

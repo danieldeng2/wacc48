@@ -5,6 +5,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.expr.ExprNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.PairType
@@ -12,13 +13,16 @@ import wacc48.tree.type.Type
 import wacc48.tree.type.VoidType
 
 data class PairElemNode(
-    var expr: ExprNode,
+    val expr: ExprNode,
     val isFirst: Boolean,
     val ctx: ParserRuleContext?
 ) : LHSNode, RHSNode {
     override var type: Type = VoidType
     lateinit var st: SymbolTable
     override var mode: AccessMode = AccessMode.READ
+
+    override val children: List<ASTNode>
+        get() = listOf(expr)
 
     override fun validate(
         st: SymbolTable,
@@ -42,8 +46,8 @@ data class PairElemNode(
         }
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitPairElem(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitPairElem(this)
     }
 
 

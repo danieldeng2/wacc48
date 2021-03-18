@@ -5,6 +5,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.expr.ExprNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.BoolType
@@ -17,6 +18,9 @@ data class IfNode(
 ) : StatNode {
     lateinit var trueST: SymbolTable
     lateinit var falseST: SymbolTable
+
+    override val children: List<ASTNode>
+        get() = listOf(proposition, trueStat, falseStat)
 
     override fun validate(
         st: SymbolTable,
@@ -37,7 +41,7 @@ data class IfNode(
         falseStat.validate(falseST, funTable, issues)
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitIf(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitIf(this)
     }
 }

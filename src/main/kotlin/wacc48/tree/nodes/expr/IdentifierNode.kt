@@ -6,6 +6,7 @@ import wacc48.analyser.exceptions.addSemantic
 import wacc48.shell.MemoryTable
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.assignment.AccessMode
 import wacc48.tree.nodes.assignment.LHSNode
 import wacc48.tree.nodes.function.FuncNode
@@ -24,6 +25,9 @@ data class IdentifierNode(
         return mt?.getLiteral(name) ?: StringLiteral("<Undefined value>", null)
     }
 
+    override val children: List<ASTNode>
+        get() = emptyList()
+
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>,
@@ -38,8 +42,8 @@ data class IdentifierNode(
         type = st[name]!!
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitIdentifier(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitIdentifier(this)
     }
 
 }
