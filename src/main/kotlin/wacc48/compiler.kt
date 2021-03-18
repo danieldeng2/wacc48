@@ -9,6 +9,7 @@ import wacc48.analyser.exceptions.IssueType
 import wacc48.analyser.exceptions.ParserException
 import wacc48.analyser.exceptions.ThrowingErrorListener
 import wacc48.analyser.optimisations.ConstantEvaluationVisitor
+import wacc48.analyser.optimisations.ConstantIdentifierVisitor
 import wacc48.analyser.optimisations.ControlFlowVisitor
 import wacc48.antlr.WACCLexer
 import wacc48.antlr.WACCParser
@@ -52,6 +53,9 @@ fun runAnalyser(
 
         // Control Flow Analysis
         ControlFlowVisitor.visitNode(programNode)
+
+        // Constant Propagation
+        ConstantIdentifierVisitor.visitNode(programNode)
     }
 
     return programNode
