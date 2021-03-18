@@ -35,8 +35,8 @@ object PairLiteral : Literal {
 }
 
 class PairMemoryLiteral(
-    val firstLiteral: Literal,
-    val secondLiteral: Literal,
+    var firstLiteral: Literal,
+    var secondLiteral: Literal,
     override var type: Type
 ) : Literal {
     //Spec says to print the hex address but kotlin doesn't allow you to

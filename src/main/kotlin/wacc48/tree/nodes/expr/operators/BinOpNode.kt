@@ -43,12 +43,12 @@ data class BinOpNode(
             return when (operator) {
                 BinaryOperator.EQ ->
                     BoolLiteral(
-                        firstExpr.literalToString() == (secondExpr as ArrayLiteral).literalToString(),
+                        (firstExpr as ArrayLiteral).literalToString() == (secondExpr as ArrayLiteral).literalToString(),
                         null
                     )
                 else ->
                     BoolLiteral(
-                        firstExpr.literalToString() != (secondExpr as ArrayLiteral).literalToString(),
+                        (firstExpr as ArrayLiteral).literalToString() != (secondExpr as ArrayLiteral).literalToString(),
                         null
                     )
             }
@@ -127,9 +127,9 @@ data class BinOpNode(
             }
             else -> { //Pair type
                 val firstPair =
-                    if (firstExpr is IdentifierNode) mt?.getLiteral(firstExpr.name) else PairLiteral
+                    if (firstExpr is IdentifierNode) mt?.getLiteral((firstExpr as IdentifierNode).name) else PairLiteral
                 val secondPair =
-                    if (secondExpr is IdentifierNode) mt?.getLiteral(secondExpr.name) else PairLiteral
+                    if (secondExpr is IdentifierNode) mt?.getLiteral((secondExpr as IdentifierNode).name) else PairLiteral
                 return when (operator) {
                     BinaryOperator.EQ ->
                         if (firstPair is PairMemoryLiteral && secondPair is PairMemoryLiteral)

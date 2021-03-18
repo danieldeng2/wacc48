@@ -28,7 +28,7 @@ data class AssignmentNode(
         value.validate(st, funTable, issues)
 
         //Assume type matches if this in a function body in the wacc48.shell
-        if (!(value is FuncCallNode && value.inShellAndFuncNodeCtx)) {
+        if (!(value is FuncCallNode && (value as FuncCallNode).inShellAndFuncNodeCtx)) {
             if (name.type != value.type) {
                 println(ctx?.text)
                 issues.addSemantic(

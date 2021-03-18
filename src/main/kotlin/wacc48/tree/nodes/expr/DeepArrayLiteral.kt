@@ -14,7 +14,7 @@ import wacc48.tree.type.VoidType
 
 //To be used in the evaluator memory table to represent arrays of other arrays
 //Values is a list of the names of the subarrays being referenced in the memory table
-class DeepArrayLiteral(val values: List<String>, elemType: Type) : Literal {
+class DeepArrayLiteral(var values: List<String>, elemType: Type) : Literal {
 
     var elemType: Type = VoidType
     override var type: Type = ArrayType(elemType, null)
