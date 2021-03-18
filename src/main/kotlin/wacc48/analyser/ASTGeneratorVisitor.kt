@@ -20,9 +20,9 @@ import wacc48.tree.nodes.expr.IntLiteral
 import wacc48.tree.nodes.expr.PairLiteral
 import wacc48.tree.nodes.expr.StringLiteral
 import wacc48.tree.nodes.expr.operators.BinOpNode
-import wacc48.tree.nodes.expr.operators.BinaryOperator
 import wacc48.tree.nodes.expr.operators.UnOpNode
-import wacc48.tree.nodes.expr.operators.UnaryOperator
+import wacc48.tree.nodes.expr.operators.operation.lookupBinary
+import wacc48.tree.nodes.expr.operators.operation.lookupUnary
 import wacc48.tree.nodes.function.ArgListNode
 import wacc48.tree.nodes.function.FuncCallNode
 import wacc48.tree.nodes.function.FuncNode
@@ -217,11 +217,10 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
     override fun visitUnaryOpExpr(ctx: WACCParser.UnaryOpExprContext): ASTNode =
         visit(ctx.unaryOperator()) as UnOpNode
 
+
     override fun visitUnaryOperator(ctx: WACCParser.UnaryOperatorContext): ASTNode =
         UnOpNode(
-            operator = UnaryOperator.lookupRepresentation(
-                ctx.getChild(0).text
-            )!!,
+            operation = lookupUnary(ctx.getChild(0).text)!!,
             expr = visit(
                 (ctx.getParent()
                     .ruleContext as WACCParser.UnaryOpExprContext).expr()
@@ -231,9 +230,7 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
 
     override fun visitBinOpExpr(ctx: WACCParser.BinOpExprContext): ASTNode =
         BinOpNode(
-            operator = BinaryOperator.lookupRepresentation(
-                ctx.op.text
-            )!!,
+            operation = lookupBinary(ctx.op.text)!!,
             firstExpr = visit(ctx.expr(0)) as ExprNode,
             secondExpr = visit(ctx.expr(1)) as ExprNode,
             ctx = ctx
@@ -320,8 +317,7 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
     private fun findType(ctx: WACCParser.TypeContext): Type =
         when {
             ctx.type() != null -> ArrayType(
-                elementType = findType(ctx.type()),
-                ctx = ctx
+                elementType = findType(ctx.type())
             )
             ctx.baseType() != null -> findBaseType(ctx.baseType())
             else -> PairType(
@@ -342,8 +338,7 @@ class ASTGeneratorVisitor : WACCParserBaseVisitor<ASTNode>() {
     private fun findPairElemType(ctx: WACCParser.PairElemTypeContext): Type =
         when {
             ctx.type() != null -> ArrayType(
-                elementType = findType(ctx.type()),
-                ctx = ctx
+                elementType = findType(ctx.type())
             )
             ctx.baseType() != null -> findBaseType(ctx.baseType())
             else -> EmptyPair

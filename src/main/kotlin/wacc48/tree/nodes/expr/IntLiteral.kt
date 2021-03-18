@@ -13,7 +13,7 @@ import wacc48.tree.type.Type
 
 data class IntLiteral(
     val value: Int,
-    val isOutOfBounds: Boolean,
+    val isOutOfBounds: Boolean = false,
     val ctx: ParserRuleContext?
 ) : BaseLiteral {
 

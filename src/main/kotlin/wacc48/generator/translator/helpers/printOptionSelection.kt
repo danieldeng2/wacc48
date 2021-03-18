@@ -11,7 +11,7 @@ fun getPrintOption(exprType: Type) =
         IntType -> PrintInt
         StringType -> PrintStr
         BoolType -> PrintBool
-        ArrayType(CharType, null) -> PrintCharArray
+        ArrayType(CharType) -> PrintCharArray
         is GenericPair, is ArrayType -> PrintReference
         else -> throw UnexpectedException(
             "Else branch should not be reached for operator $exprType"

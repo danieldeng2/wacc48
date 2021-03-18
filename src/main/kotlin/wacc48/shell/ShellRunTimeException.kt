@@ -1,6 +1,9 @@
 package wacc48.shell
 
-import wacc48.tree.nodes.expr.operators.BinaryOperator
+import wacc48.tree.nodes.expr.operators.operation.binary.BinaryOperation
+import wacc48.tree.nodes.expr.operators.operation.binary.PlusOperation
+import wacc48.tree.nodes.expr.operators.operation.binary.MinusOperation
+import wacc48.tree.nodes.expr.operators.operation.binary.MultiplyOperation
 
 open class ShellRunTimeException(s: String) : Exception(s)
 
@@ -17,33 +20,33 @@ class ShellDivideByZeroException(s: String) : ShellRunTimeException("DivideByZer
 
 class ShellIntegerOverflowException(s: String) : ShellRunTimeException("IntegerOverflowException $s")
 
-fun detectIntegerOverflow(n1: Int, n2: Int, op: BinaryOperator) {
+fun detectIntegerOverflow(n1: Int, n2: Int, op: BinaryOperation) {
     if (n1 >= 0 && n2 >= 0) {
         when (op) {
-            BinaryOperator.PLUS -> if ((n1 + n2) < 0) throw ShellIntegerOverflowException("")
-            BinaryOperator.MINUS -> return
-            BinaryOperator.MULTIPLY -> if ((n1 * n2) < 0) throw ShellIntegerOverflowException("")
+            is PlusOperation -> if ((n1 + n2) < 0) throw ShellIntegerOverflowException("")
+            is MinusOperation -> return
+            is MultiplyOperation -> if ((n1 * n2) < 0) throw ShellIntegerOverflowException("")
             else -> return
         }
     } else if (n1 < 0 && n2 < 0) {
         when (op) {
-            BinaryOperator.PLUS -> if ((n1 + n2) > 0) throw ShellIntegerOverflowException("")
-            BinaryOperator.MINUS -> return
-            BinaryOperator.MULTIPLY -> if ((n1 * n2) < 0) throw ShellIntegerOverflowException("")
+            is PlusOperation -> if ((n1 + n2) > 0) throw ShellIntegerOverflowException("")
+            is MinusOperation -> return
+            is MultiplyOperation -> if ((n1 * n2) < 0) throw ShellIntegerOverflowException("")
             else -> return
         }
     } else if (n1 < 0 && n2 >= 0) {
         when (op) {
-            BinaryOperator.PLUS -> return
-            BinaryOperator.MINUS -> if ((n1 - n2) >= 0) throw ShellIntegerOverflowException("")
-            BinaryOperator.MULTIPLY -> if ((n1 * n2) >= 0) throw ShellIntegerOverflowException("")
+            is PlusOperation -> return
+            is MinusOperation -> if ((n1 - n2) >= 0) throw ShellIntegerOverflowException("")
+            is MultiplyOperation -> if ((n1 * n2) >= 0) throw ShellIntegerOverflowException("")
             else -> return
         }
     } else if (n1 >= 0 && n2 < 0) {
         when (op) {
-            BinaryOperator.PLUS -> return
-            BinaryOperator.MINUS -> if ((n1 - n2) <= 0) throw ShellIntegerOverflowException("")
-            BinaryOperator.MULTIPLY -> if ((n1 * n2) >= 0) throw ShellIntegerOverflowException("")
+            is PlusOperation -> return
+            is MinusOperation -> if ((n1 - n2) <= 0) throw ShellIntegerOverflowException("")
+            is MultiplyOperation-> if ((n1 * n2) >= 0) throw ShellIntegerOverflowException("")
             else -> return
         }
     }

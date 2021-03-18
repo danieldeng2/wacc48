@@ -4,14 +4,23 @@ import wacc48.generator.instructions.FunctionEnd
 import wacc48.generator.instructions.FunctionStart
 import wacc48.generator.instructions.Syscall
 import wacc48.generator.instructions.arithmetic.ADDInstr
+import wacc48.generator.instructions.arithmetic.ADDSInstr
+import wacc48.generator.instructions.arithmetic.IDIVInstr
+import wacc48.generator.instructions.arithmetic.MODInstr
+import wacc48.generator.instructions.arithmetic.SMULLInstr
+import wacc48.generator.instructions.arithmetic.SUBSInstr
 import wacc48.generator.instructions.branch.BEQInstr
 import wacc48.generator.instructions.branch.BInstr
 import wacc48.generator.instructions.branch.BLInstr
+import wacc48.generator.instructions.branch.BLNEInstr
+import wacc48.generator.instructions.branch.BLVSInstr
 import wacc48.generator.instructions.compare.CMPInstr
 import wacc48.generator.instructions.directives.Directive
 import wacc48.generator.instructions.directives.LabelInstr
 import wacc48.generator.instructions.load.LDRInstr
+import wacc48.generator.instructions.move.MOVEQInstr
 import wacc48.generator.instructions.move.MOVInstr
+import wacc48.generator.instructions.move.MOVNEInstr
 import wacc48.generator.instructions.operands.*
 import wacc48.generator.instructions.store.STRInstr
 import wacc48.generator.translator.ArmConstants.FALSE_VALUE
@@ -21,11 +30,12 @@ import wacc48.generator.translator.ArmConstants.TRUE_VALUE
 import wacc48.generator.translator.helpers.*
 import wacc48.generator.translator.lib.FreePair
 import wacc48.generator.translator.lib.errors.CheckNullPointer
+import wacc48.generator.translator.lib.errors.DivideByZeroError
+import wacc48.generator.translator.lib.errors.OverflowError
 import wacc48.generator.translator.lib.print.PrintLn
 import wacc48.generator.translator.lib.read.ReadChar
 import wacc48.generator.translator.lib.read.ReadInt
 import wacc48.tree.ASTBaseVisitor
-import wacc48.tree.ASTVisitor
 import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.ProgNode
 import wacc48.tree.nodes.assignment.AccessMode
@@ -34,9 +44,11 @@ import wacc48.tree.nodes.assignment.NewPairNode
 import wacc48.tree.nodes.assignment.PairElemNode
 import wacc48.tree.nodes.expr.*
 import wacc48.tree.nodes.expr.operators.BinOpNode
-import wacc48.tree.nodes.expr.operators.BinaryOperator
+import wacc48.tree.nodes.expr.operators.operation.*
 import wacc48.tree.nodes.expr.operators.UnOpNode
-import wacc48.tree.nodes.expr.operators.UnaryOperator
+import wacc48.tree.nodes.expr.operators.operation.unary.*
+import wacc48.tree.nodes.expr.operators.operation.binary.*
+import wacc48.tree.nodes.expr.operators.operation.binary.AndOperation
 import wacc48.tree.nodes.function.*
 import wacc48.tree.nodes.statement.*
 import wacc48.tree.type.CharType
@@ -230,27 +242,36 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) :
 
     /** Select appropriate methods to generate code */
     override fun visitBinOp(node: BinOpNode) {
-        when (node.operator) {
-            BinaryOperator.EQ -> translateEquality(node, isEqual = true)
-            BinaryOperator.NEQ -> translateEquality(node, isEqual = false)
-            BinaryOperator.AND -> translateLogical(node, isAnd = true)
-            BinaryOperator.OR -> translateLogical(node, isAnd = false)
-            BinaryOperator.PLUS -> translatePlusMinus(node, isPlus = true)
-            BinaryOperator.MINUS -> translatePlusMinus(node, isPlus = false)
-            BinaryOperator.MULTIPLY -> translateMultiply(node)
-            BinaryOperator.DIVIDE -> translateDivide(node)
-            BinaryOperator.MODULUS -> translateModulo(node)
-            else -> translateComparator(node)
+        if (node.operation == AndOperation) {
+            translateAnd(node)
+            return
         }
+
+        if (node.operation == OrOperation) {
+            translateOr(node)
+            return
+        }
+
+        loadOperandsIntoRegister(node)
+
+//        add library functions
+        when (node.operation) {
+            is MultiplyOperation,
+            is PlusOperation,
+            is MinusOperation -> ctx.addLibraryFunction(OverflowError)
+            is DivideOperation -> ctx.addLibraryFunction(DivideByZeroError)
+        }
+
+        binaryInstructions[node.operation]?.let { ctx.text.addAll(it) }
     }
 
     /** Select appropriate methods to generate code */
     override fun visitUnOp(node: UnOpNode) {
-        when (node.operator) {
-            UnaryOperator.NEGATE -> translateNegate(node)
-            UnaryOperator.CHR, UnaryOperator.ORD -> visitNode(node.expr)
-            UnaryOperator.MINUS -> translateMinus(node)
-            UnaryOperator.LEN -> ctx.text.apply {
+        when (node.operation) {
+            is NotOperation -> translateNegate(node)
+            is ChrOperation, is OrdOperation -> visitNode(node.expr)
+            is NegateOperation -> translateMinus(node)
+            is LenOperation -> ctx.text.apply {
                 visitNode(node.expr)
                 add(LDRInstr(Register.R0, MemAddr(Register.R0)))
             }
