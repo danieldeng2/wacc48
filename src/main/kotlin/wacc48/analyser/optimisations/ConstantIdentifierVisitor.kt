@@ -165,7 +165,10 @@ object ConstantIdentifierVisitor : ASTVisitor{
     }
 
     override fun visitRead(node: ReadNode) {
-
+        if (node.value is IdentifierNode &&
+            declaredVars.contains(node.value.name)) {
+            assignedVars.add(node.value.name)
+        }
     }
 
     override fun visitReturn(node: ReturnNode) {
