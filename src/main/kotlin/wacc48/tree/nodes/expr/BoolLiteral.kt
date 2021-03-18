@@ -12,7 +12,7 @@ import wacc48.tree.type.Type
 data class BoolLiteral(
     var value: Boolean,
     val ctx: ParserRuleContext?
-) : Literal {
+) : BaseLiteral {
 
     override var type: Type = BoolType
 

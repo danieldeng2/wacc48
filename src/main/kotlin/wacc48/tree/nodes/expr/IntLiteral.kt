@@ -14,7 +14,7 @@ data class IntLiteral(
     val value: Int,
     val isOutOfBounds: Boolean,
     val ctx: ParserRuleContext?
-) : Literal {
+) : BaseLiteral {
 
     override var type: Type = IntType
 

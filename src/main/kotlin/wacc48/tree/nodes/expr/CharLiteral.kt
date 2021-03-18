@@ -9,7 +9,7 @@ import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.CharType
 import wacc48.tree.type.Type
 
-data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) : Literal {
+data class CharLiteral(val value: Char, val ctx: ParserRuleContext?) : BaseLiteral {
     override var type: Type = CharType
 
     override fun literalToString(mt: MemoryTable?): String = value.toString()
