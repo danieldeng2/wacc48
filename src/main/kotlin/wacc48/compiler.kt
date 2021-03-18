@@ -8,6 +8,8 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.IssueType
 import wacc48.analyser.exceptions.ParserException
 import wacc48.analyser.exceptions.ThrowingErrorListener
+import wacc48.analyser.optimisations.ConstantEvaluationVisitor
+import wacc48.analyser.optimisations.ControlFlowVisitor
 import wacc48.antlr.WACCLexer
 import wacc48.antlr.WACCParser
 import wacc48.tree.SymbolTable
@@ -43,6 +45,14 @@ fun runAnalyser(
         funTable = funTable,
         issues = issues
     )
+
+    if (issues.isEmpty()) {
+        // Constant Evaluation Analysis
+        ConstantEvaluationVisitor.visitNode(programNode)
+
+        // Control Flow Analysis
+        ControlFlowVisitor.visitNode(programNode)
+    }
 
     return programNode
 }
