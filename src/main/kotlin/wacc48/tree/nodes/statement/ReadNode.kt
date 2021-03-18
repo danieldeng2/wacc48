@@ -5,6 +5,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.assignment.AccessMode
 import wacc48.tree.nodes.assignment.LHSNode
 import wacc48.tree.nodes.function.FuncNode
@@ -17,7 +18,12 @@ data class ReadNode(
     val value: LHSNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
-    private val expectedExprTypes: List<Type> = listOf(IntType, StringType, CharType)
+
+    private val expectedExprTypes: List<Type> =
+        listOf(IntType, StringType, CharType)
+
+    override val children: List<ASTNode>
+        get() = listOf(value)
 
     override fun validate(
         st: SymbolTable,
@@ -31,7 +37,7 @@ data class ReadNode(
             issues.addSemantic("Cannot read from type ${value.type}", ctx)
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitRead(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitRead(this)
     }
 }

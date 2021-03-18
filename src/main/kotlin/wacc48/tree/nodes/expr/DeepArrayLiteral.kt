@@ -5,6 +5,7 @@ import wacc48.shell.MemoryTable
 import wacc48.shell.ShellRunTimeException
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.ArrayType
 import wacc48.tree.type.CharType
@@ -31,6 +32,9 @@ class DeepArrayLiteral(var values: List<String>, elemType: Type) : Literal {
     override fun reduceToLiteral(mt: MemoryTable?): Literal =
         this
 
+    override val children: List<ASTNode>
+        get() = emptyList()
+
 
     override fun validate(
         st: SymbolTable,
@@ -39,8 +43,8 @@ class DeepArrayLiteral(var values: List<String>, elemType: Type) : Literal {
     ) {
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitDeepArrayLiteral(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>) : T {
+        return visitor.visitDeepArrayLiteral(this)
     }
 
 }

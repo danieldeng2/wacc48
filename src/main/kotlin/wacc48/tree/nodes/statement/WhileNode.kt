@@ -5,6 +5,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.expr.ExprNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.BoolType
@@ -15,6 +16,9 @@ data class WhileNode(
     val ctx: ParserRuleContext?,
 ) : StatNode {
     lateinit var bodyST: SymbolTable
+
+    override val children: List<ASTNode>
+        get() = listOf(proposition, body)
 
     override fun validate(
         st: SymbolTable,
@@ -30,8 +34,8 @@ data class WhileNode(
         body.validate(bodyST, funTable, issues)
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitWhile(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>) : T {
+        return visitor.visitWhile(this)
     }
 
 }

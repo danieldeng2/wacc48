@@ -6,6 +6,7 @@ import wacc48.analyser.exceptions.addSemantic
 
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.assignment.RHSNode
 import wacc48.tree.nodes.function.FuncCallNode
 import wacc48.tree.nodes.function.FuncNode
@@ -13,10 +14,13 @@ import wacc48.tree.nodes.function.ParamNode
 
 data class DeclarationNode(
     val name: ParamNode,
-    val value: RHSNode,
+    var value: RHSNode,
     val ctx: ParserRuleContext?
 ) : StatNode {
     lateinit var st: SymbolTable
+
+    override val children: List<ASTNode>
+        get() = listOf(name, value)
 
     override fun validate(
         st: SymbolTable,
@@ -28,7 +32,7 @@ data class DeclarationNode(
         value.validate(st, funTable, issues)
 
         //Assume type matches if this in a function body in the wacc48.shell
-        if (!(value is FuncCallNode && value.inShellAndFuncNodeCtx)) {
+        if (!(value is FuncCallNode && (value as FuncCallNode).inShellAndFuncNodeCtx)) {
             if (value.type != name.type)
                 issues.addSemantic(
                     "Type mismatch in declaration of ${name.text}, expected ${name.type}, actual ${value.type}",
@@ -37,8 +41,8 @@ data class DeclarationNode(
         }
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitDeclaration(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitDeclaration(this)
     }
 
 

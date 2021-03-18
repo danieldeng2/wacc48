@@ -5,15 +5,18 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.function.FuncCallNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.nodes.statement.StatNode
 
 data class AssignmentNode(
     val name: LHSNode,
-    val value: RHSNode,
+    var value: RHSNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
+    override val children: List<ASTNode>
+        get() = listOf(name, value)
 
     override fun validate(
         st: SymbolTable,
@@ -25,7 +28,7 @@ data class AssignmentNode(
         value.validate(st, funTable, issues)
 
         //Assume type matches if this in a function body in the wacc48.shell
-        if (!(value is FuncCallNode && value.inShellAndFuncNodeCtx)) {
+        if (!(value is FuncCallNode && (value as FuncCallNode).inShellAndFuncNodeCtx)) {
             if (name.type != value.type) {
                 println(ctx?.text)
                 issues.addSemantic(
@@ -36,8 +39,8 @@ data class AssignmentNode(
         }
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitAssignment(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitAssignment(this)
     }
 
 }

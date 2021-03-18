@@ -26,7 +26,10 @@ data class FuncNode(
     lateinit var paramListTable: SymbolTable
     lateinit var bodyTable: SymbolTable
 
-    fun validatePrototype(ft: MutableMap<String, FuncNode>, issues: MutableList<Issue>) {
+    fun validatePrototype(
+        ft: MutableMap<String, FuncNode>,
+        issues: MutableList<Issue>
+    ) {
         if (identifier in ft)
             issues.addSemantic(
                 "Illegal re-declaration of function $identifier",
@@ -34,6 +37,12 @@ data class FuncNode(
             )
         ft[identifier] = this
     }
+
+    override val children: List<ASTNode>
+        get() = mutableListOf<ASTNode>().apply {
+            addAll(paramList)
+            add(body)
+        }
 
     override fun validate(
         st: SymbolTable,
@@ -44,7 +53,10 @@ data class FuncNode(
         this.bodyTable = SymbolTable(paramListTable)
 
         if (!allPathsTerminated(body)) {
-            issues.addSyntax("Function $identifier must end with either a return or exit", ctx)
+            issues.addSyntax(
+                "Function $identifier must end with either a return or exit",
+                ctx
+            )
             return
         }
 
@@ -76,8 +88,8 @@ data class FuncNode(
     }
 
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitFunction(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitFunction(this)
     }
 
     fun allPathsTerminated(body: StatNode): Boolean =

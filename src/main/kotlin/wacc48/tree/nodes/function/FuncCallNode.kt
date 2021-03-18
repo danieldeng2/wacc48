@@ -5,6 +5,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.assignment.RHSNode
 import wacc48.tree.type.Type
 import wacc48.tree.type.VoidType
@@ -15,9 +16,13 @@ data class FuncCallNode(
     val ctx: ParserRuleContext?,
     val inShellAndFuncNodeCtx: Boolean = false,
 ) : RHSNode {
+
     override var type: Type = VoidType
     lateinit var functionNode: FuncNode
     var argListSize: Int = 0
+
+    override val children: List<ASTNode>
+        get() = listOf(argList)
 
     override fun validate(
         st: SymbolTable,
@@ -62,8 +67,8 @@ data class FuncCallNode(
         }
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitFuncCall(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitFuncCall(this)
     }
 
 }

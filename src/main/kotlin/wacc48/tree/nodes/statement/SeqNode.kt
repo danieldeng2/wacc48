@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import wacc48.analyser.exceptions.Issue
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.function.FuncNode
 
 data class SeqNode(
@@ -11,6 +12,8 @@ data class SeqNode(
     val ctx: ParserRuleContext?,
 ) : StatNode, List<StatNode> {
 
+    override val children: List<ASTNode>
+        get() = sequence
 
     override fun validate(
         st: SymbolTable,
@@ -54,8 +57,8 @@ data class SeqNode(
     override fun subList(fromIndex: Int, toIndex: Int): List<StatNode> =
         sequence.subList(fromIndex, toIndex)
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitSeq(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>) : T {
+        return visitor.visitSeq(this)
     }
 
 }

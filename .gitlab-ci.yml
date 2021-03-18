@@ -33,3 +33,9 @@ gradle-test-shell:
   stage: gradleTest
   script:
     - ./gradlew clean test --tests 'wacc48.shell.*'
+
+gradle-test-optimisation:
+  stage: gradleTest
+  script:
+    - ./gradlew clean test --tests 'wacc48.generator.optimisations.*'
+
