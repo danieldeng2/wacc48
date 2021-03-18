@@ -7,21 +7,10 @@ import wacc48.shell.MemoryTable
 import wacc48.shell.detectIntegerOverflow
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
-import wacc48.tree.nodes.expr.ArrayLiteral
-import wacc48.tree.nodes.expr.BoolLiteral
-import wacc48.tree.nodes.expr.CharLiteral
-import wacc48.tree.nodes.expr.ExprNode
-import wacc48.tree.nodes.expr.IntLiteral
-import wacc48.tree.nodes.expr.Literal
-import wacc48.tree.nodes.expr.StringLiteral
+import wacc48.tree.nodes.ASTNode
+import wacc48.tree.nodes.expr.*
 import wacc48.tree.nodes.function.FuncNode
-import wacc48.tree.type.ArrayType
-import wacc48.tree.type.BoolType
-import wacc48.tree.type.CharType
-import wacc48.tree.type.IntType
-import wacc48.tree.type.StringType
-import wacc48.tree.type.Type
-import wacc48.tree.type.VoidType
+import wacc48.tree.type.*
 
 data class UnOpNode(
     val operator: UnaryOperator,
@@ -37,6 +26,9 @@ data class UnOpNode(
             UnaryOperator.ORD -> reduceOrdToLiteral(mt)
             UnaryOperator.CHR -> reduceChrToLiteral(mt)
         }
+
+    override val children: List<ASTNode>
+        get() = listOf(expr)
 
     private fun reduceMinusToLiteral(mt: MemoryTable?): Literal {
         val intExpr = expr.reduceToLiteral(mt) as IntLiteral
@@ -86,8 +78,8 @@ data class UnOpNode(
     }
 
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitUnOp(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitUnOp(this)
     }
 
 }

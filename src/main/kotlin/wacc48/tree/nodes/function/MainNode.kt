@@ -19,6 +19,9 @@ class MainNode(
 ) : ASTNode {
     lateinit var st: SymbolTable
 
+    override val children: List<ASTNode>
+        get() = listOf(body)
+
     override fun validate(
         st: SymbolTable, funTable: MutableMap<String, FuncNode>,
         issues: MutableList<Issue>
@@ -30,8 +33,8 @@ class MainNode(
             issues.addSemantic("Cannot return in global context", ctx)
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitMain(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitMain(this)
     }
 
     private fun hasGlobalReturn(body: StatNode): Boolean =

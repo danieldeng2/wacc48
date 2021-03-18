@@ -1,5 +1,6 @@
 package wacc48.shell
 
+import wacc48.tree.ASTBaseVisitor
 import wacc48.tree.ASTVisitor
 import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.ProgNode
@@ -24,7 +25,7 @@ class CodeEvaluatorVisitor(
     val output: PrintStream = System.`out`,
     private val testMode: Boolean = false,
     var exitCode: Int? = null
-) : ASTVisitor {
+) : ASTBaseVisitor<Unit>() {
     private var returnFromFuncCall: Boolean = false
     private var inSeqCtx: Boolean = false
     private val argListStack: Stack<Literal> = Stack()
@@ -37,11 +38,7 @@ class CodeEvaluatorVisitor(
         evalLiteralStack.clear()
     }
 
-    /** Wrapper method to tell [node] to invoke its corresponding
-     *  'translate' method to evaluate code */
-    override fun visitNode(node: ASTNode) {
-        node.acceptVisitor(this)
-    }
+    override fun defaultResult() {}
 
     /** Evaluate whole program by calling evaluate on each of its children */
     override fun visitProgram(node: ProgNode) {

@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.ParserRuleContext
 import wacc48.analyser.exceptions.Issue
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.expr.ExprNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.PairType
@@ -16,6 +17,8 @@ data class NewPairNode(
     val ctx: ParserRuleContext?
 ) : RHSNode {
     override var type: Type = VoidType
+    override val children: List<ASTNode>
+        get() = listOf(firstElem, secondElem)
 
 
     override fun validate(
@@ -30,9 +33,8 @@ data class NewPairNode(
         type = PairType(firstElem.type, secondElem.type, ctx)
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitNewPair(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitNewPair(this)
     }
-
 
 }

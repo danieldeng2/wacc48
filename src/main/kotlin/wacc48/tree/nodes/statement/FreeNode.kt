@@ -5,6 +5,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.addSemantic
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.expr.ExprNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.GenericPair
@@ -13,6 +14,9 @@ data class FreeNode(
     var value: ExprNode,
     val ctx: ParserRuleContext?,
 ) : StatNode {
+
+    override val children: List<ASTNode>
+        get() = listOf(value)
 
     override fun validate(
         st: SymbolTable,
@@ -25,8 +29,8 @@ data class FreeNode(
             issues.addSemantic("Cannot free ${value.type}", ctx)
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitFree(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitFree(this)
     }
 
 }

@@ -7,11 +7,13 @@ import wacc48.tree.nodes.function.FuncNode
 
 interface ASTNode {
 
+    val children: List<ASTNode>
+
     fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>,
         issues: MutableList<Issue>
     )
 
-    fun acceptVisitor(visitor: ASTVisitor)
+    fun <T> acceptVisitor(visitor: ASTVisitor<T>) : T
 }

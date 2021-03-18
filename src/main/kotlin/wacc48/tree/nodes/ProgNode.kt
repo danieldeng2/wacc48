@@ -12,6 +12,11 @@ data class ProgNode(
     val main: MainNode,
     val ctx: ParserRuleContext?
 ) : ASTNode {
+    override val children: List<ASTNode>
+        get() = mutableListOf<ASTNode>().apply {
+            addAll(functions)
+            add(main)
+        }
 
     override fun validate(
         st: SymbolTable,
@@ -24,10 +29,9 @@ data class ProgNode(
         main.validate(st, funTable, issues)
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitProgram(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitProgram(this)
     }
-
 }
 
 

@@ -4,6 +4,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.shell.MemoryTable
 import wacc48.tree.ASTVisitor
 import wacc48.tree.SymbolTable
+import wacc48.tree.nodes.ASTNode
 import wacc48.tree.nodes.function.FuncNode
 import wacc48.tree.type.EmptyPair
 import wacc48.tree.type.Type
@@ -13,6 +14,9 @@ object PairLiteral : Literal {
     override var type: Type = EmptyPair
 
     override fun literalToString(mt: MemoryTable?): String = "(nil)"
+
+    override val children: List<ASTNode>
+        get() = emptyList()
 
     override fun validate(
         st: SymbolTable,
@@ -25,8 +29,8 @@ object PairLiteral : Literal {
         return "Null"
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitPairLiteral(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitPairLiteral(this)
     }
 }
 
@@ -39,6 +43,9 @@ class PairMemoryLiteral(
     override fun literalToString(mt: MemoryTable?): String =
         "<${firstLiteral.literalToString(mt)},${secondLiteral.literalToString(mt)}>"
 
+    override val children: List<ASTNode>
+        get() = listOf(firstLiteral, secondLiteral)
+
     override fun validate(
         st: SymbolTable,
         funTable: MutableMap<String, FuncNode>,
@@ -46,7 +53,7 @@ class PairMemoryLiteral(
     ) {
     }
 
-    override fun acceptVisitor(visitor: ASTVisitor) {
-        visitor.visitPairMemoryLiteral(this)
+    override fun <T> acceptVisitor(visitor: ASTVisitor<T>): T {
+        return visitor.visitPairMemoryLiteral(this)
     }
 }

@@ -8,6 +8,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.IssueType
 import wacc48.analyser.exceptions.ParserException
 import wacc48.analyser.exceptions.ThrowingErrorListener
+import wacc48.analyser.optimisations.*
 import wacc48.antlr.WACCLexer
 import wacc48.antlr.WACCParser
 import wacc48.tree.SymbolTable
@@ -47,6 +48,8 @@ fun runAnalyser(
     return programNode
 }
 
+
+
 fun runAnalyserCatchError(sourceFile: File): ProgNode {
     val issues = mutableListOf<Issue>()
     val programNode: ASTNode
@@ -63,6 +66,39 @@ fun runAnalyserCatchError(sourceFile: File): ProgNode {
     return programNode as ProgNode
 }
 
+fun runOptimiser(programNode: ASTNode, optimiseLevel: Int) {
+    if(optimiseLevel == 0)
+        return
+    do {
+        var optimisations = 0
+
+        // Constant Evaluation Analysis
+        optimisations += ConstantEvaluationVisitor.optimise(programNode)
+        if (optimiseLevel == 1)
+            continue
+
+        // Control Flow Analysis
+        optimisations += ControlFlowVisitor.optimise(programNode)
+        if (optimiseLevel == 2)
+            continue
+
+        // Constant Propagation
+        val funcConstants = ConstantIdentifierVisitor.identifyConstants(programNode)
+
+        funcConstants.forEach{ func ->
+
+            optimisations += PropagationVisitor.optimise(func)
+
+            // Dead Code Elimination
+            if (optimiseLevel == 4){
+                optimisations += DeadCodeVisitor.optimise(
+                    node = func.key,
+                    inactiveVariables = func.value.keys
+                )
+            }
+        }
+    } while (optimisations > 0)
+}
 
 fun checkAnalyserIssues(issues: MutableList<Issue>) {
     val syntaxIssues = issues.filter { it.type == IssueType.SYNTAX }
