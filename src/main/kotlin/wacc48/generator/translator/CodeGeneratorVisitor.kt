@@ -246,11 +246,11 @@ class CodeGeneratorVisitor(private val rootNode: ASTNode) :
 
     /** Select appropriate methods to generate code */
     override fun visitUnOp(node: UnOpNode) {
-        when (node.operator) {
-            UnaryOperator.NEGATE -> translateNegate(node)
-            UnaryOperator.CHR, UnaryOperator.ORD -> visitNode(node.expr)
-            UnaryOperator.MINUS -> translateMinus(node)
-            UnaryOperator.LEN -> ctx.text.apply {
+        when (node.operation) {
+            is NotOperation -> translateNegate(node)
+            is ChrOperation, is OrdOperation -> visitNode(node.expr)
+            is NegateOperation -> translateMinus(node)
+            is LenOperation -> ctx.text.apply {
                 visitNode(node.expr)
                 add(LDRInstr(Register.R0, MemAddr(Register.R0)))
             }

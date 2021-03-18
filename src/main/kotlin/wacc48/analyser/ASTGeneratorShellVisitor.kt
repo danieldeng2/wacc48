@@ -21,7 +21,8 @@ import wacc48.tree.nodes.expr.StringLiteral
 import wacc48.tree.nodes.expr.operators.BinOpNode
 import wacc48.tree.nodes.expr.operators.BinaryOperator
 import wacc48.tree.nodes.expr.operators.UnOpNode
-import wacc48.tree.nodes.expr.operators.UnaryOperator
+import wacc48.tree.nodes.expr.operators.operation.lookupBinary
+import wacc48.tree.nodes.expr.operators.operation.lookupUnary
 import wacc48.tree.nodes.function.ArgListNode
 import wacc48.tree.nodes.function.FuncCallNode
 import wacc48.tree.nodes.function.FuncNode
@@ -227,9 +228,7 @@ class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
 
     override fun visitUnaryOperator(ctx: WACCShellParser.UnaryOperatorContext): ASTNode =
         UnOpNode(
-            operator = UnaryOperator.lookupRepresentation(
-                ctx.getChild(0).text
-            )!!,
+            operation = lookupUnary(ctx.getChild(0).text)!!,
             expr = visit(
                 (ctx.getParent()
                     .ruleContext as WACCShellParser.UnaryOpExprContext).expr()
@@ -239,9 +238,7 @@ class ASTGeneratorShellVisitor : WACCShellParserBaseVisitor<ASTNode>() {
 
     override fun visitBinOpExpr(ctx: WACCShellParser.BinOpExprContext): ASTNode =
         BinOpNode(
-            operator = BinaryOperator.lookupRepresentation(
-                ctx.op.text
-            )!!,
+            operation = lookupBinary(ctx.op.text)!!,
             firstExpr = visit(ctx.expr(0)) as ExprNode,
             secondExpr = visit(ctx.expr(1)) as ExprNode,
             ctx = ctx
