@@ -45,9 +45,6 @@ fun runAnalyser(
         issues = issues
     )
 
-    if (issues.isEmpty())
-        runOptimiser(programNode)
-
     return programNode
 }
 
@@ -69,14 +66,21 @@ fun runAnalyserCatchError(sourceFile: File): ProgNode {
     return programNode as ProgNode
 }
 
-fun runOptimiser(programNode: ASTNode) {
+fun runOptimiser(programNode: ASTNode, optimiseLevel: Int) {
+    if(optimiseLevel == 0)
+        return
     do {
         var optimisations = 0
+
         // Constant Evaluation Analysis
         optimisations += ConstantEvaluationVisitor.optimise(programNode)
+        if (optimiseLevel == 1)
+            continue
 
         // Control Flow Analysis
         optimisations += ControlFlowVisitor.optimise(programNode)
+        if (optimiseLevel == 2)
+            continue
 
         // Constant Propagation
         val funcConstants = ConstantIdentifierVisitor.identifyConstants(programNode)
@@ -86,10 +90,12 @@ fun runOptimiser(programNode: ASTNode) {
             optimisations += PropagationVisitor.optimise(func)
 
             // Dead Code Elimination
-            optimisations += DeadCodeVisitor.optimise(
-                node = func.key,
-                inactiveVariables = func.value.keys
-            )
+            if (optimiseLevel == 4){
+                optimisations += DeadCodeVisitor.optimise(
+                    node = func.key,
+                    inactiveVariables = func.value.keys
+                )
+            }
         }
     } while (optimisations > 0)
 }
