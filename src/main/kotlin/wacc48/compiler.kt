@@ -11,6 +11,7 @@ import wacc48.analyser.exceptions.ThrowingErrorListener
 import wacc48.analyser.optimisations.ConstantEvaluationVisitor
 import wacc48.analyser.optimisations.ConstantIdentifierVisitor
 import wacc48.analyser.optimisations.ControlFlowVisitor
+import wacc48.analyser.optimisations.PropagationVisitor
 import wacc48.antlr.WACCLexer
 import wacc48.antlr.WACCParser
 import wacc48.tree.SymbolTable
@@ -55,7 +56,11 @@ fun runAnalyser(
         ControlFlowVisitor.visitNode(programNode)
 
         // Constant Propagation
-        ConstantIdentifierVisitor.visitNode(programNode)
+        val funcConstants = ConstantIdentifierVisitor.identifyConstants(programNode)
+
+        funcConstants.forEach{ func ->
+            PropagationVisitor(func.value).visitNode(func.key)
+        }
     }
 
     return programNode

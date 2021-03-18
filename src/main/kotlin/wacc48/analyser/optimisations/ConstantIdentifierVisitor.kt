@@ -17,6 +17,12 @@ object ConstantIdentifierVisitor : ASTVisitor{
     private val assignedVars = mutableListOf<String>()
     private val constantVars = mutableMapOf<ASTNode,Map<String,BaseLiteral>>()
 
+    fun identifyConstants(programNode: ASTNode): MutableMap<ASTNode, Map<String, BaseLiteral>> {
+        constantVars.clear()
+        visitNode(programNode)
+        return constantVars
+    }
+
     private fun newScope(){
         declaredVars.clear()
         assignedVars.clear()
