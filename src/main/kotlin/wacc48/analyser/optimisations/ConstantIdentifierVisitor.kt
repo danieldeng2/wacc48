@@ -57,7 +57,12 @@ object ConstantIdentifierVisitor : ASTVisitor{
 
     override fun visitDeclaration(node: DeclarationNode) {
         if (node.value is BaseLiteral){
-            declaredVars[node.name.text] = node.value as BaseLiteral
+            if (declaredVars.contains(node.name.text)){
+                assignedVars.add(node.name.text)
+            } else {
+                declaredVars[node.name.text] = node.value as BaseLiteral
+            }
+
         }
     }
 
