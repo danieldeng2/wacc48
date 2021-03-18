@@ -7,9 +7,9 @@ import wacc48.tree.nodes.assignment.NewPairNode
 import wacc48.tree.nodes.assignment.PairElemNode
 import wacc48.tree.nodes.expr.*
 import wacc48.tree.nodes.expr.operators.BinOpNode
-import wacc48.tree.nodes.expr.operators.BinaryOperator
 import wacc48.tree.nodes.expr.operators.UnOpNode
-import wacc48.tree.nodes.expr.operators.UnaryOperator
+import wacc48.tree.nodes.expr.operators.operation.binary.*
+import wacc48.tree.nodes.expr.operators.operation.unary.*
 import wacc48.tree.nodes.function.ArgListNode
 import wacc48.tree.nodes.statement.*
 
