@@ -13,10 +13,21 @@ import wacc48.tree.nodes.expr.operators.operation.unary.*
 import wacc48.tree.nodes.function.ArgListNode
 import wacc48.tree.nodes.statement.*
 
+/**
+ * This visitor traverses the AST tree starting from ProgNode.
+ * Once encountering an expression the visitor applies Constant
+ * Folding techniques to reduce the expression as much as possible
+ * For example "x = 1 + 2" is optimised to "x = 3"
+ */
+
 object ConstantEvaluationVisitor : ASTBaseVisitor<Unit>() {
 
     var optimisations = 0
 
+    /**
+     * Optimises a AST tree starting from [node]
+     * @return Number of optimisations performed
+     */
     fun optimise(node: ASTNode): Int {
         optimisations = 0
         visitNode(node)
@@ -25,6 +36,11 @@ object ConstantEvaluationVisitor : ASTBaseVisitor<Unit>() {
 
     override fun defaultResult() {}
 
+    /**
+     * Function Dispatcher based on the interface [ExprNode] to
+     * apply constant folding based on node structure
+     * @return constant folded node [expr]
+     */
     private fun analyseExpression(expr: ExprNode): ExprNode {
         return when (expr) {
             is ArrayElement -> {
@@ -41,6 +57,13 @@ object ConstantEvaluationVisitor : ASTBaseVisitor<Unit>() {
         }
     }
 
+    /**
+     * Optimises a binary expression using constant folding. Both expressions
+     * are recursively optimised. If this results in two [BaseLiteral] types
+     * the expression is folded. If not the original expression is returned
+     *
+     * @return Optimised with constant folding node [binExpr]
+     */
     private fun analyseBinOp(binExpr: BinOpNode): ExprNode {
         val firstExprResult = analyseExpression(binExpr.firstExpr)
         val secondExprResult = analyseExpression(binExpr.secondExpr)
