@@ -12,43 +12,63 @@ import wacc48.tree.nodes.expr.operators.UnOpNode
 import wacc48.tree.nodes.function.*
 import wacc48.tree.nodes.statement.*
 
-object PropagationVisitor : ASTVisitor {
+object DeadCodeVisitor : ASTVisitor {
     private var optimisations = 0
-    private var constants : Map<String,BaseLiteral> = mutableMapOf()
-    private val propagatedConstants = mutableSetOf<String>()
+    private var inactiveVariables = emptySet<String>()
 
-    fun optimise(funcConstants: Map.Entry<ASTNode, Map<String, BaseLiteral>>) : Int {
+    fun optimise(node: ASTNode, inactiveVariables: Set<String>) : Int {
         optimisations = 0
-        constants = funcConstants.value
-        propagatedConstants
-        funcConstants.key.acceptVisitor(this)
+        this.inactiveVariables = inactiveVariables
+        node.acceptVisitor(this)
         return optimisations
     }
 
-    private fun propagate(expr: ExprNode): ExprNode {
-        return when(expr) {
-            is IdentifierNode -> {
-                if (constants.contains(expr.name)) {
-                    optimisations++
-                    constants[expr.name]!!
+    private fun eliminate(node : StatNode) : StatNode {
+        return when(node){
+            is AssignmentNode -> {
+                if (node.name is IdentifierNode &&
+                    inactiveVariables.contains(node.name.name)) {
+                        optimisations++
+                    SkipNode
                 } else {
-                    expr
+                    node
                 }
             }
-            is ArrayElement -> {
-                expr.acceptVisitor(this)
-                expr
+            is BeginNode -> {
+                node.stat = eliminate(node.stat)
+                node
             }
-            is BinOpNode -> {
-                expr.firstExpr = propagate(expr.firstExpr)
-                expr.secondExpr = propagate(expr.secondExpr)
-                expr
+            is DeclarationNode -> {
+                if(inactiveVariables.contains(node.name.text)) {
+                    optimisations++
+                    SkipNode
+                } else {
+                    node
+                }
             }
-            is UnOpNode -> {
-                expr.expr = propagate(expr.expr)
-                expr
+            is IfNode -> {
+                node.falseStat = eliminate(node.falseStat)
+                node.trueStat = eliminate(node.trueStat)
+                node
             }
-            else -> expr
+            is ReadNode -> {
+                if (node.value is IdentifierNode &&
+                    inactiveVariables.contains(node.value.name)) {
+                    optimisations++
+                    SkipNode
+                } else {
+                    node
+                }
+            }
+            is SeqNode -> {
+                node.sequence = node.sequence.map { eliminate(it) }
+                node
+            }
+            is WhileNode -> {
+                node.body = eliminate(node.body)
+                node
+            }
+            else -> node
         }
     }
 
@@ -57,23 +77,26 @@ object PropagationVisitor : ASTVisitor {
     }
 
     override fun visitProgram(node: ProgNode) {
-
+        node.functions.forEach {
+            it.acceptVisitor(this)
+        }
+        node.main.acceptVisitor(this)
     }
 
     override fun visitMain(node: MainNode) {
-        node.body.acceptVisitor(this)
-    }
-
-    override fun visitExit(node: ExitNode) {
-        node.expr = propagate(node.expr)
+        node.body = eliminate(node.body)
     }
 
     override fun visitFunction(node: FuncNode) {
-        node.body.acceptVisitor(this)
+        node.body = eliminate(node.body)
+    }
+
+    override fun visitExit(node: ExitNode) {
+
     }
 
     override fun visitFuncCall(node: FuncCallNode) {
-        node.argList.acceptVisitor(this)
+
     }
 
     override fun visitParam(node: ParamNode) {
@@ -81,28 +104,19 @@ object PropagationVisitor : ASTVisitor {
     }
 
     override fun visitNewPair(node: NewPairNode) {
-        node.firstElem = propagate(node.firstElem)
-        node.secondElem = propagate(node.secondElem)
+
     }
 
     override fun visitDeclaration(node: DeclarationNode) {
-        when(node.value){
-            is ExprNode -> node.value = propagate(node.value as ExprNode)
-            else -> node.value.acceptVisitor(this)
-        }
+
     }
 
     override fun visitArgList(node: ArgListNode) {
-        node.args = node.args.map {
-            propagate(it)
-        }
+
     }
 
     override fun visitAssignment(node: AssignmentNode) {
-        when(node.value){
-            is ExprNode -> node.value = propagate(node.value as ExprNode)
-            else -> node.value.acceptVisitor(this)
-        }
+
     }
 
     override fun visitBinOp(node: BinOpNode) {
@@ -114,7 +128,7 @@ object PropagationVisitor : ASTVisitor {
     }
 
     override fun visitPairElem(node: PairElemNode) {
-        node.expr = propagate(node.expr)
+
     }
 
     override fun visitArrayElement(elem: ArrayElement) {
@@ -122,9 +136,7 @@ object PropagationVisitor : ASTVisitor {
     }
 
     override fun visitArrayLiteral(literal: ArrayLiteral) {
-        literal.values = literal.values.map {
-            propagate(it)
-        }
+
     }
 
     override fun visitBoolLiteral(literal: BoolLiteral) {
@@ -160,21 +172,19 @@ object PropagationVisitor : ASTVisitor {
     }
 
     override fun visitBegin(node: BeginNode) {
-        node.stat.acceptVisitor(this)
+
     }
 
     override fun visitFree(node: FreeNode) {
-        node.value = propagate(node.value)
+
     }
 
     override fun visitIf(node: IfNode) {
-        node.proposition = propagate(node.proposition)
-        node.trueStat.acceptVisitor(this)
-        node.falseStat.acceptVisitor(this)
+
     }
 
     override fun visitPrint(node: PrintNode) {
-        node.value = propagate(node.value)
+
     }
 
     override fun visitRead(node: ReadNode) {
@@ -182,17 +192,14 @@ object PropagationVisitor : ASTVisitor {
     }
 
     override fun visitReturn(node: ReturnNode) {
-        node.value = propagate(node.value)
+
     }
 
     override fun visitSeq(node: SeqNode) {
-        node.sequence.forEach {
-            it.acceptVisitor(this)
-        }
+
     }
 
     override fun visitWhile(node: WhileNode) {
-        node.body.acceptVisitor(this)
-        node.proposition = propagate(node.proposition)
+
     }
 }

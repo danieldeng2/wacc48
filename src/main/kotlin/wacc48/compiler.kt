@@ -8,10 +8,7 @@ import wacc48.analyser.exceptions.Issue
 import wacc48.analyser.exceptions.IssueType
 import wacc48.analyser.exceptions.ParserException
 import wacc48.analyser.exceptions.ThrowingErrorListener
-import wacc48.analyser.optimisations.ConstantEvaluationVisitor
-import wacc48.analyser.optimisations.ConstantIdentifierVisitor
-import wacc48.analyser.optimisations.ControlFlowVisitor
-import wacc48.analyser.optimisations.PropagationVisitor
+import wacc48.analyser.optimisations.*
 import wacc48.antlr.WACCLexer
 import wacc48.antlr.WACCParser
 import wacc48.tree.SymbolTable
@@ -85,7 +82,14 @@ fun runOptimiser(programNode: ASTNode) {
         val funcConstants = ConstantIdentifierVisitor.identifyConstants(programNode)
 
         funcConstants.forEach{ func ->
-            optimisations += PropagationVisitor(func.value).optimise(func.key)
+
+            optimisations += PropagationVisitor.optimise(func)
+
+            // Dead Code Elimination
+            optimisations += DeadCodeVisitor.optimise(
+                node = func.key,
+                inactiveVariables = func.value.keys
+            )
         }
     } while (optimisations > 0)
 }
